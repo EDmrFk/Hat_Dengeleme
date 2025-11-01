@@ -198,6 +198,40 @@ main { /* Ana içerik */
 #lineSvg { /* SVG alanı */
   width: 100%; /* Tam genişlik */
   height: 100%; /* Tam yükseklik */
+  transform-origin: center center; /* Zoom merkezini sabitle */
+  transition: transform var(--transition); /* Zoom geçişi */
+}
+
+.zoom-toolbar { /* Zoom denetimi kutusu */
+  position: absolute; /* Panel üzerinde konumla */
+  right: 16px; /* Sağa yasla */
+  bottom: 16px; /* Alta yasla */
+  display: flex; /* Yatay hizala */
+  gap: 6px; /* Boşluk bırak */
+  padding: 6px 8px; /* İç boşluk */
+  background: rgba(12, 14, 18, 0.72); /* Saydam arka plan */
+  border-radius: 999px; /* Yuvarlak kutu */
+  border: 1px solid rgba(255,255,255,0.08); /* İnce kenar */
+  backdrop-filter: blur(6px); /* Cam efekti */
+}
+
+.zoom-toolbar button { /* Zoom butonları */
+  background: rgba(255,255,255,0.08); /* Hafif parlaklık */
+  border-radius: 999px; /* Tam yuvarlak */
+  border: none; /* Kenar kaldır */
+  padding: 6px 12px; /* İç boşluk */
+  color: var(--text); /* Metin rengi */
+  font-weight: 600; /* Kalınlık */
+  cursor: pointer; /* İşaretçi */
+}
+
+.zoom-toolbar button:hover { /* Hover durumu */
+  background: rgba(100,210,255,0.25); /* Vurgu */
+  color: #0a1a23; /* Kontrast */
+}
+
+.zoom-toolbar span { /* Zoom metni */
+  pointer-events: none; /* Etkileşimi kapat */
 }
 
 .station-shape { /* SVG istasyon kutusu */
@@ -320,6 +354,44 @@ main { /* Ana içerik */
   font-size: 0.9rem; /* Boyut */
 }
 
+.analysis-form { /* Analiz form satırı */
+  display: flex; /* Yatay hizala */
+  gap: 16px; /* Aralık */
+  align-items: flex-end; /* Alt hizala */
+  margin-bottom: 12px; /* Alt boşluk */
+}
+
+.analysis-section { /* Analiz blokları */
+  margin-top: 18px; /* Üst boşluk */
+}
+
+.analysis-table { /* Analiz tablosu */
+  width: 100%; /* Tam genişlik */
+  border-collapse: collapse; /* Kenarları birleştir */
+}
+
+.analysis-table th, .analysis-table td { /* Analiz hücreleri */
+  border-bottom: 1px solid rgba(255,255,255,0.08); /* Alt çizgi */
+  padding: 6px 8px; /* İç boşluk */
+  font-size: 0.88rem; /* Yazı boyutu */
+}
+
+.analysis-table th { /* Analiz başlıkları */
+  color: var(--muted); /* Sönük renk */
+  font-weight: 600; /* Kalınlık */
+}
+
+.analysis-text { /* Analiz açıklama metni */
+  margin: 0; /* Boşluk kaldır */
+  line-height: 1.5; /* Satır yüksekliği */
+}
+
+.analysis-list { /* What-if listesi */
+  margin: 8px 0 0 0; /* Boşluklar */
+  padding-left: 18px; /* Liste iç boşluk */
+  line-height: 1.5; /* Satır yüksekliği */
+}
+
 footer { /* Alt bilgi */
   text-align: center; /* Ortala */
   padding: 16px; /* İç boşluk */
@@ -374,12 +446,13 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
   <div class="controls"> <!-- Kontrol grubu -->
     <button id="addStationBtn" type="button" class="primary" title="Yeni istasyon ekle">+ İstasyon Ekle</button> <!-- İstasyon ekleme -->
     <button id="sampleSetupBtn" type="button" title="Örnek kurulum yükle">Örnek Kurulum</button> <!-- Hazır senaryo -->
+    <button id="analysisBtn" type="button" title="Analiz ve önerileri aç">Analiz/Öneri</button> <!-- Analiz modal tetikleyici -->
     <button id="startBtn" type="button" class="primary" title="Simülasyonu başlat (B)">Başlat</button> <!-- Başlat butonu -->
     <button id="stopBtn" type="button" class="danger" title="Simülasyonu durdur (D)" disabled>Durdur</button> <!-- Durdur butonu -->
     <button id="resetBtn" type="button" title="Simülasyonu sıfırla (R)">Sıfırla</button> <!-- Sıfırla butonu -->
     <label title="Animasyon hızı" style="display:flex;align-items:center;gap:8px;"> <!-- Hız kontrol etiketi -->
       <span>Hız</span> <!-- Metin -->
-      <input id="speedSlider" type="range" min="0.25" max="4" step="0.25" value="1"> <!-- Slider -->
+      <input id="speedSlider" type="range" min="0.25" max="16" step="0.25" value="1"> <!-- Slider -->
       <span id="speedValue" class="badge">1×</span> <!-- Hız göstergesi -->
     </label>
     <label title="Hedef tamamlanacak ürün adedi" style="display:flex;align-items:center;gap:8px;"> <!-- Hedef alanı -->
@@ -406,6 +479,11 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
   <section class="section" aria-labelledby="vizTitle"> <!-- Görselleştirme bölümü -->
     <h2 id="vizTitle">Hat Akışı</h2> <!-- Başlık -->
     <div id="visualPanel"> <!-- Görsel panel -->
+      <div class="zoom-toolbar" role="group" aria-label="Görsel ölçek denetimi"> <!-- Zoom kontrol grubu -->
+        <button id="zoomOutBtn" type="button" title="Küçült">−</button> <!-- Zoom küçült -->
+        <button id="zoomResetBtn" type="button" title="Ölçeği 100% yap"><span id="zoomValue">100%</span></button> <!-- Zoom değeri/yenile -->
+        <button id="zoomInBtn" type="button" title="Büyüt">+</button> <!-- Zoom büyüt -->
+      </div>
       <svg id="lineSvg" role="img" aria-label="Hat akışı animasyonu"></svg> <!-- SVG alanı -->
     </div>
   </section>
@@ -413,6 +491,46 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
 <footer> <!-- Alt bilgi -->
   <span>Klavyeden: <strong>B</strong> Başlat · <strong>D</strong> Durdur · <strong>R</strong> Sıfırla</span> <!-- Kısayol bilgisi -->
 </footer>
+
+<div class="modal-backdrop" id="analysisModal"> <!-- Analiz modal arka planı -->
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="analysisTitle"> <!-- Analiz modal kutusu -->
+    <h3 id="analysisTitle">Analiz ve Öneri</h3> <!-- Analiz başlığı -->
+    <p style="margin-top:0;color:var(--muted);">Hat kapasitesi ve takt time senaryolarını inceleyin.</p> <!-- Açıklama -->
+    <div class="analysis-form"> <!-- Takt formu -->
+      <label for="taktInput" style="display:flex;flex-direction:column;gap:6px;flex:1;"> <!-- Takt etiket -->
+        <span>Takt Time (sn/ürün)</span> <!-- Etiket metni -->
+        <input id="taktInput" type="number" min="1" placeholder="Örn: 60" /> <!-- Takt girişi -->
+      </label>
+      <button id="analysisRecalcBtn" type="button" class="primary" style="align-self:flex-end;">Hesapla</button> <!-- Yenile butonu -->
+    </div>
+    <div id="analysisSummary" class="analysis-section"> <!-- Toplam süreler -->
+      <h4>İstasyon Özeti</h4> <!-- Özet başlığı -->
+      <table class="analysis-table" aria-label="İstasyon süreleri ve kapasite"> <!-- Analiz tablosu -->
+        <thead>
+          <tr>
+            <th>İstasyon</th>
+            <th>Toplam Süre (sn)</th>
+            <th>Operatör</th>
+            <th>Paralel</th>
+            <th>Teorik Kapasite (ürün/sn)</th>
+          </tr>
+        </thead>
+        <tbody id="analysisTableBody"></tbody>
+      </table>
+    </div>
+    <div id="analysisInsights" class="analysis-section"> <!-- Bottleneck yorumları -->
+      <h4>Bottleneck ve Takt Değerlendirmesi</h4> <!-- Başlık -->
+      <p class="analysis-text"></p> <!-- Dinamik yorum -->
+    </div>
+    <div id="analysisWhatIf" class="analysis-section"> <!-- What-if senaryosu -->
+      <h4>What-if: Operatör Artırımı</h4> <!-- Başlık -->
+      <ul class="analysis-list"></ul> <!-- Senaryo listesi -->
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:18px;"> <!-- Alt buton satırı -->
+      <button id="closeAnalysisBtn" class="primary">Kapat</button> <!-- Kapat butonu -->
+    </div>
+  </div>
+</div>
 
 <div class="modal-backdrop" id="reportModal"> <!-- Rapor modal arka planı -->
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reportTitle"> <!-- Modal kutusu -->
@@ -458,7 +576,7 @@ const STORAGE_KEY = 'line-sim-state'; // Yerel depolama anahtarı
 const persistedSnapshot = loadPersistedState(); // Önceden kaydedilmiş durum
 
 // Yardımcı sabitler //
-const MAX_SERVERS = 4; // Maksimum paralel sunucu sayısı
+const MAX_SERVERS = 16; // Maksimum paralel sunucu sayısı
 const UPDATE_INTERVAL_MS = 150; // UI metrik güncelleme aralığı
 const MOVE_DURATION_MS = 900; // Baloncuk hareket süresi
 const LOGICAL_RATE = 4; // 1 saniyede işlenecek mantıksal saniye
@@ -471,6 +589,8 @@ const appState = window.appState ?? { // Uygulama genel durumu
   entryPolicy: 'trigger', // Giriş politikası seçimi
   entryInterval: 30, // Sabit giriş aralığı
   speed: 1, // Animasyon hızı
+  zoom: 1, // Görsel ölçek
+  taktTime: null, // Takt time değeri
   simulation: null, // Simülasyon motoru referansı
   lastUpdate: 0, // Son UI güncelleme zamanı
   lastMetricRefresh: 0, // Son metrik yenileme zamanı
@@ -511,6 +631,8 @@ function saveState(state = appState) { // Durumu kaydet
       entryPolicy: state.entryPolicy, // Giriş politikası
       entryInterval: state.entryInterval, // Giriş aralığı
       speed: state.speed, // Hız
+      zoom: state.zoom, // Zoom değeri
+      taktTime: state.taktTime, // Takt time
       nextStationId: state.nextStationId // Sıradaki kimlik
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot)); // JSON olarak yaz
@@ -894,17 +1016,21 @@ class SimulationEngine { // Motor sınıfı
       const util = horizon ? (rt.busyArea / (horizon * (rt.servers.length || 1))) : 0; // Utilizasyon
       const avgQ = horizon ? (rt.queueArea / horizon) : 0; // Ortalama kuyruk
       const wait = rt.serviceCount ? (rt.totalWaitTime / rt.serviceCount) : 0; // Ortalama bekleme
-      const effectiveService = rt.station.totalDuration() / rt.station.parallelServers; // Efektif servis
+      const serviceTime = rt.station.totalDuration(); // Tek iş servis süresi
+      const capacityPerSec = serviceTime > 0 ? rt.station.parallelServers / serviceTime : 0; // Teorik kapasite
       return { // Satır nesnesi
+        stationId: rt.station.id, // Kimlik
         stationName: rt.station.name, // İsim
+        parallelServers: rt.station.parallelServers, // Paralel sayısı
         utilization: util, // Utilizasyon
         avgQueue: avgQ, // Kuyruk
         avgWait: wait, // Bekleme
-        effectiveService // Servis
+        serviceTime, // Servis süresi
+        capacityPerSec // Kapasite
       };
     });
-    const bottleneckUtil = stationRows.reduce((max, row) => (row.utilization > (max.utilization || 0) ? row : max), {}); // Util darboğazı
-    const bottleneckService = stationRows.reduce((max, row) => (row.effectiveService > (max.effectiveService || 0) ? row : max), {}); // Servis darboğazı
+    const bottleneckUtil = stationRows.reduce((max, row) => (!max || row.utilization > max.utilization ? row : max), null); // Util darboğazı
+    const bottleneckService = stationRows.reduce((max, row) => (!max || row.serviceTime > max.serviceTime ? row : max), null); // Servis darboğazı
     return { // Rapor objesi
       totalCompleted, // Tamamlanan
       horizon, // Simülasyon süresi
@@ -927,9 +1053,11 @@ class Visualization { // Görsel katman
     this.stationLayout = []; // İstasyon yerleşimi
     this.metricGroup = null; // Metrik yazıları grubu
     this.speed = 1; // Animasyon hızı
+    this.zoom = 1; // Zoom ölçeği
     this.resizeObserver = new ResizeObserver(() => this.drawStations()); // Yeniden çizim dinleyicisi
     this.resizeObserver.observe(svg.parentElement); // Paneli izle
     this.frame = this.frame.bind(this); // Animasyon bağla
+    this.setZoom(this.zoom); // Başlangıç ölçeğini uygula
     requestAnimationFrame(this.frame); // Döngüyü başlat
   }
   clearJobs() { // Baloncukları temizle
@@ -965,6 +1093,10 @@ class Visualization { // Görsel katman
   }
   setSpeed(speed) { // Hızı güncelle
     this.speed = speed; // Hız ata
+  }
+  setZoom(scale) { // Zoom değerini güncelle
+    this.zoom = scale; // Ölçeği sakla
+    this.svg.style.transform = `scale(${scale})`; // CSS ölçeğini uygula
   }
   setStations(stations) { // İstasyon yerleşimini güncelle
     this.stationLayout = stations.map((station, index) => ({ station, index })); // Yerleşim kaydı
@@ -1135,11 +1267,17 @@ const startBtn = document.getElementById('startBtn'); // Başlat butonu
 const stopBtn = document.getElementById('stopBtn'); // Durdur butonu
 const resetBtn = document.getElementById('resetBtn'); // Sıfırla butonu
 const sampleBtn = document.getElementById('sampleSetupBtn'); // Örnek kurulum butonu
+const analysisBtn = document.getElementById('analysisBtn'); // Analiz butonu
 const speedSlider = document.getElementById('speedSlider'); // Hız slider
 const speedValue = document.getElementById('speedValue'); // Hız değeri
 const targetInput = document.getElementById('targetInput'); // Hedef girişi
 const entryPolicySelect = document.getElementById('entryPolicySelect'); // Giriş politikası seçimi
 const entryIntervalInput = document.getElementById('entryIntervalInput'); // Aralık girişi
+const taktInput = document.getElementById('taktInput'); // Takt time girişi
+const zoomOutBtn = document.getElementById('zoomOutBtn'); // Zoom küçült butonu
+const zoomInBtn = document.getElementById('zoomInBtn'); // Zoom büyüt butonu
+const zoomResetBtn = document.getElementById('zoomResetBtn'); // Zoom sıfırlama butonu
+const zoomValueEl = document.getElementById('zoomValue'); // Zoom metni
 const reportModal = document.getElementById('reportModal'); // Rapor modalı
 const closeReportBtn = document.getElementById('closeReportBtn'); // Modal kapatma butonu
 const summaryTableBody = document.querySelector('#summaryTable tbody'); // Özet tablo gövdesi
@@ -1147,12 +1285,37 @@ const stationTableBody = document.querySelector('#stationTable tbody'); // İsta
 const bottleneckInfo = document.getElementById('bottleneckInfo'); // Darboğaz metni
 const downloadCsvBtn = document.getElementById('downloadCsvBtn'); // CSV butonu
 const completedCounterEl = document.getElementById('completedCounter'); // Tamamlanan sayaç etiketi
+const analysisModal = document.getElementById('analysisModal'); // Analiz modalı
+const closeAnalysisBtn = document.getElementById('closeAnalysisBtn'); // Analiz kapanış butonu
+const analysisRecalcBtn = document.getElementById('analysisRecalcBtn'); // Analiz hesaplama butonu
+const analysisTableBody = document.getElementById('analysisTableBody'); // Analiz tablo gövdesi
+const analysisText = document.querySelector('#analysisInsights .analysis-text'); // Analiz yorum metni
+const analysisList = document.querySelector('#analysisWhatIf .analysis-list'); // What-if listesi
 
 const viz = new Visualization(document.getElementById('lineSvg')); // Görselleştirme örneği
 const stationRuntimeRefs = new Map(); // Canlı metrik referans haritası
 
 function renderGraph(stations) { // Akış grafiğini çiz
   viz.setStations(stations); // Görselleştirme modelini güncelle
+}
+
+function updateZoomDisplay() { // Zoom metnini güncelle
+  if (zoomValueEl) zoomValueEl.textContent = `${Math.round(appState.zoom * 100)}%`; // Yüzdelik göster
+  if (zoomResetBtn) zoomResetBtn.title = `Ölçeği ${Math.round(appState.zoom * 100)}% durumundan 100% yap`; // İpucu güncelle
+  viz.setZoom(appState.zoom); // Görsel ölçeği uygula
+}
+
+function adjustZoom(delta) { // Zoom değerini değiştir
+  const next = Math.max(0.5, Math.min(2.5, parseFloat((appState.zoom + delta).toFixed(2)))); // Sınırla ve yuvarla
+  appState.zoom = next; // Duruma yaz
+  updateZoomDisplay(); // Görseli güncelle
+  saveState(appState); // Durumu kaydet
+}
+
+function resetZoom() { // Zoom'u sıfırla
+  appState.zoom = 1; // Varsayılan ölçek
+  updateZoomDisplay(); // Görseli güncelle
+  saveState(appState); // Durumu kaydet
 }
 
 function cloneStationsForRun() { // Simülasyon için istasyon kopyala
@@ -1253,6 +1416,9 @@ function renderStations() { // İstasyon kartlarını çiz
 
     const runtimeLine = document.createElement('div'); // Canlı metrik satırı
     runtimeLine.className = 'runtime-line'; // Sınıf ata
+    const capacityPill = document.createElement('span'); // Kapasite rozeti
+    capacityPill.className = 'runtime-pill'; // Sınıf ata
+    capacityPill.textContent = `Operatör: ${station.parallelServers} (Paralel: ${station.parallelServers})`; // Varsayılan metin
     const queuePill = document.createElement('span'); // Kuyruk rozeti
     queuePill.className = 'runtime-pill'; // Sınıf ata
     queuePill.textContent = 'Kuyruk: 0'; // Varsayılan metin
@@ -1262,18 +1428,19 @@ function renderStations() { // İstasyon kartlarını çiz
     const remainingPill = document.createElement('span'); // Kalan süre rozeti
     remainingPill.className = 'runtime-pill'; // Sınıf ata
     remainingPill.textContent = 'Kalan: -'; // Varsayılan metin
+    runtimeLine.appendChild(capacityPill); // Kapasiteyi ekle
     runtimeLine.appendChild(queuePill); // Kuyruğu ekle
     runtimeLine.appendChild(servicePill); // Servisi ekle
     runtimeLine.appendChild(remainingPill); // Kalanı ekle
     card.appendChild(runtimeLine); // Kart içine yerleştir
-    stationRuntimeRefs.set(station.id, { card, queue: queuePill, service: servicePill, remaining: remainingPill }); // Referansı kaydet
+    stationRuntimeRefs.set(station.id, { card, capacity: capacityPill, queue: queuePill, service: servicePill, remaining: remainingPill }); // Referansı kaydet
 
     const serverRow = document.createElement('div'); // Sunucu satırı
     serverRow.style.display = 'flex'; // Yatay düzen
     serverRow.style.gap = '8px'; // Boşluk
     serverRow.style.alignItems = 'center'; // Ortala
     const serverLabel = document.createElement('span'); // Etiket
-    serverLabel.textContent = 'Paralel Operatör'; // Metin
+    serverLabel.textContent = 'Operatör (Paralel Kapasite)'; // Metin
     serverRow.appendChild(serverLabel); // Satıra ekle
     const serverInput = document.createElement('input'); // Sayısal girdi
     serverInput.type = 'number'; // Tip
@@ -1391,6 +1558,7 @@ function applyLiveStationSnapshot(snapshot) { // Canlı metrikleri karta yaz
     const busyServers = item.servers.filter(server => !!server); // Aktif sunucular
     const avgProgress = busyServers.length ? busyServers.reduce((sum, server) => sum + server.progress, 0) / busyServers.length : 0; // Ortalama ilerleme
     const maxRemaining = busyServers.length ? Math.max(...busyServers.map(server => server.remaining)) : 0; // Maks kalan süre
+    refs.capacity.textContent = `Operatör: ${item.metrics.capacity} (Paralel: ${item.metrics.capacity})`; // Kapasite metni
     refs.queue.textContent = `Kuyruk: ${item.metrics.queueLength}`; // Kuyruk metni
     refs.service.textContent = `Servis: ${item.metrics.busyCount}/${item.metrics.capacity}`; // Servis metni
     refs.remaining.textContent = busyServers.length ? `Kalan: ${maxRemaining.toFixed(1)}sn · %${(avgProgress * 100).toFixed(0)}` : 'Kalan: -'; // Kalan süre metni
@@ -1547,6 +1715,7 @@ function resetSimulation() { // Simülasyonu sıfırla
     const station = appState.stations.find(st => st.id === stationId); // İstasyonu bul
     const capacity = station ? station.parallelServers : 0; // Kapasite al
     refs.card.classList.remove('bottleneck'); // Vurguyu kaldır
+    refs.capacity.textContent = `Operatör: ${capacity} (Paralel: ${capacity})`; // Kapasiteyi sıfırla
     refs.queue.textContent = 'Kuyruk: 0'; // Kuyruğu sıfırla
     refs.service.textContent = `Servis: 0/${capacity}`; // Servisi sıfırla
     refs.remaining.textContent = 'Kalan: -'; // Kalan süreyi sıfırla
@@ -1591,6 +1760,100 @@ function runLoop() { // Simülasyon döngüsü
   requestAnimationFrame(runLoop); // Sonraki karede devam
 }
 
+function openAnalysisModal() { // Analiz modalını aç
+  runAnalysis(); // İçeriği üret
+  if (analysisModal) analysisModal.classList.add('active'); // Modalı göster
+}
+
+function closeAnalysisModal() { // Analiz modalını kapat
+  if (analysisModal) analysisModal.classList.remove('active'); // Modalı gizle
+}
+
+function runAnalysis() { // Analiz içeriğini hesapla
+  if (!analysisTableBody || !analysisText || !analysisList) return; // Eleman kontrolü
+  const taktTime = appState.taktTime && appState.taktTime > 0 ? appState.taktTime : null; // Takt değeri
+  const taktRate = taktTime ? 1 / taktTime : null; // Takt oranı
+  let report = null; // Rapor saklama
+  try { // Güvenli çağrı
+    if (appState.simulation) report = appState.simulation.buildReport(); // Mevcut raporu al
+  } catch (error) { // Hata durumunda
+    console.warn('Analiz raporu oluşturulamadı:', error); // Uyarı
+  }
+  analysisTableBody.innerHTML = ''; // Tabloyu temizle
+  const stationSummaries = appState.stations.map(station => { // Her istasyon için özet
+    const duration = station.totalDuration(); // Toplam süre
+    const parallel = Math.max(1, station.parallelServers); // Paralel kapasite
+    const capacityPerSec = duration > 0 ? parallel / duration : 0; // Teorik kapasite
+    const reportRow = report?.stationRows?.find(row => row.stationId === station.id) || null; // Rapor satırı
+    const utilization = reportRow ? reportRow.utilization : null; // Utilizasyon
+    const avgQueue = reportRow ? reportRow.avgQueue : null; // Ortalama kuyruk
+    const tr = document.createElement('tr'); // Tablo satırı
+    tr.innerHTML = `<td>${station.name}</td><td>${duration.toFixed(2)}</td><td>${parallel}</td><td>${parallel}</td><td>${capacityPerSec.toFixed(3)}</td>`; // Hücreler
+    analysisTableBody.appendChild(tr); // Tabloya ekle
+    return { station, duration, parallel, capacityPerSec, utilization, avgQueue }; // Özet döndür
+  });
+  if (!stationSummaries.length) { // İstasyon yoksa
+    analysisText.textContent = 'Analiz için önce en az bir istasyon tanımlayın.'; // Bilgi metni
+    analysisList.innerHTML = ''; // Listeyi temizle
+    return; // Çık
+  }
+  const bottleneckService = stationSummaries.reduce((max, row) => (!max || row.duration > max.duration ? row : max), null); // Servis darboğazı
+  const bottleneckUtil = stationSummaries.reduce((max, row) => {
+    if (row.utilization === null) return max; // Util yoksa geç
+    if (!max || row.utilization > (max.utilization ?? 0)) return row; // Daha büyükse seç
+    return max; // Aksi halde mevcut
+  }, null); // Util darboğazı
+  const serviceName = bottleneckService ? bottleneckService.station.name : '-'; // Servis istasyonu adı
+  const utilName = bottleneckUtil ? bottleneckUtil.station.name : '-'; // Util istasyonu adı
+  let insight = `Bottleneck (servis): ${serviceName}.`; // Servis içgörüsü
+  insight += ` Utilizasyon analizine göre öne çıkan istasyon: ${utilName}.`; // Util bilgisi
+  if (bottleneckService && bottleneckService.avgQueue !== null) { // Kuyruk bilgisi varsa
+    insight += ` Ortalama kuyruk ${bottleneckService.avgQueue.toFixed(2)} iş.`; // Kuyruk büyüklüğü
+  }
+  if (taktTime && bottleneckService) { // Takt varsa
+    if (bottleneckService.duration > taktTime) { // Taktı aşıyorsa
+      insight += ` Takt ${taktTime.toFixed(2)} sn, bu istasyonda tek ürün süresi ${bottleneckService.duration.toFixed(2)} sn olduğundan paralel kapasite artışı önerilir.`; // Tavsiye
+    } else {
+      insight += ` Takt ${taktTime.toFixed(2)} sn değerini bu istasyon karşılıyor, paralel kapasite yalnızca kuyruğu dengelemek için artırılmalı.`; // Bilgi
+    }
+  } else {
+    insight += ' Takt time girmediğiniz için öneriler teorik kapasite üzerinden hesaplandı.'; // Bilgi
+  }
+  insight += ' Paralel operatör eklemek servis süresini kısaltmaz; yalnızca aynı anda işlenen ürün sayısını artırır.'; // Sabit süre vurgusu
+  analysisText.textContent = insight; // Metni yaz
+  const targetStation = report?.bottleneckService?.stationId
+    ? stationSummaries.find(row => row.station.id === report.bottleneckService.stationId) || bottleneckService
+    : bottleneckService; // Senaryo istasyonu
+  analysisList.innerHTML = ''; // Listeyi temizle
+  if (!targetStation) return; // İstasyon yoksa çık
+  const baseThroughput = targetStation.duration > 0 ? targetStation.parallel / targetStation.duration : 0; // Mevcut throughput
+  [1, 2].forEach(delta => { // +1 ve +2 senaryosu
+    const proposed = Math.min(MAX_SERVERS, targetStation.parallel + delta); // Yeni paralel
+    if (proposed === targetStation.parallel) { // Artış mümkün değilse
+      const li = document.createElement('li'); // Liste elemanı
+      li.textContent = `+${delta} operatör: Kapasite ${MAX_SERVERS} sınırında olduğu için artış uygulanamaz.`; // Mesaj
+      analysisList.appendChild(li); // Listeye ekle
+      return; // Sonraki
+    }
+    const newThroughput = targetStation.duration > 0 ? proposed / targetStation.duration : 0; // Yeni throughput
+    let queueNote = 'Kuyruk etkisi: '; // Kuyruk notu
+    if (taktRate) { // Takt varsa
+      if (newThroughput >= taktRate) { // Taktı yakaladıysa
+        queueNote += 'takt hızını yakalayarak kuyrukları eritmesi beklenir.'; // Azalma
+      } else if (newThroughput > baseThroughput) {
+        queueNote += 'takt altında kalsa da kuyruk büyüme hızını azaltır.'; // Yavaşlar
+      } else {
+        queueNote += 'değişim beklenmez.'; // Etkisiz
+      }
+    } else {
+      queueNote += newThroughput > baseThroughput ? 'azalma yönlü.' : 'değişim beklenmez.'; // Takt yoksa genel yorum
+    }
+    const li = document.createElement('li'); // Liste elemanı
+    li.textContent = `+${delta} operatör → ${targetStation.parallel}→${proposed} paralel, teorik throughput ${baseThroughput.toFixed(3)}→${newThroughput.toFixed(3)} ürün/sn. ${queueNote}`; // Açıklama
+    analysisList.appendChild(li); // Listeye ekle
+  });
+}
+
 function openReportModal() { // Rapor modalını aç
   if (!appState.simulation) return; // Motor yoksa çık
   const report = appState.simulation.buildReport(); // Raporu üret
@@ -1614,7 +1877,9 @@ function openReportModal() { // Rapor modalını aç
     tr.innerHTML = `<td>${row.stationName}</td><td>${(row.utilization * 100).toFixed(1)}</td><td>${row.avgQueue.toFixed(2)}</td><td>${row.avgWait.toFixed(2)}</td>`; // Hücreler
     stationTableBody.appendChild(tr); // Tabloya ekle
   });
-  bottleneckInfo.textContent = `Yöntem 1 (Utilizasyon): ${report.bottleneckUtil.stationName || '-'} · Yöntem 2 (Servis Süresi): ${report.bottleneckService.stationName || '-'}`; // Darboğaz metni
+  const utilName = report.bottleneckUtil?.stationName || '-'; // Util darboğaz adı
+  const serviceName = report.bottleneckService?.stationName || '-'; // Servis darboğaz adı
+  bottleneckInfo.textContent = `Yöntem 1 (Utilizasyon): ${utilName} · Yöntem 2 (Servis Süresi): ${serviceName}`; // Darboğaz metni
   reportModal.classList.add('active'); // Modal göster
   downloadCsvBtn.onclick = () => downloadCsv(report); // CSV butonuna fonksiyon bağla
 }
@@ -1633,9 +1898,9 @@ function downloadCsv(report) { // CSV indirme fonksiyonu
   lines.push(`Throughput(dk),${report.throughputPerMin.toFixed(3)}`); // Ürün/dk
   lines.push(`Ortalama WIP,${report.avgWip.toFixed(2)}`); // WIP
   lines.push(''); // Boş satır
-  lines.push('İstasyon,Utilizasyon(%),Ortalama Kuyruk,Ortalama Bekleme(sn)'); // İstasyon başlığı
+  lines.push('İstasyon,Operatör,Paralel,Servis Süresi(sn),Teorik Kapasite(ürün/sn),Utilizasyon(%),Ortalama Kuyruk,Ortalama Bekleme(sn)'); // İstasyon başlığı
   report.stationRows.forEach(row => { // Her istasyon için
-    lines.push(`${row.stationName},${(row.utilization * 100).toFixed(1)},${row.avgQueue.toFixed(2)},${row.avgWait.toFixed(2)}`); // Satır ekle
+    lines.push(`${row.stationName},${row.parallelServers},${row.parallelServers},${row.serviceTime.toFixed(2)},${row.capacityPerSec.toFixed(3)},${(row.utilization * 100).toFixed(1)},${row.avgQueue.toFixed(2)},${row.avgWait.toFixed(2)}`); // Satır ekle
   });
   const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' }); // Blob oluştur
   const url = URL.createObjectURL(blob); // URL üret
@@ -1675,6 +1940,8 @@ function syncControlsFromState() { // Kontrolleri duruma göre hizala
   speedSlider.value = appState.speed; // Hız kaydırgacı
   const display = Number.isInteger(appState.speed) ? appState.speed.toFixed(0) : appState.speed.toFixed(2); // Gösterim metni
   speedValue.textContent = `${display}×`; // Hız etiketi
+  if (taktInput) taktInput.value = appState.taktTime ?? ''; // Takt alanı
+  updateZoomDisplay(); // Zoom göstergesini yenile
 }
 
 function restoreFromSnapshot(snapshot) { // Yerel depolamadan gelen durumu uygula
@@ -1714,7 +1981,13 @@ function restoreFromSnapshot(snapshot) { // Yerel depolamadan gelen durumu uygul
     appState.entryPolicy = snapshot.entryPolicy; // Politikayı ata
   }
   if (typeof snapshot.speed === 'number' && snapshot.speed > 0) { // Hız geçerli mi
-    appState.speed = Math.max(0.25, Math.min(4, snapshot.speed)); // Hızı sınırla
+    appState.speed = Math.max(0.25, Math.min(16, snapshot.speed)); // Hızı sınırla
+  }
+  if (typeof snapshot.zoom === 'number' && snapshot.zoom > 0) { // Zoom geçerli mi
+    appState.zoom = Math.max(0.5, Math.min(2.5, snapshot.zoom)); // Zoom aralığını sınırla
+  }
+  if (typeof snapshot.taktTime === 'number' && snapshot.taktTime > 0) { // Takt değeri geçerli mi
+    appState.taktTime = snapshot.taktTime; // Takt time ata
   }
   syncControlsFromState(); // Kontrolleri güncelle
   renderStations(); // Kartları çiz
@@ -1749,6 +2022,10 @@ function attachUiEvents() { // UI olaylarını bağla
   startBtn?.addEventListener('click', () => startSimulation()); // Başlat
   stopBtn?.addEventListener('click', () => stopSimulation(true)); // Durdur
   resetBtn?.addEventListener('click', () => resetSimulation()); // Sıfırla
+  analysisBtn?.addEventListener('click', () => openAnalysisModal()); // Analiz modalını aç
+  closeAnalysisBtn?.addEventListener('click', () => closeAnalysisModal()); // Analiz modalını kapat
+  analysisModal?.addEventListener('click', event => { if (event.target === analysisModal) closeAnalysisModal(); }); // Dışa tıklayınca kapat
+  analysisRecalcBtn?.addEventListener('click', () => runAnalysis()); // Analizi yenile
   closeReportBtn?.addEventListener('click', () => closeReport()); // Rapor kapat
   reportModal?.addEventListener('click', event => { if (event.target === reportModal) closeReport(); }); // Modal dışı kapat
   speedSlider?.addEventListener('input', () => { // Hız değişimi
@@ -1756,12 +2033,19 @@ function attachUiEvents() { // UI olaylarını bağla
     appState.speed = value; // Duruma ata
     const display = Number.isInteger(value) ? value.toFixed(0) : value.toFixed(2); // Gösterim seçimi
     speedValue.textContent = `${display}×`; // Etiketi güncelle
+    viz.setSpeed(appState.speed); // Animasyon hızını anında uygula
     saveState(appState); // Durumu kaydet
   });
   targetInput?.addEventListener('input', () => { // Hedef değişimi
     const value = Number(targetInput.value); // Değer al
     appState.targetCount = value > 0 ? Math.floor(value) : null; // Ata
     saveState(appState); // Durumu kaydet
+  });
+  taktInput?.addEventListener('change', () => { // Takt değişimi
+    const value = Number(taktInput.value); // Değer al
+    appState.taktTime = value > 0 ? value : null; // Duruma yaz
+    saveState(appState); // Durumu kaydet
+    runAnalysis(); // Analizi güncelle
   });
   entryPolicySelect?.addEventListener('change', () => { // Giriş politikası değişimi
     appState.entryPolicy = entryPolicySelect.value; // Durum güncelle
@@ -1777,6 +2061,9 @@ function attachUiEvents() { // UI olaylarını bağla
     appState.entryInterval = value; // Duruma ata
     saveState(appState); // Durumu kaydet
   });
+  zoomOutBtn?.addEventListener('click', () => adjustZoom(-0.25)); // Zoom azalt
+  zoomInBtn?.addEventListener('click', () => adjustZoom(0.25)); // Zoom artır
+  zoomResetBtn?.addEventListener('click', () => resetZoom()); // Zoom sıfırla
   document.addEventListener('keydown', bindKeyboardShortcuts); // Klavye olayları
 }
 

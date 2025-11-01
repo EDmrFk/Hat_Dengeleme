@@ -34,12 +34,15 @@ Projeyi açmanın iki basit yolu vardır:
    Ardından tarayıcıda `http://localhost:8000/index.html` adresine gidin.
 
 # Kullanım
-- **+ İstasyon Ekle** ile yeni bir istasyon oluşturun; istasyon adı, paralel sunucu (1–4) ve görev listesi alanlarını doldurun.
-- Görev eklemek için `Görev Adı`, `Operatör` (≥1) ve `Süre(sn)` (>0) değerlerini yazın; satırdaki artı simgesiyle yeni görev eklenir.
-- Üst çubuktaki **Başlat**, **Durdur** ve **Sıfırla** butonları simülasyon akışını kontrol eder. Klavye kısayolları: `B`, `D`, `R`.
-- Hız kaydırgacını 0.25×–4× aralığında ayarlayarak animasyon hızını değiştirin; metrik hesapları mantıksal zamanda kalır.
-- Hedef adet alanına sayı girerseniz o kadar ürün tamamlandığında simülasyon otomatik olarak durur.
-- Rapor modali Cycle Time, Throughput, Ortalama WIP, istasyon bazlı kuyruk uzunluğu ve darboğaz analizlerini gösterir; CSV olarak indirebilirsiniz.
+- **+ İstasyon Ekle** ile yeni bir istasyon oluşturun; istasyon adı, operatör/paralel sunucu sayısını (1–16 arası) ve görev listesini düzenleyin.
+- Görev eklemek için `Görev Adı`, `Operatör` (≥1) ve `Süre(sn)` (>0) alanlarını doldurun; satırdaki artı simgesiyle yeni görev eklersiniz.
+- Operatör sayısı istasyon kapasitesini paralel sunucu olarak artırır; tek bir ürünün servis süresi görev sürelerinin toplamı olarak sabit kalır.
+- Üst çubuktaki **Başlat**, **Durdur** ve **Sıfırla** butonları simülasyonu yönetir. Klavye kısayolları: `B`, `D`, `R`.
+- Hız kaydırgacını 0.25×–16× aralığında ayarlayarak yalnızca animasyon hızını değiştirin; mantıksal zaman ve metrikler sabit kalır.
+- **Analiz/Öneri** butonuna tıklayıp açılan modalde takt time (sn/ürün) girin; darboğaz istasyonu, teorik throughput, +1/+2 operatör what-if senaryoları ve kuyruk etkisi raporlanır.
+- Üst çubuktaki “Tamamlanan: N” rozeti hat genelinde tamamlanan ürün sayısını canlı olarak gösterir.
+- Hedef adet alanına sayı girerseniz o kadar ürün tamamlandığında simülasyon otomatik durur ve rapor açılır.
+- Rapor modali Cycle Time, Throughput (sn/dk), Ortalama WIP, istasyon bazlı kuyruk/bekleme değerleri ve iki farklı darboğaz tespit yöntemini sunar; CSV çıktısı alınabilir.
 
 # “İstasyon Ekle” Butonu İpucu
 Simülasyona yeni istasyon eklenemiyorsa aşağıdaki kontrol listesini izleyin:
@@ -68,6 +71,8 @@ Simülasyona yeni istasyon eklenemiyorsa aşağıdaki kontrol listesini izleyin:
 - İstasyonlar yatay kartlar halinde sıralanır; aralarındaki oklar ürünlerin akış yönünü belirtir.
 - Baloncuk animasyonları (job'lar) oklar boyunca ilerler; istasyonda boş sunucu yoksa kartın üzerinde FIFO kuyruğu görünür.
 - Darboğaz oluştuğunda istasyon çerçevesi kırmızı tonuna geçer ve canlı `qLen` ile `util%` etiketleri uyarı niteliği taşır.
+- Her istasyon kartında anlık kuyruk, aktif paralel servis sayısı, kalan süre ve yüzde ilerleme rozetleri görüntülenir.
+- Görsel paneldeki “− / % / +” zoom denetimi, sahneyi 0.5×–2.5× aralığında büyütüp küçültür; animasyon akışı bozulmaz.
 
 # Sistem Gereksinimleri
 - Güncel bir masaüstü tarayıcı (Chrome, Edge veya Firefox) yeterlidir.
