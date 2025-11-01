@@ -451,6 +451,8 @@ const appState = window.appState ?? { // Uygulama genel durumu
 };
 window.appState = appState; // Durumu küresele yaz
 
+let renderingPaused = false; // Geçici olarak yeniden çizimi durdurma bayrağı
+
 function loadPersistedState() { // Yerel depolamadan durumu oku
   if (typeof localStorage === 'undefined') return null; // Tarayıcı dışı ortam koruması
   try {
@@ -1016,10 +1018,13 @@ function addStation(name = null) { // İstasyon ekleme fonksiyonu
   station.parallelServers = 1; // Varsayılan kapasite
   station.tasks = []; // Görevleri boş başlat
   appState.stations.push(station); // Listeye ekle
-  renderStationCard(station); // Kartı çiz
-  renderGraph(appState.stations); // Akışı güncelle
-  saveState(appState); // Durumu kaydet
+  if (!renderingPaused) { // Yeniden çizim açıksa
+    renderStations(); // Kart listesini güncelle
+    renderGraph(appState.stations); // Akış diyagramını tazele
+    saveState(appState); // Durumu kaydet
+  }
   console.info('Station added:', station); // Konsola bilgi düş
+  return station; // Yeni istasyonu döndür
 }
 
 function onAddStationClick(event) { // İstasyon ekle buton tıklaması
@@ -1064,13 +1069,6 @@ function removeTask(stationId, taskIndex) { // Görev silme fonksiyonu
   renderStations(); // UI yenile
   renderGraph(appState.stations); // Akışı güncelle
   saveState(appState); // Durumu kaydet
-}
-
-function renderStationCard(station) { // Tek istasyon kartını güncelle
-  if (!stationListEl) return; // Kapsayıcı yoksa çık
-  const existing = stationListEl.querySelector(`.station-card[data-id="${station.id}"]`); // Mevcut kartı bul
-  if (existing) existing.remove(); // Varsa kaldır
-  renderStations(); // Tam listeyi yeniden çiz
 }
 
 function renderStations() { // İstasyon kartlarını çiz
@@ -1583,16 +1581,18 @@ function initApp() { // Başlatıcı
     const addBtn = document.querySelector('#addStationBtn, [data-action="add-station"]'); // Butonu bul
     if (!addBtn) return; // Yoksa çık
     const before = appState.stations.length; // Önceki sayaç
-    addBtn.click(); // Tıklamayı simüle et
+    const previousNextId = appState.nextStationId; // Önceki kimlik sayacı
+    renderingPaused = true; // Yeniden çizimi geçici olarak durdur
+    try { // Korunan deneme bloğu
+      addBtn.click(); // Tıklamayı simüle et
+    } finally { // Her durumda çalışacak blok
+      renderingPaused = false; // Bayrağı eski haline getir
+    }
     const after = appState.stations.length; // Sonraki sayaç
     console.assert(after === before + 1, 'Station not added via programmatic click'); // Doğrulama
     if (after === before + 1) { // Başarılıysa
       appState.stations.pop(); // Eklenen istasyonu çıkar
-      const highest = appState.stations.reduce((max, st) => { // En büyük kimliği bul
-        const numeric = Number(String(st.id).split('-').pop()); // Numerik değer
-        return Number.isFinite(numeric) ? Math.max(max, numeric + 1) : max; // Sonraki tahmin
-      }, 1); // Başlangıç 1
-      appState.nextStationId = Math.max(1, highest); // Sayaç hizala
+      appState.nextStationId = previousNextId; // Kimlik sayacını geri al
       renderStations(); // Listeyi yenile
       renderGraph(appState.stations); // Akışı güncelle
       saveState(appState); // Durumu kaydet

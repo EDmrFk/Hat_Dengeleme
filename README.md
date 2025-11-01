@@ -46,7 +46,7 @@ Simülasyona yeni istasyon eklenemiyorsa aşağıdaki kontrol listesini izleyin:
 
 - `index.html` dosyasını tarayıcıda açmanız yeterlidir; ek bir sunucu gerekmez.
 - HTML içinde `id="addStationBtn"` olan ve `type="button"` olarak tanımlanan butonun bulunduğundan emin olun.
-- Tarayıcı konsolunda hata görürseniz ekran görüntüsü alın ve `renderStationCard`, `renderGraph` ile `saveState` fonksiyonlarının kodda tanımlı olduğunu doğrulayın.
+- Tarayıcı konsolunda hata görürseniz ekran görüntüsü alın ve `addStation`, `renderStations`, `renderGraph` ile `saveState` fonksiyonlarının kodda tanımlı olduğunu doğrulayın.
 
 # Görselleştirme
 - İstasyonlar yatay kartlar halinde sıralanır; aralarındaki oklar ürünlerin akış yönünü belirtir.
