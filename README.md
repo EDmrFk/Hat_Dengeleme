@@ -44,9 +44,25 @@ Projeyi açmanın iki basit yolu vardır:
 # “İstasyon Ekle” Butonu İpucu
 Simülasyona yeni istasyon eklenemiyorsa aşağıdaki kontrol listesini izleyin:
 
-- `index.html` dosyasını tarayıcıda açmanız yeterlidir; ek bir sunucu gerekmez.
-- HTML içinde `id="addStationBtn"` olan ve `type="button"` olarak tanımlanan butonun bulunduğundan emin olun.
-- Tarayıcı konsolunda hata görürseniz ekran görüntüsü alın ve `addStation`, `renderStations`, `renderGraph` ile `saveState` fonksiyonlarının kodda tanımlı olduğunu doğrulayın.
+- `index.html` dosyasını tarayıcıda açmanız yeterlidir; gerekirse `python -m http.server` ile basit sunucu kullanabilirsiniz.
+- HTML içinde `id="addStationBtn"` olan **tek** bir buton bulunduğunu ve `type="button"` kullanıldığını doğrulayın; bu sayede form submit tetiklenmez.
+- Sayfa yüklendikten sonra (DOMContentLoaded) `onAddStationClick` dinleyicisinin yalnızca bir kez bağlandığını ve konsolda `Station added:` logunun göründüğünü kontrol edin.
+- CSS tarafında butonun üzerinde `pointer-events:none` veren veya üstünü örten bir eleman olmadığından emin olun; gerektiğinde geliştirici araçlarıyla katmanları inceleyin.
+- Tarayıcı konsolunda hata görürseniz ekran görüntüsü alın; `addStation`, `renderStations`, `renderGraph`, `saveState` ve `loadPersistedState` fonksiyonlarının tanımlı olduğundan ve script etiketinin yalnızca bir kez yüklendiğinden emin olun.
+
+# Hızlı Hata Kontrolü (Invalid or unexpected token)
+`Uncaught SyntaxError: Invalid or unexpected token` mesajı alırsanız şu adımları uygulayın:
+
+```bash
+# Kod dosyalarının UTF-8 olduğundan emin olun (VS Code → File → Save with Encoding → UTF-8)
+# Kopyalanan metinlerdeki akıllı tırnakları düz tırnaklarla değiştirin
+# Şüpheli karakterleri silip yeniden yazın (özellikle yorum satırları ve template literal'ler)
+```
+
+- Görünmez karakterleri temizlemek için sorunu yaşayan satırı silip yeniden yazın; gerekirse `View → Toggle Render Whitespace` özelliğini açın.
+- `<script>` etiketinin doğru kapandığını, betiğin yalnızca bir kez çağrıldığını ve dosya yolunda yazım hatası olmadığını doğrulayın.
+- Son değişikliklerinizde yarım kalan template literal, kapatılmamış parantez veya çok satırlı yorum olmadığını tekrar kontrol edin.
+- Değişikliklerden sonra tarayıcıyı yenileyip konsolun temiz kaldığını doğrulayın.
 
 # Görselleştirme
 - İstasyonlar yatay kartlar halinde sıralanır; aralarındaki oklar ürünlerin akış yönünü belirtir.
