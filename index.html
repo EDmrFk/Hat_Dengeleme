@@ -123,6 +123,11 @@ main { /* Ana içerik */
   border: 1px solid rgba(255,255,255,0.05); /* İnce kenar */
 }
 
+.station-card.bottleneck { /* Darboğaz vurgusu */
+  border-color: rgba(255,107,107,0.6); /* Kırmızı kenar */
+  box-shadow: 0 0 20px rgba(255,107,107,0.25); /* Parıltı */
+}
+
 .station-card.dragging { /* Sürükleme durumu */
   opacity: 0.6; /* Şeffaflık */
 }
@@ -158,6 +163,21 @@ main { /* Ana içerik */
 .task-table input { /* Hücre içi input */
   width: 100%; /* Tam genişlik */
   padding: 6px 8px; /* İç boşluk */
+}
+
+.runtime-line { /* Canlı metrik satırı */
+  display: flex; /* Yatay hizalama */
+  gap: 8px; /* Eleman arası boşluk */
+  flex-wrap: wrap; /* Satır kaydır */
+  font-size: 0.82rem; /* Küçük metin */
+  color: var(--muted); /* Sönük renk */
+}
+
+.runtime-pill { /* Metrik kapsülü */
+  padding: 4px 8px; /* İç boşluk */
+  border-radius: 999px; /* Yuvarlak */
+  background: rgba(255,255,255,0.06); /* Arka plan */
+  color: var(--text); /* Metin rengi */
 }
 
 .task-actions { /* Görev butonları satırı */
@@ -242,6 +262,12 @@ main { /* Ana içerik */
   padding: 4px 10px; /* İç boşluk */
   border-radius: 999px; /* Tam yuvarlak */
   background: rgba(100,210,255,0.12); /* Arka plan */
+}
+
+.hud-badge { /* Üst çubuk rozeti */
+  font-weight: 600; /* Kalın metin */
+  background: rgba(100,210,255,0.2); /* Daha belirgin arka plan */
+  border: 1px solid rgba(100,210,255,0.35); /* İnce kenar */
 }
 
 .badge.danger { /* Kırmızı rozet */
@@ -368,6 +394,7 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
       </select>
       <input id="entryIntervalInput" type="number" min="1" value="30" style="width:120px;display:none;" placeholder="sn"> <!-- Aralık girişi -->
     </label>
+    <span id="completedCounter" class="badge hud-badge" aria-live="polite">Tamamlanan: 0</span> <!-- Tamamlanan sayaç -->
   </div>
 </header>
 <main> <!-- Ana içerik -->
@@ -432,9 +459,9 @@ const persistedSnapshot = loadPersistedState(); // Önceden kaydedilmiş durum
 
 // Yardımcı sabitler //
 const MAX_SERVERS = 4; // Maksimum paralel sunucu sayısı
-const UPDATE_INTERVAL_MS = 200; // UI metrik güncelleme aralığı
+const UPDATE_INTERVAL_MS = 150; // UI metrik güncelleme aralığı
 const MOVE_DURATION_MS = 900; // Baloncuk hareket süresi
-const BASE_LOGICAL_RATE = 4; // 1 saniyede işlenecek mantıksal saniye
+const LOGICAL_RATE = 4; // 1 saniyede işlenecek mantıksal saniye
 
 // Küresel durum //
 const appState = window.appState ?? { // Uygulama genel durumu
@@ -447,6 +474,7 @@ const appState = window.appState ?? { // Uygulama genel durumu
   simulation: null, // Simülasyon motoru referansı
   lastUpdate: 0, // Son UI güncelleme zamanı
   lastMetricRefresh: 0, // Son metrik yenileme zamanı
+  visualCursor: 0, // Görsel zaman imleci
   nextStationId: 1 // Bir sonraki istasyon numarası
 };
 window.appState = appState; // Durumu küresele yaz
@@ -512,23 +540,98 @@ class Station { // İstasyon modeli
   }
 }
 
+class FastQueue { // O(1) kuyruk yapısı
+  constructor() { // Kurucu
+    this.store = []; // İç dizi
+    this.head = 0; // Baş işaretçisi
+  }
+  enqueue(item) { // Kuyruğa ekle
+    this.store.push(item); // Dizinin sonuna ekle
+  }
+  dequeue() { // Kuyruktan çıkar
+    if (this.head >= this.store.length) return null; // Boşsa null döndür
+    const value = this.store[this.head]; // İlk elemanı al
+    this.head += 1; // Baş işaretçisini ilerlet
+    if (this.head > 32 && this.head * 2 > this.store.length) { // Temizlik eşiği
+      this.store = this.store.slice(this.head); // Diziyi daralt
+      this.head = 0; // Baş işaretçisini sıfırla
+    }
+    return value; // Elemanı döndür
+  }
+  peekAll() { // Kuyruktaki aktif elemanları döndür
+    return this.store.slice(this.head); // Aktif parçayı kopyala
+  }
+  get length() { // Uzunluk hesapla
+    return this.store.length - this.head; // Aktif eleman sayısı
+  }
+}
+
+class MinHeap { // Öncelik kuyruğu
+  constructor(compare) { // Kurucu
+    this.compare = compare; // Karşılaştırma fonksiyonu
+    this.data = []; // Depolama dizisi
+  }
+  peek() { // En küçük elemanı getir
+    return this.data.length ? this.data[0] : null; // İlk eleman veya null
+  }
+  push(value) { // Yeni eleman ekle
+    this.data.push(value); // Dizinin sonuna ekle
+    this.bubbleUp(this.data.length - 1); // Yukarı düzelt
+  }
+  pop() { // En küçük elemanı çıkar
+    if (!this.data.length) return null; // Boşsa null
+    const top = this.data[0]; // Kökü sakla
+    const last = this.data.pop(); // Son elemanı al
+    if (this.data.length) { // Hâlâ eleman varsa
+      this.data[0] = last; // Kökü son elemanla değiştir
+      this.bubbleDown(0); // Aşağı düzelt
+    }
+    return top; // Eski kökü döndür
+  }
+  size() { // Eleman sayısı
+    return this.data.length; // Uzunluk döndür
+  }
+  bubbleUp(index) { // Yukarı taşıma
+    while (index > 0) { // Kök değilse
+      const parent = Math.floor((index - 1) / 2); // Ebeveyn indeks
+      if (this.compare(this.data[index], this.data[parent]) >= 0) break; // Yerinde ise çık
+      [this.data[index], this.data[parent]] = [this.data[parent], this.data[index]]; // Elemanları değiştir
+      index = parent; // İndeksi ebeveyne ayarla
+    }
+  }
+  bubbleDown(index) { // Aşağı taşıma
+    const length = this.data.length; // Uzunluk önbelleği
+    while (true) { // Döngü
+      let smallest = index; // En küçük başlangıç
+      const left = 2 * index + 1; // Sol çocuk
+      const right = left + 1; // Sağ çocuk
+      if (left < length && this.compare(this.data[left], this.data[smallest]) < 0) smallest = left; // Sol daha küçükse
+      if (right < length && this.compare(this.data[right], this.data[smallest]) < 0) smallest = right; // Sağ daha küçükse
+      if (smallest === index) break; // Yerinde ise çık
+      [this.data[index], this.data[smallest]] = [this.data[smallest], this.data[index]]; // Elemanları değiştir
+      index = smallest; // İndeksi güncelle
+    }
+  }
+}
+
 // Simülasyon motoru //
 class SimulationEngine { // Motor sınıfı
   constructor(stations, options, viz) { // Kurucu
     this.stations = stations; // İstasyon modelleri
     this.options = options; // Seçenekler
     this.viz = viz; // Görselleştirme referansı
+    this.onLiveUpdate = null; // Canlı snapshot geri çağrısı
     this.reset(); // Başlangıç sıfırlama
   }
   reset() { // Tüm durum sıfırlama
     this.currentTime = 0; // Mantıksal zaman
-    this.eventQueue = []; // Olay listesi
+    this.eventQueue = new MinHeap(this.compareEvents); // Olay öncelik kuyruğu
     this.nextJobId = 1; // Yeni iş kimliği
     this.running = false; // Çalışma bayrağı
     this.completedJobs = []; // Tamamlanan işler
     this.runtimeStations = this.stations.map(station => ({ // Çalışma zamanlı istasyon durumları
       station, // Referans
-      queue: [], // Kuyruk iş kimlikleri
+      queue: new FastQueue(), // Kuyruk iş kimlikleri
       servers: Array.from({ length: station.parallelServers }, () => null), // Sunucular
       queueLength: 0, // Anlık kuyruk uzunluğu
       lastQueueUpdate: 0, // Son güncelleme zamanı
@@ -549,9 +652,9 @@ class SimulationEngine { // Motor sınıfı
     this.pendingStop = false; // Durdurma isteği
     this.viz.clearJobs(); // Görsel baloncukları temizle
   }
+  compareEvents = (a, b) => (a.time - b.time) || ((a.order || 0) - (b.order || 0)); // Olay karşılaştırıcısı
   schedule(event) { // Olayı kuyruğa ekle
-    this.eventQueue.push(event); // Listeye ekle
-    this.eventQueue.sort((a, b) => a.time - b.time || (a.order || 0) - (b.order || 0)); // Zaman/öncelik sıralaması
+    this.eventQueue.push(event); // Kuyruğa ekle
   }
   spawnJob(atTime) { // Yeni iş oluşturma
     const jobId = this.nextJobId++; // Kimlik üret
@@ -566,6 +669,7 @@ class SimulationEngine { // Motor sınıfı
     this.updateWip(this.wipCount + 1, atTime); // WIP artır
     this.schedule({ type: 'arrival', jobId, stationIndex: 0, time: atTime, order: 0 }); // İlk istasyona varış planla
     this.viz.ensureJob(jobId); // Görsel balon hazırla
+    console.debug(`[Motor] İş ${jobId} oluşturuldu, zaman ${atTime.toFixed(2)}`); // Oluşturma logu
   }
   start() { // Simülasyonu başlat
     if (this.running) return; // Zaten çalışıyorsa çık
@@ -593,8 +697,9 @@ class SimulationEngine { // Motor sınıfı
   processUntil(targetTime) { // Belirli zamana kadar olay işle
     if (!this.running) return; // Çalışmıyorsa çık
     this.engineCursor = targetTime; // İleri hedefi güncelle
-    while (this.eventQueue.length && this.eventQueue[0].time <= this.engineCursor && this.running) { // Olaylar sırada mı
-      const event = this.eventQueue.shift(); // İlk olayı al
+    let next = this.eventQueue.peek(); // Sıradaki olayı al
+    while (next && next.time <= this.engineCursor && this.running) { // Hedefe kadar döngü
+      const event = this.eventQueue.pop(); // En erken olayı çıkar
       this.currentTime = event.time; // Mantıksal zamanı güncelle
       this.handleEvent(event); // Olayı işle
       if (this.pendingStop) { // Durdurma istekliyse
@@ -602,7 +707,12 @@ class SimulationEngine { // Motor sınıfı
         this.pendingStop = false; // Bayrağı temizle
         break; // Döngüyü kır
       }
+      next = this.eventQueue.peek(); // Sonraki olayı hazırla
     }
+  }
+  peekNextEventTime() { // Sıradaki olay zamanını döndür
+    const next = this.eventQueue.peek(); // Tepe elemanı al
+    return next ? next.time : null; // Zaman veya null
   }
   handleEvent(event) { // Olay işleyici
     switch (event.type) { // Tür kontrolü
@@ -634,11 +744,11 @@ class SimulationEngine { // Motor sınıfı
     if (!rt) return; // Güvenlik
     const job = this.jobs.get(event.jobId); // İş nesnesi
     if (!job) return; // Güvenlik
+    console.debug(`[Motor] İş ${job.id} ${rt.station.name} istasyonuna ${event.time.toFixed(2)} zamanında geldi`); // Varış logu
     job.stage = event.stationIndex; // İstasyon kaydı
-    const queue = rt.queue; // Kuyruk referansı
     const arrivalRecord = { jobId: job.id, arrival: event.time }; // Kuyruk kaydı
-    queue.push(arrivalRecord); // Kuyruğa ekle
-    this.updateQueue(rt, rt.queueLength + 1, event.time); // Kuyruk artışı
+    rt.queue.enqueue(arrivalRecord); // Kuyruğa ekle
+    this.updateQueue(rt, rt.queue.length, event.time); // Kuyruk artışı
     this.viz.ensureJob(job.id); // Balon var mı kontrol
     this.viz.tagJob(job.id, 'waiting'); // Görsel durumu güncelle
     this.tryStartService(rt, event.stationIndex, event.time); // Servis kontrolü
@@ -649,9 +759,9 @@ class SimulationEngine { // Motor sınıfı
     if (serviceTime <= 0) return; // Süre yoksa çık
     for (let i = 0; i < rt.servers.length; i++) { // Her sunucuyu dolaş
       if (rt.servers[i]) continue; // Doluysa geç
-      const queued = rt.queue.shift(); // FIFO ilk iş
+      const queued = rt.queue.dequeue(); // FIFO ilk iş
       if (!queued) break; // Kuyruk boşsa çık
-      this.updateQueue(rt, rt.queueLength - 1, time); // Kuyruğu azalt
+      this.updateQueue(rt, rt.queue.length, time); // Kuyruğu azalt
       const job = this.jobs.get(queued.jobId); // İş nesnesi
       if (!job) continue; // Güvenlik
       const wait = time - queued.arrival; // Bekleme süresi
@@ -669,6 +779,7 @@ class SimulationEngine { // Motor sınıfı
       rt.serviceCount += 1; // Servis sayısı
       this.schedule({ type: 'serviceComplete', jobId: job.id, stationIndex, serverIndex: i, time: endTime, order: 1 }); // Hizmet bitiş planı
       this.viz.tagJob(job.id, 'processing'); // Görsel durum
+      console.debug(`[Motor] İş ${job.id} ${rt.station.name} servisinde ${time.toFixed(2)}→${endTime.toFixed(2)} aralığında çalışıyor`); // Servis başlangıç logu
     }
   }
   handleServiceCompletion(event) { // Servis bitiş işlemi
@@ -680,6 +791,7 @@ class SimulationEngine { // Motor sınıfı
     rt.servers[event.serverIndex] = null; // Sunucuyu boşalt
     const job = this.jobs.get(event.jobId); // İş nesnesi
     if (!job) return; // Güvenlik
+    console.debug(`[Motor] İş ${event.jobId} ${rt.station.name} servisinden ${event.time.toFixed(2)} zamanında ayrıldı`); // Tamamlama logu
     if (event.stationIndex === this.stations.length - 1) { // Son istasyon mu
       job.exitTime = event.time; // Çıkış zamanı kaydet
       this.completedJobs.push(job); // Tamamlanan listesine ekle
@@ -716,30 +828,54 @@ class SimulationEngine { // Motor sınıfı
     this.wipCount = Math.max(0, newWip); // Yeni değer
     this.lastWipUpdate = time; // Zaman kaydı
   }
-  updateLayoutTargets() { // Görsel yerleşimi tetikle
-    if (!this.viz) return; // Viz yoksa çık
-    const elapsed = Math.max(this.currentTime, 0.0001); // Geçen süre
+  updateLayoutTargets(timeCursor = this.currentTime) { // Görsel yerleşimi tetikle
+    const renderTime = Math.max(timeCursor, this.currentTime); // Gösterim zamanı
+    const elapsed = Math.max(renderTime, 0.0001); // Geçen süre
     const layout = this.runtimeStations.map(rt => { // Her istasyon için durum
-      const queue = rt.queue.map(q => q.jobId); // Kuyruk işleri
-      const servers = rt.servers.map(s => (s ? s.jobId : null)); // Sunucu işleri
-      const avgQueue = (rt.queueArea + rt.queueLength * (this.currentTime - rt.lastQueueUpdate)) / elapsed; // Ortalama kuyruk
+      const queueEntries = rt.queue.peekAll(); // Kuyruktaki işler
+      const servers = rt.servers.map(server => { // Sunucuları gez
+        if (!server) return null; // Boşsa null
+        const duration = Math.max(0.0001, server.end - server.start); // Süre
+        const remaining = Math.max(0, server.end - renderTime); // Kalan süre
+        const progress = Math.min(1, Math.max(0, (renderTime - server.start) / duration)); // İlerleme
+        return { // Sunucu verisi
+          jobId: server.jobId, // İş kimliği
+          start: server.start, // Başlangıç zamanı
+          end: server.end, // Bitiş zamanı
+          duration, // Süre
+          remaining, // Kalan süre
+          progress // İlerleme oranı
+        };
+      });
+      const busyCount = servers.filter(server => !!server).length; // Anlık meşgul sayısı
+      const queueLength = queueEntries.length; // Anlık kuyruk uzunluğu
+      const avgQueue = (rt.queueArea + queueLength * (renderTime - rt.lastQueueUpdate)) / elapsed; // Ortalama kuyruk
       const capacity = Math.max(1, rt.servers.length); // Kapasite
-      const rawUtil = (rt.busyArea + rt.busyCount * (this.currentTime - rt.lastBusyUpdate)) / (elapsed * capacity); // Ham util
+      const rawUtil = (rt.busyArea + rt.busyCount * (renderTime - rt.lastBusyUpdate)) / (elapsed * capacity); // Ham util
       const avgUtil = Math.min(1, Math.max(0, rawUtil)); // Sınırlandırılmış util
       return { // Yerleşim verisi
         stationId: rt.station.id, // Kimlik
-        queue, // Kuyruk iş listesi
+        stationName: rt.station.name, // İstasyon adı
+        queue: queueEntries.map(entry => ({ jobId: entry.jobId, arrival: entry.arrival })), // Kuyruk iş listesi
         servers, // Sunucu iş listesi
         metrics: { // Canlı metrikler
-          queueLength: rt.queueLength, // Anlık kuyruk
-          busyCount: rt.busyCount, // Anlık meşgul sayısı
+          queueLength, // Anlık kuyruk
+          busyCount, // Anlık meşgul sayısı
           capacity, // Kapasite
           avgQueue, // Ortalama kuyruk
           avgUtil // Ortalama util
         }
       };
     });
-    this.viz.applyLayout(layout); // Viz'e gönder
+    if (this.viz) this.viz.applyLayout(layout, renderTime); // Viz'e gönder
+    const snapshot = { // Anlık durum
+      time: renderTime, // Gösterim zamanı
+      completedCount: this.completedJobs.length, // Tamamlanan adet
+      wip: this.wipCount, // Anlık WIP
+      layout // Yerleşim verisi
+    };
+    if (typeof this.onLiveUpdate === 'function') this.onLiveUpdate(snapshot); // Callback çağır
+    return snapshot; // Snapshot döndür
   }
   buildReport() { // Rapor verisini hazırla
     this.runtimeStations.forEach(rt => { // Nihai alan güncellemesi
@@ -891,15 +1027,15 @@ class Visualization { // Görsel katman
     this.svg.appendChild(this.metricGroup); // SVG'ye ekle
     this.jobs.forEach(node => this.svg.appendChild(node.circle)); // Baloncukları üste taşı
   }
-  applyLayout(layout) { // Yerleşim verisini uygula
+  applyLayout(layout, timeCursor = 0) { // Yerleşim verisini uygula
     this.jobs.forEach((node, jobId) => { // Her iş için
       let target = null; // Hedef koordinat
       layout.forEach((item, idx) => { // İstasyonları dolaş
-        const queueIndex = item.queue.indexOf(jobId); // Kuyrukta mı
+        const queueIndex = item.queue.findIndex(entry => entry.jobId === jobId); // Kuyrukta mı
         if (queueIndex !== -1) { // Kuyrukta ise
           target = this.queuePosition(idx, queueIndex); // Hedef koordinat
         }
-        const serverIndex = item.servers.indexOf(jobId); // Sunucuda mı
+        const serverIndex = item.servers.findIndex(server => server && server.jobId === jobId); // Sunucuda mı
         if (serverIndex !== -1) { // Sunucuda ise
           target = this.serverPosition(idx, serverIndex, item.servers.length); // Hedef koordinat
         }
@@ -910,7 +1046,7 @@ class Visualization { // Görsel katman
       }
       this.moveNode(jobId, target.x, target.y); // Hareket uygula
     });
-    this.renderMetrics(layout); // Metrikleri çiz
+    this.renderMetrics(layout, timeCursor); // Metrikleri çiz
   }
   queuePosition(stationIdx, queueIdx) { // Kuyruk pozisyonu hesapla
     const layout = this.stationLayout[stationIdx]; // İstasyon yerleşimi
@@ -936,7 +1072,7 @@ class Visualization { // Görsel katman
     node.duration = MOVE_DURATION_MS / this.speed; // Süre hızla ölçeklenir
     node.removeAt = null; // Kaldırma zamanını temizle
   }
-  renderMetrics(layout) { // Metrikleri çiz
+  renderMetrics(layout, timeCursor) { // Metrikleri çiz
     if (!this.metricGroup) return; // Grup yoksa çık
     while (this.metricGroup.firstChild) this.metricGroup.removeChild(this.metricGroup.firstChild); // Eski metrikleri temizle
     layout.forEach((item, idx) => { // Her istasyon için
@@ -947,14 +1083,30 @@ class Visualization { // Görsel katman
       queueText.setAttribute('y', layoutInfo.y + 110); // Y
       queueText.setAttribute('text-anchor', 'middle'); // Ortala
       const utilPercent = item.metrics.avgUtil * 100; // Ortalama util hesapla
-      queueText.textContent = `q:${item.queue.length} avg:${item.metrics.avgQueue.toFixed(1)} util:${utilPercent.toFixed(0)}%`; // Metin
-      if (item.metrics.avgQueue > 1.5) { // Kuyruk eşiği
-        queueText.classList.add('danger'); // Uyarı sınıfı
+      queueText.textContent = `Kuyruk: ${item.metrics.queueLength} · Ort:${item.metrics.avgQueue.toFixed(1)}`; // Metin
+      const danger = item.metrics.avgQueue > 1.5 || item.metrics.avgUtil > 0.85; // Tehlike eşiği
+      if (danger) { // Kuyruk veya util yüksekse
+        queueText.classList.add('danger'); // Kuyruk uyarı sınıfı
         if (layoutInfo.rect) layoutInfo.rect.classList.add('bottleneck'); // Kutuya vurgu
       } else if (layoutInfo.rect) {
         layoutInfo.rect.classList.remove('bottleneck'); // Vurguyu kaldır
       }
       this.metricGroup.appendChild(queueText); // SVG'ye ekle
+      const serviceText = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Servis metni
+      serviceText.classList.add('metric-tag'); // Sınıf ekle
+      serviceText.setAttribute('x', layoutInfo.x + layoutInfo.width / 2); // X
+      serviceText.setAttribute('y', layoutInfo.y + 126); // Y
+      serviceText.setAttribute('text-anchor', 'middle'); // Ortala
+      const activeServers = item.servers.filter(server => !!server); // Aktif sunucular
+      if (activeServers.length) { // Serviste iş varsa
+        const avgProgress = activeServers.reduce((sum, server) => sum + server.progress, 0) / activeServers.length; // Ortalama ilerleme
+        const maxRemaining = Math.max(...activeServers.map(server => server.remaining)); // Maks kalan süre
+        serviceText.textContent = `Servis: ${item.metrics.busyCount}/${item.metrics.capacity} · %${(avgProgress * 100).toFixed(0)} · kalan ${maxRemaining.toFixed(1)}sn`; // Servis metni
+      } else {
+        serviceText.textContent = 'Servis: boş'; // Servis yok metni
+      }
+      if (danger) serviceText.classList.add('danger'); // Servis uyarısı
+      this.metricGroup.appendChild(serviceText); // Servis metnini ekle
     });
   }
   frame(timestamp) { // Animasyon döngüsü
@@ -994,8 +1146,10 @@ const summaryTableBody = document.querySelector('#summaryTable tbody'); // Özet
 const stationTableBody = document.querySelector('#stationTable tbody'); // İstasyon tablo gövdesi
 const bottleneckInfo = document.getElementById('bottleneckInfo'); // Darboğaz metni
 const downloadCsvBtn = document.getElementById('downloadCsvBtn'); // CSV butonu
+const completedCounterEl = document.getElementById('completedCounter'); // Tamamlanan sayaç etiketi
 
 const viz = new Visualization(document.getElementById('lineSvg')); // Görselleştirme örneği
+const stationRuntimeRefs = new Map(); // Canlı metrik referans haritası
 
 function renderGraph(stations) { // Akış grafiğini çiz
   viz.setStations(stations); // Görselleştirme modelini güncelle
@@ -1073,6 +1227,7 @@ function removeTask(stationId, taskIndex) { // Görev silme fonksiyonu
 
 function renderStations() { // İstasyon kartlarını çiz
   stationListEl.innerHTML = ''; // Listeyi temizle
+  stationRuntimeRefs.clear(); // Canlı referansları sıfırla
   if (!appState.stations.length) { // İstasyon yoksa
     emptyStateEl.style.display = 'block'; // Boş mesaj göster
   } else {
@@ -1095,6 +1250,23 @@ function renderStations() { // İstasyon kartlarını çiz
     totalLabel.textContent = `Toplam: ${station.totalDuration()} sn`; // Metin
     header.appendChild(totalLabel); // Başlığa ekle
     card.appendChild(header); // Kart içine ekle
+
+    const runtimeLine = document.createElement('div'); // Canlı metrik satırı
+    runtimeLine.className = 'runtime-line'; // Sınıf ata
+    const queuePill = document.createElement('span'); // Kuyruk rozeti
+    queuePill.className = 'runtime-pill'; // Sınıf ata
+    queuePill.textContent = 'Kuyruk: 0'; // Varsayılan metin
+    const servicePill = document.createElement('span'); // Servis rozeti
+    servicePill.className = 'runtime-pill'; // Sınıf ata
+    servicePill.textContent = `Servis: 0/${station.parallelServers}`; // Varsayılan metin
+    const remainingPill = document.createElement('span'); // Kalan süre rozeti
+    remainingPill.className = 'runtime-pill'; // Sınıf ata
+    remainingPill.textContent = 'Kalan: -'; // Varsayılan metin
+    runtimeLine.appendChild(queuePill); // Kuyruğu ekle
+    runtimeLine.appendChild(servicePill); // Servisi ekle
+    runtimeLine.appendChild(remainingPill); // Kalanı ekle
+    card.appendChild(runtimeLine); // Kart içine yerleştir
+    stationRuntimeRefs.set(station.id, { card, queue: queuePill, service: servicePill, remaining: remainingPill }); // Referansı kaydet
 
     const serverRow = document.createElement('div'); // Sunucu satırı
     serverRow.style.display = 'flex'; // Yatay düzen
@@ -1211,6 +1383,28 @@ function renderStations() { // İstasyon kartlarını çiz
   });
 }
 
+function applyLiveStationSnapshot(snapshot) { // Canlı metrikleri karta yaz
+  if (!snapshot || !Array.isArray(snapshot.layout)) return; // Geçerli veri kontrolü
+  snapshot.layout.forEach(item => { // Her istasyon verisi
+    const refs = stationRuntimeRefs.get(item.stationId); // Referansı al
+    if (!refs) return; // Yoksa geç
+    const busyServers = item.servers.filter(server => !!server); // Aktif sunucular
+    const avgProgress = busyServers.length ? busyServers.reduce((sum, server) => sum + server.progress, 0) / busyServers.length : 0; // Ortalama ilerleme
+    const maxRemaining = busyServers.length ? Math.max(...busyServers.map(server => server.remaining)) : 0; // Maks kalan süre
+    refs.queue.textContent = `Kuyruk: ${item.metrics.queueLength}`; // Kuyruk metni
+    refs.service.textContent = `Servis: ${item.metrics.busyCount}/${item.metrics.capacity}`; // Servis metni
+    refs.remaining.textContent = busyServers.length ? `Kalan: ${maxRemaining.toFixed(1)}sn · %${(avgProgress * 100).toFixed(0)}` : 'Kalan: -'; // Kalan süre metni
+    if (item.metrics.avgQueue > 1.5 || item.metrics.avgUtil > 0.85) { // Darboğaz koşulu
+      refs.card.classList.add('bottleneck'); // Kartı vurgula
+    } else {
+      refs.card.classList.remove('bottleneck'); // Vurguyu kaldır
+    }
+  });
+  if (completedCounterEl) { // Sayaç mevcutsa
+    completedCounterEl.textContent = `Tamamlanan: ${snapshot.completedCount}`; // Sayaç güncelle
+  }
+}
+
 let dragSourceId = null; // Sürüklenen istasyon kimliği
 
 stationListEl.addEventListener('dragstart', event => { // Sürükleme başlangıcı
@@ -1308,10 +1502,14 @@ function startSimulation() { // Simülasyonu başlat
     targetCount: appState.targetCount // Hedef adet
   };
   appState.simulation = new SimulationEngine(cloneStationsForRun(), options, viz); // Motor oluştur
+  appState.simulation.onLiveUpdate = snapshot => applyLiveStationSnapshot(snapshot); // Canlı güncelleme bağla
   appState.simulation.start(); // Başlat
   appState.running = true; // Durum güncelle
   appState.lastUpdate = performance.now(); // Zaman kaydı
   appState.lastMetricRefresh = appState.lastUpdate; // Metrik zamanını sıfırla
+  appState.visualCursor = appState.simulation.currentTime; // Görsel zamanı hizala
+  appState.simulation.updateLayoutTargets(appState.visualCursor); // İlk snapshot
+  if (completedCounterEl) completedCounterEl.textContent = 'Tamamlanan: 0'; // Sayaç sıfırla
   toggleEditing(false); // UI kilitle
   startBtn.disabled = true; // Başlat kilit
   stopBtn.disabled = false; // Durdur aç
@@ -1321,6 +1519,8 @@ function startSimulation() { // Simülasyonu başlat
 function stopSimulation(showReport = true) { // Simülasyonu durdur
   if (!appState.simulation) return; // Motor yoksa çık
   appState.simulation.stop(); // Motor durdur
+  appState.visualCursor = appState.simulation.currentTime; // Görsel zamanı güncelle
+  appState.simulation.updateLayoutTargets(appState.visualCursor); // Son durumu aktar
   appState.running = false; // Durum güncelle
   toggleEditing(true); // UI aç
   startBtn.disabled = false; // Başlat aç
@@ -1340,7 +1540,17 @@ function resetSimulation() { // Simülasyonu sıfırla
     appState.simulation.reset(); // Sıfırla
   }
   appState.lastMetricRefresh = 0; // Metrik zamanını sıfırla
+  appState.visualCursor = 0; // Görsel zamanı sıfırla
   viz.clearJobs(); // Balonları temizle
+  if (completedCounterEl) completedCounterEl.textContent = 'Tamamlanan: 0'; // Sayaç sıfırla
+  stationRuntimeRefs.forEach((refs, stationId) => { // Her kart için
+    const station = appState.stations.find(st => st.id === stationId); // İstasyonu bul
+    const capacity = station ? station.parallelServers : 0; // Kapasite al
+    refs.card.classList.remove('bottleneck'); // Vurguyu kaldır
+    refs.queue.textContent = 'Kuyruk: 0'; // Kuyruğu sıfırla
+    refs.service.textContent = `Servis: 0/${capacity}`; // Servisi sıfırla
+    refs.remaining.textContent = 'Kalan: -'; // Kalan süreyi sıfırla
+  });
 }
 
 function toggleEditing(enabled) { // UI düzenleme durumunu ayarla
@@ -1361,13 +1571,17 @@ function toggleEditing(enabled) { // UI düzenleme durumunu ayarla
 function runLoop() { // Simülasyon döngüsü
   if (!appState.simulation || !appState.simulation.running) return; // Motor çalışmıyorsa çık
   const now = performance.now(); // Şimdiki zaman
-  const delta = now - appState.lastUpdate; // Geçen süre
+  const deltaSec = (now - appState.lastUpdate) / 1000; // Geçen süre saniye
   appState.lastUpdate = now; // Zaman güncelle
-  const logicalAdvance = (delta / 1000) * BASE_LOGICAL_RATE * appState.speed; // Mantıksal ilerleme
-  appState.simulation.processUntil(appState.simulation.currentTime + logicalAdvance); // Olayları işle
+  const nextEvent = appState.simulation.peekNextEventTime(); // Sonraki olay zamanı
+  let targetTime = appState.visualCursor + deltaSec * LOGICAL_RATE; // Hedef zaman
+  if (nextEvent !== null) targetTime = Math.min(targetTime, nextEvent); // Olayı aşma
+  targetTime = Math.max(targetTime, appState.simulation.currentTime); // Geri gitme
+  appState.visualCursor = targetTime; // Görsel zamanı güncelle
+  appState.simulation.processUntil(appState.visualCursor); // Olayları işle
   viz.setSpeed(appState.speed); // Hızı güncelle
   if (!appState.lastMetricRefresh || now - appState.lastMetricRefresh >= UPDATE_INTERVAL_MS) { // Periyodik metrik kontrolü
-    appState.simulation.updateLayoutTargets(); // Yerleşim güncelle
+    appState.simulation.updateLayoutTargets(appState.visualCursor); // Yerleşim güncelle
     appState.lastMetricRefresh = now; // Zaman kaydı
   }
   if (!appState.simulation.running) { // Durduysa
