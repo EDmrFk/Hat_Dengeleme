@@ -40,9 +40,11 @@ Projeyi açmanın iki basit yolu vardır:
 - Üst çubuktaki **Başlat**, **Durdur** ve **Sıfırla** butonları simülasyonu yönetir. Klavye kısayolları: `B`, `D`, `R`.
 - Hız kaydırgacını 0.25×–16× aralığında ayarlayarak yalnızca animasyon hızını değiştirin; mantıksal zaman ve metrikler sabit kalır.
 - **Analiz/Öneri** butonuna tıklayıp açılan modalde takt time (sn/ürün) girin; darboğaz istasyonu, teorik throughput, +1/+2 operatör what-if senaryoları ve kuyruk etkisi raporlanır.
+- Üst çubuktaki **Sonuçları Gör** butonu simülasyon bitmeden de dashboardu açar; cycle time, toplam tamamlanan, throughput ve ortalama WIP kartlarını, istasyon bazlı performans tablosunu ve “Analiz / Öneriler” metnini canlı izleyebilirsiniz.
+- Dashboard altındaki CSV ve PDF (yazdır → PDF olarak kaydet) butonlarıyla raporu dışa aktarın; PDF düğmesi tarayıcının yazdırma penceresini açar ve “PDF olarak kaydet” seçeneğinin kullanılabilirliği tarayıcıya bağlıdır.
 - Üst çubuktaki “Tamamlanan: N” rozeti hat genelinde tamamlanan ürün sayısını canlı olarak gösterir.
-- Hedef adet alanına sayı girerseniz o kadar ürün tamamlandığında simülasyon otomatik durur ve rapor açılır.
-- Rapor modali Cycle Time, Throughput (sn/dk), Ortalama WIP, istasyon bazlı kuyruk/bekleme değerleri ve iki farklı darboğaz tespit yöntemini sunar; CSV çıktısı alınabilir.
+- Hedef adet alanına sayı girerseniz o kadar ürün tamamlandığında simülasyon otomatik durur ve dashboard açılır; tam ekran modundaysanız sonuçları manuel olarak görüntüleyebilirsiniz.
+- Görsel paneldeki **🔳 Tam Ekran** butonu yalnızca animasyon alanını büyütür; tekrar tıklayarak veya `Esc` ile normal görünüme dönebilirsiniz.
 
 # “İstasyon Ekle” Butonu İpucu
 Simülasyona yeni istasyon eklenemiyorsa aşağıdaki kontrol listesini izleyin:
@@ -73,6 +75,8 @@ Simülasyona yeni istasyon eklenemiyorsa aşağıdaki kontrol listesini izleyin:
 - Darboğaz oluştuğunda istasyon çerçevesi kırmızı tonuna geçer ve canlı `qLen` ile `util%` etiketleri uyarı niteliği taşır.
 - Her istasyon kartında anlık kuyruk, aktif paralel servis sayısı, kalan süre ve yüzde ilerleme rozetleri görüntülenir.
 - Görsel paneldeki “− / % / +” zoom denetimi, sahneyi 0.5×–2.5× aralığında büyütüp küçültür; animasyon akışı bozulmaz.
+- Dashboard açıldığında cycle time, toplam tamamlanan, throughput ve WIP kartları ile istasyon tablosu; ayrıca kuyruk/utilizasyon çubuk grafiği ve tamamlanma eğrisi çizgi grafiği otomatik olarak güncellenir.
+- Ekranın sağ alt köşesindeki yarı saydam **E.DEMIR** imzası her modda görünür ve tasarımın imzası olarak konumunu korur.
 
 # Sistem Gereksinimleri
 - Güncel bir masaüstü tarayıcı (Chrome, Edge veya Firefox) yeterlidir.
