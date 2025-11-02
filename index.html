@@ -198,9 +198,8 @@ main { /* Ana içerik */
 #lineSvg { /* SVG alanı */
   width: 100%; /* Tam genişlik */
   height: 100%; /* Tam yükseklik */
-  transform-origin: center center; /* Zoom merkezini sabitle */
-  transition: transform var(--transition); /* Zoom geçişi */
   touch-action: none; /* Dokunma kaydırmasını engelle */
+  background: transparent; /* Şeffaf arka plan */
 }
 
 .zoom-toolbar { /* Zoom denetimi kutusu */
@@ -404,55 +403,79 @@ main { /* Ana içerik */
   cursor: not-allowed; /* İmleç */
 }
 
-.brand-logo { /* FKT logosu kapsayıcı */
-  position: fixed; /* Sabit konum */
-  left: 24px; /* Sol boşluk */
-  bottom: 18px; /* Alt boşluk */
-  height: 60px; /* Yükseklik */
-  width: 120px; /* Genişlik */
-  border-radius: 18px; /* Köşe yuvarlama */
-  background: rgba(15, 19, 24, 0.75); /* Arka plan */
-  border: 1px solid rgba(255,255,255,0.12); /* Kenar */
-  box-shadow: 0 18px 36px rgba(0,0,0,0.45); /* Gölge */
-  display: flex; /* Esnek düzen */
-  align-items: center; /* Dikey ortala */
-  justify-content: center; /* Yatay ortala */
-  pointer-events: none; /* Etkileşim kapalı */
-  padding: 6px 12px; /* İç boşluk */
-  z-index: 60; /* Üst katman */
+.layout-toolbar { /* Yerleşim araç çubuğu */
+  position: absolute; /* Panel üzerinde konumla */
+  left: 16px; /* Sol boşluk */
+  bottom: 16px; /* Alt boşluk */
+  display: flex; /* Esnek hizalama */
+  flex-wrap: wrap; /* Satır kır */
+  gap: 8px; /* Boşluk */
+  padding: 8px 10px; /* İç boşluk */
+  border-radius: 14px; /* Köşe yuvarla */
+  background: rgba(12, 16, 22, 0.78); /* Saydam panel */
+  border: 1px solid rgba(255,255,255,0.12); /* İnce kenar */
+  box-shadow: 0 18px 34px rgba(0,0,0,0.45); /* Gölge */
+  z-index: 50; /* Katman */
 }
 
-.brand-logo span { /* Logo metni */
-  font-family: 'Orbitron', 'Segoe UI', sans-serif; /* Modern yazı tipi */
-  font-weight: 700; /* Kalınlık */
-  font-size: 1.2rem; /* Yazı boyutu */
-  letter-spacing: 0.3em; /* Harf aralığı */
-  color: rgba(255,255,255,0.92); /* Metin rengi */
+.layout-toolbar button { /* Araç çubuğu butonu */
+  padding: 7px 14px; /* İç boşluk */
+  border-radius: 10px; /* Köşe yuvarla */
+  background: rgba(255,255,255,0.08); /* Saydam arka plan */
+  border: 1px solid rgba(255,255,255,0.18); /* Kenar */
+  color: var(--text); /* Metin rengi */
+  font-weight: 500; /* Kalınlık */
+  cursor: pointer; /* İmleç */
+  transition: background var(--transition), border-color var(--transition), transform var(--transition); /* Geçişler */
 }
 
-.signature { /* İmza */
-  position: fixed; /* Sabit konum */
-  right: 24px; /* Sağ boşluk */
-  bottom: 20px; /* Alt boşluk */
-  padding: 10px 24px; /* İç boşluk */
-  border-radius: 999px; /* Tam yuvarlak */
+.layout-toolbar button:hover { /* Hover durumu */
+  background: rgba(100,210,255,0.25); /* Parlaklaştır */
+  border-color: rgba(100,210,255,0.65); /* Kenarı vurgula */
+  transform: translateY(-1px); /* Hafif kaldır */
+}
+
+.layout-toolbar button[data-active="true"] { /* Aktif durumda buton */
   background: linear-gradient(135deg, rgba(100,210,255,0.9), rgba(143,123,255,0.9)); /* Degrade arka plan */
-  color: #061821; /* Metin rengi */
-  font-family: 'Poppins', 'Segoe UI', sans-serif; /* Yazı tipi */
-  font-weight: 600; /* Kalınlık */
-  letter-spacing: 0.18em; /* Harf aralığı */
-  text-transform: uppercase; /* Büyük harf */
-  box-shadow: 0 16px 36px rgba(0,0,0,0.38); /* Gölge */
-  border: 1px solid rgba(255,255,255,0.15); /* Kenar */
-  backdrop-filter: blur(14px); /* Cam efekti */
-  transition: filter var(--transition), transform var(--transition); /* Geçiş */
-  pointer-events: auto; /* Etkileşimi aç */
-  z-index: 60; /* Üst katman */
+  color: #081822; /* Kontrast metin */
+  border-color: transparent; /* Kenarı kaldır */
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35); /* Gölge */
 }
 
-.signature:hover { /* Hover etkisi */
-  filter: brightness(1.1); /* Parlaklığı artır */
-  transform: translateY(-2px); /* Hafif kaldır */
+body[data-edit-mode="view"] .layout-toolbar [data-edit-only="true"] { /* Görüntüle modunda gizlenecekler */
+  display: none; /* Gizle */
+}
+
+body[data-edit-mode="view"] .layout-toolbar { /* Görüntüle modunda araç çubuğu */
+  background: rgba(12, 16, 22, 0.6); /* Daha hafif fon */
+}
+
+.mode-toggle { /* Mod geçiş kapsayıcı */
+  display: inline-flex; /* Yatay düzen */
+  border-radius: 999px; /* Tam yuvarlak */
+  overflow: hidden; /* Sınırla */
+  border: 1px solid rgba(255,255,255,0.12); /* İnce kenar */
+  background: rgba(18, 20, 26, 0.8); /* Arka plan */
+}
+
+.mode-toggle button { /* Mod butonu */
+  border: none; /* Kenar yok */
+  background: transparent; /* Şeffaf arka plan */
+  color: var(--muted); /* Sönük metin */
+  padding: 8px 16px; /* İç boşluk */
+  font-weight: 600; /* Kalınlık */
+  cursor: pointer; /* İmleç */
+  transition: background var(--transition), color var(--transition); /* Geçişler */
+}
+
+.mode-toggle button[data-active="true"] { /* Aktif mod */
+  background: linear-gradient(135deg, rgba(100,210,255,0.9), rgba(143,123,255,0.9)); /* Degrade */
+  color: #071a23; /* Kontrast */
+}
+
+.mode-toggle button:disabled { /* Kilitli mod butonu */
+  opacity: 0.4; /* Soluklaştır */
+  cursor: not-allowed; /* İmleç değiştir */
 }
 
 .station-shape { /* SVG istasyon kutusu */
@@ -724,9 +747,52 @@ main { /* Ana içerik */
 }
 
 footer { /* Alt bilgi */
-  text-align: center; /* Ortala */
-  padding: 16px; /* İç boşluk */
-  color: var(--muted); /* Metin */
+  margin-top: 24px; /* Üst boşluk */
+  padding: 24px 32px; /* İç boşluk */
+  background: rgba(17,19,22,0.72); /* Arka plan */
+  border-top: 1px solid rgba(255,255,255,0.08); /* Üst kenar */
+}
+
+.footer-content { /* Footer iç düzeni */
+  display: flex; /* Yatay hizala */
+  flex-wrap: wrap; /* Satır kır */
+  align-items: center; /* Dikey ortala */
+  justify-content: space-between; /* Alanı yay */
+  gap: 16px; /* Eleman boşluğu */
+}
+
+.footer-signature { /* İmza yazısı */
+  font-family: 'Poppins', 'Segoe UI', sans-serif; /* Yazı tipi */
+  font-weight: 600; /* Kalınlık */
+  letter-spacing: 0.16em; /* Harf aralığı */
+  text-transform: uppercase; /* Büyük harf */
+  color: rgba(255,255,255,0.82); /* Metin rengi */
+}
+
+.footer-signature span { /* İmza iç vurgu */
+  background: linear-gradient(135deg, rgba(100,210,255,0.9), rgba(143,123,255,0.9)); /* Degrade */
+  -webkit-background-clip: text; /* Metin degrade */
+  background-clip: text; /* Standart degrade */
+  color: transparent; /* Şeffaf metin */
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4); /* Gölge */
+}
+
+.footer-logo { /* Logo kapsayıcı */
+  display: flex; /* Yatay hizala */
+  align-items: center; /* Ortala */
+  gap: 12px; /* Boşluk */
+  color: rgba(255,255,255,0.85); /* Metin rengi */
+}
+
+.footer-logo svg { /* Logo grafiği */
+  width: 72px; /* Genişlik */
+  height: 32px; /* Yükseklik */
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.45)); /* Gölge */
+}
+
+.footer-hints { /* Kısayol bilgisi */
+  color: var(--muted); /* Sönük metin */
+  font-size: 0.9rem; /* Yazı boyutu */
 }
 
 input[type="number"]::-webkit-inner-spin-button { /* Spin butonlarını gizle */
@@ -782,6 +848,10 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
     <button id="startBtn" type="button" class="primary" title="Simülasyonu başlat (B)">Başlat</button> <!-- Başlat butonu -->
     <button id="stopBtn" type="button" class="danger" title="Simülasyonu durdur (D)" disabled>Durdur</button> <!-- Durdur butonu -->
     <button id="resetBtn" type="button" title="Simülasyonu sıfırla (R)">Sıfırla</button> <!-- Sıfırla butonu -->
+    <div class="mode-toggle" role="group" aria-label="Düzenleme modu">
+      <button id="viewModeBtn" type="button" data-active="true" title="Görüntüleme moduna geç">Görüntüle</button>
+      <button id="editModeBtn" type="button" title="Yerleşimi düzenle">Düzenle</button>
+    </div>
     <label title="Animasyon hızı" style="display:flex;align-items:center;gap:8px;"> <!-- Hız kontrol etiketi -->
       <span>Hız</span> <!-- Metin -->
       <input id="speedSlider" type="range" min="0.25" max="16" step="0.25" value="1"> <!-- Slider -->
@@ -820,16 +890,42 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
         <button id="zoomInBtn" type="button" title="Büyüt">+</button> <!-- Zoom büyüt -->
       </div>
       <button id="saveLayoutBtn" type="button" class="save-layout-btn" title="Geçerli yerleşimi kaydet">Yerleşimi Kaydet</button> <!-- Yerleşim kaydet butonu -->
+      <div class="layout-toolbar" role="group" aria-label="Yerleşim araçları">
+        <button id="centerLayoutBtn" type="button" title="Görünümü merkeze getir">Merkeze Topla</button>
+        <button id="resetLayoutBtn" type="button" data-edit-only="true" title="Yerleşimi varsayılana döndür">Yerleşimi Sıfırla</button>
+        <button id="normalizeLayoutBtn" type="button" data-edit-only="true" title="Transformları yeniden hizala">Düzeni Onar</button>
+        <button id="refreshBubblesBtn" type="button" title="Baloncuk konumlarını yenile">Baloncukları Yenile</button>
+      </div>
       <svg id="lineSvg" role="img" aria-label="Hat akışı animasyonu"></svg> <!-- SVG alanı -->
     </div>
   </section>
 </main>
 <footer> <!-- Alt bilgi -->
-  <span>Klavyeden: <strong>B</strong> Başlat · <strong>D</strong> Durdur · <strong>R</strong> Sıfırla</span> <!-- Kısayol bilgisi -->
+  <div class="footer-content"> <!-- Footer içeriği -->
+    <div class="footer-logo" aria-hidden="true"> <!-- Logo alanı -->
+      <svg viewBox="0 0 120 48" role="presentation"> <!-- Basit FKT logosu -->
+        <defs>
+          <linearGradient id="fktGradient" x1="0%" y1="0%" x2="100%" y2="100%"> <!-- Degrade tanımı -->
+            <stop offset="0%" stop-color="#64d2ff" /> <!-- Başlangıç rengi -->
+            <stop offset="100%" stop-color="#8f7bff" /> <!-- Bitiş rengi -->
+          </linearGradient>
+        </defs>
+        <path d="M12 36 L12 12 L52 12" fill="none" stroke="url(#fktGradient)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" /> <!-- F harfi -->
+        <path d="M62 36 L62 12 L98 12" fill="none" stroke="url(#fktGradient)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" /> <!-- K üst kol -->
+        <path d="M98 12 L86 24 L102 36" fill="none" stroke="url(#fktGradient)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" /> <!-- K eğik -->
+        <path d="M110 12 L110 36" fill="none" stroke="url(#fktGradient)" stroke-width="6" stroke-linecap="round" /> <!-- T dik çizgi -->
+        <path d="M100 12 L120 12" fill="none" stroke="url(#fktGradient)" stroke-width="6" stroke-linecap="round" /> <!-- T üst çizgi -->
+      </svg>
+      <span>Flow Kaizen Tech</span> <!-- Logo metni -->
+    </div>
+    <div class="footer-hints"> <!-- Kısayol bilgisi -->
+      Klavyeden: <strong>B</strong> Başlat · <strong>D</strong> Durdur · <strong>R</strong> Sıfırla
+    </div>
+    <div class="footer-signature"> <!-- İmza alanı -->
+      <span>E.DEMIR</span>
+    </div>
+  </div>
 </footer>
-
-<div class="brand-logo" aria-hidden="true"><span>FKT</span></div> <!-- Sol alt logo -->
-<div class="signature" aria-hidden="true">E.DEMIR</div> <!-- İmza -->
 
 <div class="modal-backdrop" id="analysisModal"> <!-- Analiz modal arka planı -->
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="analysisTitle"> <!-- Analiz modal kutusu -->
@@ -1014,9 +1110,12 @@ const appState = window.appState ?? { // Uygulama genel durumu
   lastUpdate: 0, // Son UI güncelleme zamanı
   lastMetricRefresh: 0, // Son metrik yenileme zamanı
   visualCursor: 0, // Görsel zaman imleci
-  nextStationId: 1 // Bir sonraki istasyon numarası
+  nextStationId: 1, // Bir sonraki istasyon numarası
+  mode: 'view', // Ekran modu
+  pausedForEdit: false // Düzenleme için duraklatıldı mı
 };
 window.appState = appState; // Durumu küresele yaz
+document.body.dataset.editMode = appState.mode; // Başlangıç modunu body'ye işle
 
 let renderingPaused = false; // Geçici olarak yeniden çizimi durdurma bayrağı
 
@@ -1054,7 +1153,8 @@ function saveState(state = appState) { // Durumu kaydet
       speed: state.speed, // Hız
       zoom: state.zoom, // Zoom değeri
       taktTime: state.taktTime, // Takt time
-      nextStationId: state.nextStationId // Sıradaki kimlik
+      nextStationId: state.nextStationId, // Sıradaki kimlik
+      mode: state.mode // Ekran modu
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot)); // JSON olarak yaz
   } catch (error) {
@@ -1625,6 +1725,15 @@ class Visualization { // Görsel katman
     this.metricGroup = null; // Metrik yazıları grubu
     this.speed = 1; // Animasyon hızı
     this.zoom = 1; // Yakınlaştırma ölçeği
+    this.editing = false; // Düzenleme modu aktif mi
+    this.viewPadding = 200; // Görünüm tamponu
+    this.minViewWidth = 1200; // Minimum görünüm genişliği
+    this.minViewHeight = 800; // Minimum görünüm yüksekliği
+    this.viewCenter = { x: 0, y: 0 }; // Görünüm merkezi
+    this.viewExtent = { width: this.minViewWidth, height: this.minViewHeight }; // Görünüm boyutu
+    this.panOffset = { x: 0, y: 0 }; // Pan kayması
+    this.worldLimits = { minX: -1600, maxX: 1600, minY: -900, maxY: 900 }; // Dünya sınırları
+    this.hasCentered = false; // İlk merkezleme yapıldı mı
     this.edgeElements = new Map(); // Kenar öğeleri haritası
     this.nodeElements = new Map(); // Düğüm öğeleri haritası
     this.handlers = { addEdge: null, removeEdge: null, moveNode: null }; // Olay geri çağrıları
@@ -1635,7 +1744,7 @@ class Visualization { // Görsel katman
     this.resizeObserver = new ResizeObserver(() => this.drawStations()); // Yeniden çizim dinleyicisi
     if (svg && svg.parentElement) this.resizeObserver.observe(svg.parentElement); // Paneli izle
     this.frame = this.frame.bind(this); // Animasyon bağlama
-    this.setZoom(this.zoom); // Başlangıç ölçeğini uygula
+    this.updateViewBox(); // Başlangıç görünümünü ayarla
     requestAnimationFrame(this.frame); // Animasyon döngüsünü başlat
   }
   setHandlers(handlers = {}) { // Geri çağrı atayıcı
@@ -1653,7 +1762,7 @@ class Visualization { // Görsel katman
     circle.setAttribute('cx', 0); // Başlangıç X
     circle.setAttribute('cy', 0); // Başlangıç Y
     this.svg.appendChild(circle); // SVG'ye ekle
-    this.jobs.set(jobId, { circle, targetX: 0, targetY: 0, x: 0, y: 0, startX: 0, startY: 0, startTime: performance.now(), duration: MOVE_DURATION_MS, removeAt: null }); // Haritaya kaydet
+    this.jobs.set(jobId, { circle, targetX: 0, targetY: 0, x: 0, y: 0, startX: 0, startY: 0, startTime: performance.now(), duration: MOVE_DURATION_MS, removeAt: null, progress: 0 }); // Haritaya kaydet
   }
   tagJob(jobId, state) { // Balon durum etiketi
     const node = this.jobs.get(jobId); // Balonu al
@@ -1676,8 +1785,153 @@ class Visualization { // Görsel katman
     this.speed = speed; // Değeri sakla
   }
   setZoom(scale) { // Yakınlaştırma ayarı
-    this.zoom = scale; // Ölçeği sakla
-    if (this.svg) this.svg.style.transform = `scale(${scale})`; // CSS ölçeği uygula
+    this.zoom = Math.max(0.5, Math.min(3, scale)); // Ölçeği sınırla
+    this.updateViewBox(); // ViewBox'ı güncelle
+  }
+  updateViewBox() { // ViewBox değerini yenile
+    if (!this.svg) return; // SVG yoksa çık
+    const width = this.viewExtent.width / this.zoom; // Ölçeklenmiş genişlik
+    const height = this.viewExtent.height / this.zoom; // Ölçeklenmiş yükseklik
+    const x = this.viewCenter.x - width / 2 + this.panOffset.x; // Sol üst X
+    const y = this.viewCenter.y - height / 2 + this.panOffset.y; // Sol üst Y
+    this.svg.setAttribute('viewBox', `${x} ${y} ${width} ${height}`); // ViewBox ata
+  }
+  setEditing(enabled) { // Düzenleme modunu ayarla
+    this.editing = !!enabled; // Bayrağı sakla
+    this.nodeElements.forEach(entry => { // Tüm düğümleri dolaş
+      if (!entry || !entry.group) return; // Geçersizse geç
+      entry.group.style.cursor = this.editing ? 'grab' : 'default'; // İmleci güncelle
+      entry.group.classList.toggle('editing-enabled', this.editing); // Sınıfı değiştir
+      if (entry.addGroup) { // Bağlantı düğmesi varsa
+        entry.addGroup.style.pointerEvents = this.editing ? 'all' : 'none'; // Etkileşimi ayarla
+        entry.addGroup.style.opacity = this.editing ? '1' : '0.35'; // Görünürlüğü düzenle
+        entry.addGroup.style.cursor = this.editing ? 'pointer' : 'not-allowed'; // İmleci değiştir
+      }
+    });
+  }
+  calculateBounds() { // Yerleşim sınırlarını hesapla
+    if (!this.stationLayout.length) { // İstasyon yoksa
+      return { minX: -400, maxX: 400, minY: -200, maxY: 200 }; // Varsayılan sınırlar
+    }
+    let minX = Infinity; // Minimum X
+    let minY = Infinity; // Minimum Y
+    let maxX = -Infinity; // Maksimum X
+    let maxY = -Infinity; // Maksimum Y
+    this.stationLayout.forEach(layout => { // Her istasyonu dolaş
+      minX = Math.min(minX, layout.x); // Minimum X güncelle
+      minY = Math.min(minY, layout.y); // Minimum Y güncelle
+      maxX = Math.max(maxX, layout.x + layout.width); // Maksimum X güncelle
+      maxY = Math.max(maxY, layout.y + layout.height); // Maksimum Y güncelle
+    });
+    return { // Tampon uygulanmış sınırlar
+      minX: minX - this.viewPadding,
+      maxX: maxX + this.viewPadding,
+      minY: minY - this.viewPadding,
+      maxY: maxY + this.viewPadding
+    };
+  }
+  centerViewOnBounds() { // Tüm yerleşimi merkeze al
+    const bounds = this.calculateBounds(); // Sınırları hesapla
+    this.bounds = bounds; // Kaydet
+    const width = Math.max(this.minViewWidth, bounds.maxX - bounds.minX); // Genişliği belirle
+    const height = Math.max(this.minViewHeight, bounds.maxY - bounds.minY); // Yüksekliği belirle
+    this.viewExtent = { width, height }; // Görünüm boyutunu ata
+    this.viewCenter = { // Merkezi hesapla
+      x: (bounds.minX + bounds.maxX) / 2,
+      y: (bounds.minY + bounds.maxY) / 2
+    };
+    this.panOffset = { x: 0, y: 0 }; // Pan kaymasını sıfırla
+    this.updateViewBox(); // ViewBox'ı güncelle
+  }
+  updateBounds() { // Sınırları yenile
+    this.bounds = this.calculateBounds(); // Sınırları hesapla
+    const width = this.bounds.maxX - this.bounds.minX; // Genişlik
+    const height = this.bounds.maxY - this.bounds.minY; // Yükseklik
+    this.viewExtent.width = Math.max(this.viewExtent.width, Math.max(this.minViewWidth, width)); // Genişlik sınırı
+    this.viewExtent.height = Math.max(this.viewExtent.height, Math.max(this.minViewHeight, height)); // Yükseklik sınırı
+    this.updateViewBox(); // ViewBox'ı güncelle
+  }
+  clampPosition(layout, x, y) { // Sınırlar içinde konumla
+    const minX = this.worldLimits.minX; // Minimum X
+    const maxX = this.worldLimits.maxX - layout.width; // Maksimum X
+    const minY = this.worldLimits.minY; // Minimum Y
+    const maxY = this.worldLimits.maxY - layout.height; // Maksimum Y
+    return { // Sınırlandırılmış koordinatlar
+      x: Math.max(minX, Math.min(maxX, x)),
+      y: Math.max(minY, Math.min(maxY, y))
+    };
+  }
+  rectsOverlap(a, b, padding = 0) { // Dikdörtgen çakışma testi
+    return !(a.x + a.width + padding <= b.x || b.x + b.width + padding <= a.x || a.y + a.height + padding <= b.y || b.y + b.height + padding <= a.y); // Çakışma kontrolü
+  }
+  resolveCollisions(layout) { // Çakışmaları gider
+    const padding = 32; // Minimum boşluk
+    for (let attempt = 0; attempt < 8; attempt++) { // Sınırlı iterasyon
+      let collided = false; // Çakışma bayrağı
+      for (const other of this.stationLayout) { // Diğer istasyonları dolaş
+        if (other === layout) continue; // Aynıysa geç
+        if (!this.rectsOverlap(layout, other, padding)) continue; // Çakışma yoksa geç
+        collided = true; // Çakışma var
+        const dx = (layout.x + layout.width / 2) - (other.x + other.width / 2); // Merkez farkı X
+        const dy = (layout.y + layout.height / 2) - (other.y + other.height / 2); // Merkez farkı Y
+        if (Math.abs(dx) >= Math.abs(dy)) { // X yönü baskınsa
+          layout.x += dx >= 0 ? padding : -padding; // Sağ/sola kaydır
+        } else { // Y yönü baskınsa
+          layout.y += dy >= 0 ? padding : -padding; // Yukarı/aşağı kaydır
+        }
+        const clamped = this.clampPosition(layout, layout.x, layout.y); // Sınırla
+        layout.x = clamped.x; // X ata
+        layout.y = clamped.y; // Y ata
+      }
+      if (!collided) break; // Çakışma kalmadıysa çık
+    }
+  }
+  translateJob(jobId, dx, dy) { // Tek baloncuğu kaydır
+    if (!dx && !dy) return; // Kaydırma yoksa çık
+    const node = this.jobs.get(jobId); // Balonu al
+    if (!node) return; // Bulunamadıysa çık
+    node.x += dx; // X güncelle
+    node.y += dy; // Y güncelle
+    node.startX += dx; // Başlangıç X kaydır
+    node.startY += dy; // Başlangıç Y kaydır
+    node.targetX += dx; // Hedef X kaydır
+    node.targetY += dy; // Hedef Y kaydır
+    node.circle.setAttribute('cx', node.x); // SVG X
+    node.circle.setAttribute('cy', node.y); // SVG Y
+  }
+  translateStationJobs(layout, dx, dy) { // İstasyona bağlı balonları kaydır
+    if (!dx && !dy) return; // Değişim yoksa çık
+    const queue = Array.isArray(layout.queue) ? layout.queue : []; // Kuyruk işleri
+    queue.forEach(item => this.translateJob(item.jobId, dx, dy)); // Kuyruktakileri kaydır
+    const servers = Array.isArray(layout.servers) ? layout.servers : []; // Servis işleri
+    servers.forEach(server => { if (server) this.translateJob(server.jobId, dx, dy); }); // Servistekileri kaydır
+  }
+  refreshJobAnchors(forceInstant = false) { // Baloncuk konumlarını yeniden hesapla
+    const assigned = new Set(); // Atanan iş kümesi
+    this.stationLayout.forEach((layout, stationIdx) => { // Her istasyonu dolaş
+      const queue = Array.isArray(layout.queue) ? layout.queue : []; // Kuyruk listesi
+      queue.forEach((entry, queueIdx) => { // Her kuyruk elemanı
+        const pos = this.queuePosition(stationIdx, queueIdx); // Hedef konum
+        this.ensureJob(entry.jobId); // Balonu hazırla
+        if (forceInstant) this.moveNodeInstant(entry.jobId, pos.x, pos.y); else this.moveNode(entry.jobId, pos.x, pos.y); // Konumu uygula
+        assigned.add(entry.jobId); // Atandı olarak işaretle
+      });
+      const servers = Array.isArray(layout.servers) ? layout.servers : []; // Sunucu listesi
+      servers.forEach((server, serverIdx) => { // Her sunucu
+        if (!server) return; // Boşsa geç
+        const pos = this.serverPosition(stationIdx, serverIdx, servers.length); // Konumu hesapla
+        this.ensureJob(server.jobId); // Balonu hazırla
+        if (forceInstant) this.moveNodeInstant(server.jobId, pos.x, pos.y); else this.moveNode(server.jobId, pos.x, pos.y); // Konumu uygula
+        assigned.add(server.jobId); // Atandı olarak işaretle
+      });
+    });
+    return assigned; // Atanan kümesini döndür
+  }
+  normalizeWorld() { // Transformları sıfırla
+    this.stationLayout.forEach(layout => this.updateNodeTransform(layout)); // Her düğümü tazele
+    this.updateEdges(); // Kenarları güncelle
+    this.refreshJobAnchors(true); // Baloncukları hizala
+    this.updateBounds(); // Görünümü güncelle
   }
   setStations(stations) { // İstasyon yerleşimini güncelle
     this.stationLayout = stations.map((station, index) => { // Tüm istasyonları dolaş
@@ -1693,6 +1947,13 @@ class Visualization { // Görsel katman
     });
     this.layoutById = new Map(this.stationLayout.map(item => [item.station.id, item])); // Kimlik haritasını güncelle
     this.drawStations(); // SVG'yi yeniden çiz
+    if (!this.hasCentered) { // İlk yükleme
+      this.centerViewOnBounds(); // Görünümü ortala
+      this.hasCentered = true; // Bayrağı ata
+    } else {
+      this.updateBounds(); // Sınırları güncelle
+    }
+    this.setEditing(this.editing); // Düzenleme imlecini uygula
   }
   ensureMarkers() { // Ok işaretini oluştur
     if (!this.svg) return; // SVG yoksa çık
@@ -1797,6 +2058,7 @@ class Visualization { // Görsel katman
   }
   bindDrag(group, layout) { // Sürükleme olaylarını bağla
     group.addEventListener('pointerdown', event => { // Başlangıç olayı
+      if (!this.editing) return; // Düzenleme modunda değilse çık
       if (event.button !== 0) return; // Sol tuş değilse çık
       event.preventDefault(); // Varsayılanı engelle
       const point = this.toSvgPoint(event); // SVG koordinatına çevir
@@ -1808,20 +2070,37 @@ class Visualization { // Görsel katman
     group.addEventListener('pointermove', event => { // Hareket olayı
       if (!this.dragState || this.dragState.pointerId !== event.pointerId) return; // Geçerli sürükleme yoksa çık
       const point = this.toSvgPoint(event); // Koordinatı hesapla
-      this.dragState.layout.x = point.x - this.dragState.offsetX; // X değerini güncelle
-      this.dragState.layout.y = point.y - this.dragState.offsetY; // Y değerini güncelle
+      const proposedX = point.x - this.dragState.offsetX; // Önerilen X
+      const proposedY = point.y - this.dragState.offsetY; // Önerilen Y
+      const clamped = this.clampPosition(this.dragState.layout, proposedX, proposedY); // Sınırla
+      const dx = clamped.x - this.dragState.layout.x; // Delta X
+      const dy = clamped.y - this.dragState.layout.y; // Delta Y
+      if (!dx && !dy) return; // Hareket yoksa çık
+      this.dragState.layout.x = clamped.x; // X'i güncelle
+      this.dragState.layout.y = clamped.y; // Y'yi güncelle
       this.updateNodeTransform(this.dragState.layout); // Görseli güncelle
+      this.translateStationJobs(this.dragState.layout, dx, dy); // Baloncukları kaydır
       this.updateEdges(); // Kenarları tazele
       if (typeof this.handlers.moveNode === 'function') { // Handler varsa
         this.handlers.moveNode(this.dragState.layout.station.id, this.dragState.layout.x, this.dragState.layout.y, { live: true }); // Canlı güncelle
       }
     });
     const finish = event => { // Sürükleme bitiş işlemi
-      if (!this.dragState || (event.pointerId !== undefined && this.dragState.pointerId !== event.pointerId)) return; // Uyuşmuyorsa çık
+      if (!this.dragState || (event.pointerId !== undefined && this.dragState.pointerId !== event.pointerId)) return; // Geçerli değilse çık
       const state = this.dragState; // Durumu al
       this.dragState = null; // Sıfırla
       if (event.pointerId !== undefined) group.releasePointerCapture(event.pointerId); // Yakalamayı bırak
+      const before = { x: state.layout.x, y: state.layout.y }; // Önceki konum
+      this.resolveCollisions(state.layout); // Çakışmaları düzelt
+      const fixDx = state.layout.x - before.x; // Düzeltme X
+      const fixDy = state.layout.y - before.y; // Düzeltme Y
+      if (fixDx || fixDy) { // Ek kaydırma olduysa
+        this.updateNodeTransform(state.layout); // Transformu güncelle
+        this.translateStationJobs(state.layout, fixDx, fixDy); // Baloncukları taşı
+      }
       this.updateEdges(); // Kenarları yenile
+      this.refreshJobAnchors(true); // Baloncukları hizala
+      this.updateBounds(); // Görünüm sınırlarını güncelle
       if (typeof this.handlers.moveNode === 'function') { // Handler varsa
         this.handlers.moveNode(state.layout.station.id, state.layout.x, state.layout.y, { live: false }); // Kalıcı güncelle
       }
@@ -1941,6 +2220,7 @@ class Visualization { // Görsel katman
       nodeLayout.servers = item.servers; // Sunucu verisini sakla
     });
     this.updateEdges(); // Kenarları güncelle
+    this.refreshJobAnchors(); // Baloncukları yeni geometriye taşı
     this.renderMetrics(layout, timeCursor); // Metrikleri çiz
     this.jobs.forEach(node => this.svg.appendChild(node.circle)); // Baloncukları üstte tut
   }
@@ -2014,6 +2294,7 @@ class Visualization { // Görsel katman
     this.jobs.forEach((node, jobId) => { // Her balonu dolaş
       const progress = Math.min(1, (timestamp - node.startTime) / Math.max(1, node.duration)); // İlerleme yüzdesi
       const eased = progress < 1 ? (1 - Math.pow(1 - progress, 3)) : 1; // Ease-out küp
+      node.progress = progress; // Ham ilerleme oranı
       node.x = node.startX + (node.targetX - node.startX) * eased; // X hesapla
       node.y = node.startY + (node.targetY - node.startY) * eased; // Y hesapla
       node.circle.setAttribute('cx', node.x); // SVG X güncelle
@@ -2032,6 +2313,8 @@ const addStationBtn = document.getElementById('addStationBtn'); // İstasyon ekl
 const startBtn = document.getElementById('startBtn'); // Başlat butonu
 const stopBtn = document.getElementById('stopBtn'); // Durdur butonu
 const resetBtn = document.getElementById('resetBtn'); // Sıfırla butonu
+const viewModeBtn = document.getElementById('viewModeBtn'); // Görüntüleme modu butonu
+const editModeBtn = document.getElementById('editModeBtn'); // Düzenleme modu butonu
 const sampleBtn = document.getElementById('sampleSetupBtn'); // Örnek kurulum butonu
 const analysisBtn = document.getElementById('analysisBtn'); // Analiz butonu
 const speedSlider = document.getElementById('speedSlider'); // Hız slider
@@ -2048,6 +2331,10 @@ const visualPanel = document.getElementById('visualPanel'); // Görsel panel kap
 const fullscreenBtn = document.getElementById('fullscreenBtn'); // Tam ekran butonu
 const fullscreenLabel = fullscreenBtn ? fullscreenBtn.querySelector('span') : null; // Tam ekran etiket metni
 const saveLayoutBtn = document.getElementById('saveLayoutBtn'); // Yerleşim kaydet butonu
+const centerLayoutBtn = document.getElementById('centerLayoutBtn'); // Merkeze toplama butonu
+const resetLayoutBtn = document.getElementById('resetLayoutBtn'); // Yerleşimi sıfırlama butonu
+const normalizeLayoutBtn = document.getElementById('normalizeLayoutBtn'); // Düzeni onarma butonu
+const refreshBubblesBtn = document.getElementById('refreshBubblesBtn'); // Baloncuk yenileme butonu
 const resultsBtn = document.getElementById('resultsBtn'); // Sonuç açma butonu
 const reportModal = document.getElementById('reportModal'); // Rapor modalı
 const closeReportBtn = document.getElementById('closeReportBtn'); // Modal kapatma butonu
@@ -2264,10 +2551,12 @@ function openEdgePicker(sourceId, anchor) { // Bağlantı seçim panelini aç
 function renderGraph(stations) { // Akış grafiğini çiz
   normalizeStationTopology(stations); // İstasyonları normalize et
   closeEdgePicker(); // Açık bağlantı panelini kapat
-  const handlerConfig = appState.running // Çalışma durumuna göre handler seç
-    ? { moveNode: handleNodeMove } // Yalnızca taşıma
-    : { addEdge: openEdgePicker, removeEdge: removeConnection, moveNode: handleNodeMove }; // Tam etkileşim
+  const editingEnabled = !appState.running && appState.mode === 'edit'; // Düzenleme aktif mi
+  const handlerConfig = editingEnabled // Çalışma durumuna göre handler seç
+    ? { addEdge: openEdgePicker, removeEdge: removeConnection, moveNode: handleNodeMove } // Tam düzenleme
+    : { addEdge: null, removeEdge: null, moveNode: null }; // Etkileşimi kapat
   viz.setHandlers(handlerConfig); // Handlerları ata
+  viz.setEditing(editingEnabled); // Sürükleme izinlerini ayarla
   viz.setStations(stations); // Görselleştirme modelini güncelle
 }
 
@@ -2301,14 +2590,27 @@ function cloneStationsForRun() { // Simülasyon için istasyon kopyala
   });
 }
 
-function suggestStationPosition(index) { // Yeni istasyon için varsayılan koordinat üret
-  const col = index % 4; // Kolon indeksini hesapla
-  const row = Math.floor(index / 4); // Satır indeksini hesapla
-  const startX = 140; // Başlangıç X
-  const startY = 80; // Başlangıç Y
-  const gapX = 220; // Yatay boşluk
+function computeDefaultGridPosition(index, total) { // Varsayılan merkezli ızgara pozisyonu
+  const baseCols = 4; // Maks kolon
+  const gapX = 240; // Yatay boşluk
   const gapY = 180; // Dikey boşluk
-  return { x: startX + col * gapX, y: startY + row * gapY }; // Koordinatı döndür
+  const row = Math.floor(index / baseCols); // Satır
+  const col = index % baseCols; // Kolon
+  const totalRows = Math.max(1, Math.ceil(total / baseCols)); // Toplam satır
+  const isLastRow = row === totalRows - 1; // Son satır mı
+  const itemsInRow = isLastRow ? Math.max(1, total - row * baseCols) : Math.min(baseCols, total); // Satırdaki eleman sayısı
+  const rowWidth = (itemsInRow - 1) * gapX; // Satır genişliği
+  const clampedCol = Math.min(col, itemsInRow - 1); // Son satır için kolon sınırı
+  const offsetX = itemsInRow === 1 ? 0 : clampedCol * gapX; // X offseti
+  const originX = -rowWidth / 2; // Satır başlangıç X
+  const totalHeight = (totalRows - 1) * gapY; // Toplam yükseklik
+  const originY = -totalHeight / 2; // Başlangıç Y
+  return { x: originX + offsetX, y: originY + row * gapY }; // Hesaplanan koordinat
+}
+
+function suggestStationPosition(index, total = null) { // Yeni istasyon için varsayılan koordinat üret
+  const safeTotal = Number.isFinite(total) && total > 0 ? total : Math.max(index + 1, appState?.stations?.length || 1); // Güvenli toplam
+  return computeDefaultGridPosition(index, safeTotal); // Konumu döndür
 }
 
 function addStation(name = null) { // İstasyon ekleme fonksiyonu
@@ -2319,7 +2621,8 @@ function addStation(name = null) { // İstasyon ekleme fonksiyonu
   station.parallelServers = 1; // Varsayılan kapasite
   station.tasks = []; // Görevleri boş başlat
   station.outputs = []; // Çıkış bağlantılarını sıfırla
-  station.position = suggestStationPosition(appState.stations.length); // Varsayılan konumu ata
+  const gridIndex = appState.stations.length; // Izgara indeksi
+  station.position = suggestStationPosition(gridIndex, gridIndex + 1); // Varsayılan konumu ata
   appState.stations.push(station); // Listeye ekle
   if (!renderingPaused) { // Yeniden çizim açıksa
     renderStations(); // Kart listesini güncelle
@@ -2328,6 +2631,19 @@ function addStation(name = null) { // İstasyon ekleme fonksiyonu
   }
   console.info('Station added:', station); // Konsola bilgi düş
   return station; // Yeni istasyonu döndür
+}
+
+function resetLayoutToDefault() { // Yerleşimi varsayılana döndür
+  if (!appState.stations.length) { showGraphToast('Varsayılan yerleşim için istasyon bulunamadı.', 'info'); return; } // Boşsa uyar
+  const total = appState.stations.length; // Toplam istasyon sayısı
+  appState.stations.forEach((station, index) => { // Her istasyonu dolaş
+    const pos = suggestStationPosition(index, total); // Varsayılan konumu al
+    station.position = { x: pos.x, y: pos.y }; // Konumu ata
+  });
+  renderGraph(appState.stations); // Grafiği güncelle
+  if (viz) viz.centerViewOnBounds(); // Görünümü ortala
+  saveState(appState); // Durumu kaydet
+  showGraphToast('Yerleşim varsayılan ızgaraya sıfırlandı.', 'success'); // Kullanıcıyı bilgilendir
 }
 
 function onAddStationClick(event) { // İstasyon ekle buton tıklaması
@@ -2652,7 +2968,12 @@ function validateSetup() { // Kurulum doğrulama
 }
 
 function startSimulation() { // Simülasyonu başlat
+  if (appState.pausedForEdit && appState.simulation) { // Düzenlemeden dönerken
+    setMode('view'); // Görüntüleme moduna geçip devam et
+    return; // Yeni motor kurma
+  }
   if (!validateSetup()) return; // Geçersizse çık
+  if (appState.mode !== 'view') setMode('view'); // Çalışma öncesi görüntüle moduna dön
   const options = { // Seçenekler
     entryPolicy: appState.entryPolicy, // Giriş politikası
     entryInterval: appState.entryInterval, // Giriş aralığı
@@ -2662,6 +2983,7 @@ function startSimulation() { // Simülasyonu başlat
   appState.simulation.onLiveUpdate = snapshot => applyLiveStationSnapshot(snapshot); // Canlı güncelleme bağla
   appState.simulation.start(); // Başlat
   appState.running = true; // Durum güncelle
+  appState.pausedForEdit = false; // Düzenleme duraklamasını temizle
   appState.lastUpdate = performance.now(); // Zaman kaydı
   appState.lastMetricRefresh = appState.lastUpdate; // Metrik zamanını sıfırla
   appState.visualCursor = appState.simulation.currentTime; // Görsel zamanı hizala
@@ -2679,6 +3001,7 @@ function stopSimulation(showReport = true) { // Simülasyonu durdur
   appState.visualCursor = appState.simulation.currentTime; // Görsel zamanı güncelle
   appState.simulation.updateLayoutTargets(appState.visualCursor); // Son durumu aktar
   appState.running = false; // Durum güncelle
+  appState.pausedForEdit = false; // Düzenleme bayrağını temizle
   toggleEditing(true); // UI aç
   startBtn.disabled = false; // Başlat aç
   stopBtn.disabled = true; // Durdur kilit
@@ -2691,6 +3014,7 @@ function resetSimulation() { // Simülasyonu sıfırla
   appState.running = false; // Durum
   startBtn.disabled = false; // Başlat aç
   stopBtn.disabled = true; // Durdur kilit
+  appState.pausedForEdit = false; // Düzenleme duraklamasını sıfırla
   toggleEditing(true); // UI aç
   if (appState.simulation) { // Motor varsa
     appState.simulation.reset(); // Sıfırla
@@ -2708,6 +3032,50 @@ function resetSimulation() { // Simülasyonu sıfırla
     refs.service.textContent = `Servis: 0/${capacity}`; // Servisi sıfırla
     refs.remaining.textContent = 'Kalan: -'; // Kalan süreyi sıfırla
   });
+}
+
+function pauseSimulationForEdit() { // Düzenleme için simülasyonu duraklat
+  if (!appState.simulation || !appState.simulation.running) return false; // Çalışmıyorsa çık
+  appState.simulation.stop(); // Motoru duraklat
+  appState.pausedForEdit = true; // Duraklat bayrağı
+  appState.running = false; // UI durumu
+  stopBtn.disabled = true; // Durdur butonunu kilitle
+  startBtn.disabled = false; // Başlat butonunu aç
+  toggleEditing(true); // Kontrolleri aç
+  showGraphToast('Simülasyon düzenleme için duraklatıldı.', 'warning'); // Kullanıcıyı bilgilendir
+  return true; // Başarılı
+}
+
+function resumeSimulationAfterEdit() { // Düzenleme sonrasında devam ettir
+  if (!appState.simulation || !appState.pausedForEdit) return false; // Duraklatılmamışsa çık
+  appState.simulation.running = true; // Motoru yeniden çalıştır
+  appState.running = true; // UI durumunu güncelle
+  appState.pausedForEdit = false; // Bayrağı temizle
+  appState.lastUpdate = performance.now(); // Zaman damgasını yenile
+  appState.lastMetricRefresh = 0; // Metrik yenilemeyi sıfırla
+  startBtn.disabled = true; // Başlat butonunu kilitle
+  stopBtn.disabled = false; // Durdur butonunu aç
+  toggleEditing(false); // Kontrolleri kilitle
+  runLoop(); // Döngüyü yeniden başlat
+  showGraphToast('Simülasyon kaldığı yerden devam ediyor.', 'success'); // Bilgilendir
+  return true; // Başarılı
+}
+
+function setMode(mode) { // Görünüm/düzenleme modunu değiştir
+  if (mode !== 'view' && mode !== 'edit') return; // Geçersiz modları yoksay
+  if (appState.mode === mode) return; // Zaten bu moddaysa çık
+  if (mode === 'edit') { // Düzenleme moduna geçerken
+    pauseSimulationForEdit(); // Simülasyonu duraklat
+  } else if (mode === 'view') { // Görüntüleme moduna dönerken
+    resumeSimulationAfterEdit(); // Gerekirse devam ettir
+  }
+  appState.mode = mode; // Modu güncelle
+  document.body.dataset.editMode = appState.mode; // Body veri niteliğini güncelle
+  if (viz) viz.setEditing(appState.mode === 'edit' && !appState.running); // Görsel düzenlemeyi ayarla
+  syncControlsFromState(); // Kontrolleri yenile
+  renderGraph(appState.stations); // Grafiği modla uyumlu çiz
+  saveState(appState); // Durumu sakla
+  console.info('Mod güncellendi:', appState.mode); // Konsol kaydı
 }
 
 function toggleEditing(enabled) { // UI düzenleme durumunu ayarla
@@ -3232,9 +3600,9 @@ function loadSample() { // Örnek kurulum yükle
   s1.outputs = [s2.id]; // Çıkış bağlantısı tanımla
   s2.outputs = [s3.id]; // Zinciri devam ettir
   s3.outputs = []; // Son istasyon
-  s1.position = suggestStationPosition(0); // Varsayılan konum
-  s2.position = suggestStationPosition(1); // Varsayılan konum
-  s3.position = suggestStationPosition(2); // Varsayılan konum
+  s1.position = suggestStationPosition(0, 3); // Varsayılan konum
+  s2.position = suggestStationPosition(1, 3); // Varsayılan konum
+  s3.position = suggestStationPosition(2, 3); // Varsayılan konum
   appState.stations.push(s1, s2, s3); // Listeye ekle
   appState.entryPolicy = 'trigger'; // Tetikleme politikası
   appState.targetCount = 20; // Hedef 20
@@ -3255,6 +3623,15 @@ function syncControlsFromState() { // Kontrolleri duruma göre hizala
   speedValue.textContent = `${display}×`; // Hız etiketi
   if (taktInput) taktInput.value = appState.taktTime ?? ''; // Takt alanı
   updateZoomDisplay(); // Zoom göstergesini yenile
+  document.body.dataset.editMode = appState.mode; // Mod niteliğini güncelle
+  if (viewModeBtn) { // Görüntüle butonu durumunu ayarla
+    viewModeBtn.dataset.active = appState.mode === 'view' ? 'true' : 'false'; // Aktif veri niteliği
+    viewModeBtn.disabled = appState.mode === 'view'; // Aktifken kilitle
+  }
+  if (editModeBtn) { // Düzenle butonu durumunu ayarla
+    editModeBtn.dataset.active = appState.mode === 'edit' ? 'true' : 'false'; // Aktif veri niteliği
+    editModeBtn.disabled = appState.mode === 'edit'; // Aktifken kilitle
+  }
 }
 
 function restoreFromSnapshot(snapshot) { // Yerel depolamadan gelen durumu uygula
@@ -3308,6 +3685,10 @@ function restoreFromSnapshot(snapshot) { // Yerel depolamadan gelen durumu uygul
   if (typeof snapshot.taktTime === 'number' && snapshot.taktTime > 0) { // Takt değeri geçerli mi
     appState.taktTime = snapshot.taktTime; // Takt time ata
   }
+  if (snapshot.mode === 'edit' || snapshot.mode === 'view') { // Mod bilgisi geçerli mi
+    appState.mode = snapshot.mode; // Modu ata
+  }
+  document.body.dataset.editMode = appState.mode; // Body veri niteliğini güncelle
   syncControlsFromState(); // Kontrolleri güncelle
   renderStations(); // Kartları çiz
   renderGraph(appState.stations); // Akışı güncelle
@@ -3349,6 +3730,12 @@ function attachUiEvents() { // UI olaylarını bağla
   analysisRecalcBtn?.addEventListener('click', () => runAnalysis()); // Analizi yenile
   closeReportBtn?.addEventListener('click', () => closeReport()); // Rapor kapat
   reportModal?.addEventListener('click', event => { if (event.target === reportModal) closeReport(); }); // Modal dışı kapat
+  viewModeBtn?.addEventListener('click', () => setMode('view')); // Görüntüleme moduna geç
+  editModeBtn?.addEventListener('click', () => setMode('edit')); // Düzenleme moduna geç
+  centerLayoutBtn?.addEventListener('click', () => { viz.centerViewOnBounds(); showGraphToast('Görünüm merkeze toplandı.', 'info'); }); // Merkezleme
+  resetLayoutBtn?.addEventListener('click', () => resetLayoutToDefault()); // Yerleşimi sıfırla
+  normalizeLayoutBtn?.addEventListener('click', () => { viz.normalizeWorld(); showGraphToast('Yerleşim transformları onarıldı.', 'success'); }); // Normalize et
+  refreshBubblesBtn?.addEventListener('click', () => { viz.refreshJobAnchors(true); showGraphToast('Baloncuk konumları yenilendi.', 'info'); }); // Baloncukları yenile
   speedSlider?.addEventListener('input', () => { // Hız değişimi
     const value = Number(speedSlider.value); // Değer al
     appState.speed = value; // Duruma ata
