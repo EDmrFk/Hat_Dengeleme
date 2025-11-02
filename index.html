@@ -1,0 +1,2553 @@
+<!DOCTYPE html> <!-- Tek sayfa uygulama bildirimi -->
+<html lang="tr"> <!-- Dil ayarı Türkçe -->
+<head> <!-- Başlık bilgileri başlangıcı -->
+<meta charset="UTF-8"> <!-- Unicode desteği -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Mobil uyum -->
+<title>Hat Simülasyonu</title> <!-- Sayfa başlığı -->
+<style> /* Gömülü stiller başlangıcı */
+:root { /* Tema değişkenleri tanımı */
+  --bg: #111316; /* Arka plan rengi */
+  --card: #1c1f24; /* Kart arka planı */
+  --card-light: #242830; /* Kart açık tonu */
+  --accent: #64d2ff; /* Vurgu rengi */
+  --accent-strong: #30a6d9; /* Güçlü vurgu rengi */
+  --text: #f4f5f7; /* Metin rengi */
+  --muted: #9aa0ab; /* Sönük metin rengi */
+  --danger: #ff6b6b; /* Hata/darboğaz rengi */
+  --border-radius: 12px; /* Genel köşe yuvarlama */
+  --transition: 160ms ease; /* Standart geçiş süresi */
+}
+
+* { /* Genel reset */
+  box-sizing: border-box; /* Kutular içeriğe göre hesaplanır */
+}
+
+body { /* Gövde stili */
+  margin: 0; /* Varsayılan boşlukları kaldır */
+  font-family: "Segoe UI", sans-serif; /* Modern yazı tipi */
+  background: var(--bg); /* Arka plan */
+  color: var(--text); /* Metin */
+  min-height: 100vh; /* Tam ekran */
+}
+
+header { /* Üst çubuk stili */
+  position: sticky; /* Yukarıda sabitlenir */
+  top: 0; /* Yukarı hizalama */
+  z-index: 10; /* Üstte kalması için */
+  background: rgba(17, 19, 22, 0.94); /* Hafif saydam fon */
+  backdrop-filter: blur(12px); /* Cam efekti */
+  padding: 16px 24px; /* İç boşluk */
+  box-shadow: 0 2px 12px rgba(0,0,0,0.35); /* Gölge */
+}
+
+header .controls { /* Kontrol satırı */
+  display: flex; /* Yatay hizalama */
+  flex-wrap: wrap; /* Satır atlama */
+  gap: 12px; /* Aralar boşluk */
+  align-items: center; /* Dikey ortalama */
+}
+
+button, input, select { /* Form kontrolleri ortak stil */
+  font: inherit; /* Yazı tipini devral */
+  border-radius: var(--border-radius); /* Köşe yuvarla */
+  border: 1px solid transparent; /* Kenar */
+  padding: 8px 14px; /* İç boşluk */
+  background: var(--card-light); /* Arka plan */
+  color: var(--text); /* Metin rengi */
+  transition: border-color var(--transition), background var(--transition), transform var(--transition); /* Geçişler */
+}
+
+#addStationBtn, [data-action="add-station"] { /* İstasyon ekle butonu tıklanabilirliği */
+  pointer-events: auto; /* Fare etkileşimini aç */
+  position: relative; /* Üst katman konum */
+  z-index: 20; /* Diğer katmanların üstünde */
+}
+
+header .controls { /* Kontrol satırının katman düzeni */
+  position: relative; /* Z-index etkili olsun */
+  z-index: 15; /* Üste taşı */
+}
+
+button:hover, input:focus, select:focus { /* Odak/hover durumu */
+  border-color: var(--accent); /* Kenar renklendir */
+  outline: none; /* Varsayılan odak kaldır */
+}
+
+button.primary { /* Öne çıkan buton */
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong)); /* Degrade */
+  color: #0a1a23; /* Kontrast metin */
+  font-weight: 600; /* Kalınlık */
+}
+
+button.danger { /* Silme/durdurma butonu */
+  background: rgba(255,107,107,0.16); /* Hafif kırmızı */
+  color: var(--danger); /* Metin */
+}
+
+button:disabled, input:disabled, select:disabled { /* Pasif durum */
+  opacity: 0.45; /* Soluk */
+  cursor: not-allowed; /* İşaretçi */
+}
+
+main { /* Ana içerik */
+  padding: 24px; /* İç boşluk */
+  display: grid; /* Izgara */
+  gap: 24px; /* Bölümler arası boşluk */
+}
+
+.section { /* Bölüm kartı */
+  background: var(--card); /* Kart fonu */
+  border-radius: var(--border-radius); /* Köşe yuvarla */
+  padding: 24px; /* İç boşluk */
+  box-shadow: 0 18px 38px rgba(0,0,0,0.28); /* Gölge */
+}
+
+.section h2 { /* Başlık stil */
+  margin-top: 0; /* Üst boşluk kaldır */
+  font-size: 1.2rem; /* Yazı boyutu */
+  letter-spacing: 0.01em; /* Harf aralığı */
+}
+
+#stationList { /* İstasyon kartları listesi */
+  display: grid; /* Izgara düzen */
+  gap: 16px; /* Kart arası boşluk */
+}
+
+.station-card { /* Her istasyon kartı */
+  background: var(--card-light); /* Kart tonu */
+  border-radius: var(--border-radius); /* Köşe yuvarla */
+  padding: 18px; /* İç boşluk */
+  display: grid; /* Izgara */
+  gap: 12px; /* Boşluk */
+  position: relative; /* İç pozisyonlama */
+  border: 1px solid rgba(255,255,255,0.05); /* İnce kenar */
+}
+
+.station-card.bottleneck { /* Darboğaz vurgusu */
+  border-color: rgba(255,107,107,0.6); /* Kırmızı kenar */
+  box-shadow: 0 0 20px rgba(255,107,107,0.25); /* Parıltı */
+}
+
+.station-card.dragging { /* Sürükleme durumu */
+  opacity: 0.6; /* Şeffaflık */
+}
+
+.station-card.drag-over { /* Sürükleme hedefi */
+  border-color: var(--accent); /* Vurgu kenarı */
+}
+
+.station-header { /* Kart başlık satırı */
+  display: flex; /* Yatay */
+  justify-content: space-between; /* Aralara yay */
+  gap: 12px; /* Boşluk */
+  align-items: center; /* Ortala */
+}
+
+.station-header input { /* İsim alanı */
+  flex: 1; /* Genişlik */
+}
+
+.task-table { /* Görev listesi tablosu */
+  width: 100%; /* Tam genişlik */
+  border-collapse: collapse; /* Kenarları birleştir */
+  color: var(--text); /* Metin */
+}
+
+.task-table th, .task-table td { /* Hücre stili */
+  border-bottom: 1px solid rgba(255,255,255,0.06); /* Alt çizgi */
+  padding: 6px 4px; /* İç boşluk */
+  text-align: left; /* Hizalama */
+  font-size: 0.92rem; /* Yazı boyutu */
+}
+
+.task-table input { /* Hücre içi input */
+  width: 100%; /* Tam genişlik */
+  padding: 6px 8px; /* İç boşluk */
+}
+
+.runtime-line { /* Canlı metrik satırı */
+  display: flex; /* Yatay hizalama */
+  gap: 8px; /* Eleman arası boşluk */
+  flex-wrap: wrap; /* Satır kaydır */
+  font-size: 0.82rem; /* Küçük metin */
+  color: var(--muted); /* Sönük renk */
+}
+
+.runtime-pill { /* Metrik kapsülü */
+  padding: 4px 8px; /* İç boşluk */
+  border-radius: 999px; /* Yuvarlak */
+  background: rgba(255,255,255,0.06); /* Arka plan */
+  color: var(--text); /* Metin rengi */
+}
+
+.task-actions { /* Görev butonları satırı */
+  display: flex; /* Yatay */
+  justify-content: space-between; /* Alanla */
+  margin-top: 6px; /* Üst boşluk */
+}
+
+#visualPanel { /* Görselleştirme paneli */
+  position: relative; /* İç yerleşim */
+  height: 360px; /* Sabit yükseklik */
+  border-radius: var(--border-radius); /* Köşe */
+  background: radial-gradient(circle at top left, rgba(100,210,255,0.08), transparent 60%), var(--card-light); /* Arka plan */
+  overflow: hidden; /* Taşmayı gizle */
+  border: 1px solid rgba(255,255,255,0.04); /* İnce kenar */
+}
+
+#lineSvg { /* SVG alanı */
+  width: 100%; /* Tam genişlik */
+  height: 100%; /* Tam yükseklik */
+  transform-origin: center center; /* Zoom merkezini sabitle */
+  transition: transform var(--transition); /* Zoom geçişi */
+}
+
+.zoom-toolbar { /* Zoom denetimi kutusu */
+  position: absolute; /* Panel üzerinde konumla */
+  right: 16px; /* Sağa yasla */
+  bottom: 16px; /* Alta yasla */
+  display: flex; /* Yatay hizala */
+  gap: 6px; /* Boşluk bırak */
+  padding: 6px 8px; /* İç boşluk */
+  background: rgba(12, 14, 18, 0.72); /* Saydam arka plan */
+  border-radius: 999px; /* Yuvarlak kutu */
+  border: 1px solid rgba(255,255,255,0.08); /* İnce kenar */
+  backdrop-filter: blur(6px); /* Cam efekti */
+}
+
+.zoom-toolbar button { /* Zoom butonları */
+  background: rgba(255,255,255,0.08); /* Hafif parlaklık */
+  border-radius: 999px; /* Tam yuvarlak */
+  border: none; /* Kenar kaldır */
+  padding: 6px 12px; /* İç boşluk */
+  color: var(--text); /* Metin rengi */
+  font-weight: 600; /* Kalınlık */
+  cursor: pointer; /* İşaretçi */
+}
+
+.zoom-toolbar button:hover { /* Hover durumu */
+  background: rgba(100,210,255,0.25); /* Vurgu */
+  color: #0a1a23; /* Kontrast */
+}
+
+.zoom-toolbar span { /* Zoom metni */
+  pointer-events: none; /* Etkileşimi kapat */
+}
+
+.station-shape { /* SVG istasyon kutusu */
+  fill: rgba(255,255,255,0.05); /* Dolgu */
+  stroke: rgba(255,255,255,0.1); /* Kenar */
+  stroke-width: 2; /* Kenar kalınlığı */
+}
+
+.station-shape.bottleneck { /* Darboğaz vurgusu */
+  stroke: var(--danger); /* Kırmızı kenar */
+  fill: rgba(255,107,107,0.18); /* Kırmızımsı dolgu */
+}
+
+.station-label { /* SVG istasyon etiketi */
+  fill: var(--text); /* Yazı rengi */
+  font-size: 13px; /* Yazı boyutu */
+  font-weight: 600; /* Kalın */
+}
+
+.metric-tag { /* Canlı metrik etiketi */
+  fill: var(--muted); /* Renk */
+  font-size: 11px; /* Boyut */
+}
+
+.metric-tag.danger { /* Kritik metrik etiketi */
+  fill: var(--danger); /* Kırmızı renk */
+  font-weight: 600; /* Kalın */
+}
+
+.job-bubble { /* İş baloncuğu */
+  fill: var(--accent); /* Dolgu */
+  stroke: rgba(10,30,40,0.8); /* Kenar */
+  stroke-width: 1.5; /* Kenar kalınlığı */
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35)); /* Gölge */
+}
+
+.job-bubble.processing { /* İşlenen balon */
+  fill: #ffd86b; /* Farklı ton */
+}
+
+.job-bubble.waiting { /* Kuyruk balonu */
+  fill: #8895ff; /* Mor ton */
+}
+
+.job-bubble.completed { /* Tamamlanan balon */
+  fill: #64ff8f; /* Yeşil */
+}
+
+#emptyState { /* Boş durum mesajı */
+  color: var(--muted); /* Sönük metin */
+  text-align: center; /* Ortala */
+  padding: 28px; /* İç boşluk */
+  border: 1px dashed rgba(255,255,255,0.08); /* Kesik kenar */
+  border-radius: var(--border-radius); /* Köşe */
+}
+
+.badge { /* Küçük rozetler */
+  display: inline-flex; /* Yatay */
+  align-items: center; /* Ortala */
+  gap: 6px; /* Boşluk */
+  font-size: 0.85rem; /* Boyut */
+  padding: 4px 10px; /* İç boşluk */
+  border-radius: 999px; /* Tam yuvarlak */
+  background: rgba(100,210,255,0.12); /* Arka plan */
+}
+
+.hud-badge { /* Üst çubuk rozeti */
+  font-weight: 600; /* Kalın metin */
+  background: rgba(100,210,255,0.2); /* Daha belirgin arka plan */
+  border: 1px solid rgba(100,210,255,0.35); /* İnce kenar */
+}
+
+.badge.danger { /* Kırmızı rozet */
+  background: rgba(255,107,107,0.15); /* Arka plan */
+  color: var(--danger); /* Metin */
+}
+
+.fullscreen-btn { /* Tam ekran butonu */
+  position: absolute; /* Konumlandır */
+  top: 12px; /* Üst boşluk */
+  right: 12px; /* Sağ boşluk */
+  background: rgba(0,0,0,0.45); /* Yarı saydam arka plan */
+  color: #fff; /* Metin rengi */
+  border: 1px solid rgba(255,255,255,0.25); /* İnce kenar */
+  padding: 6px 10px; /* İç boşluk */
+  border-radius: 12px; /* Köşe */
+  cursor: pointer; /* İmleç */
+  display: flex; /* İç hizalama */
+  align-items: center; /* Dikey hizalama */
+  gap: 6px; /* Aralık */
+  z-index: 11; /* Üste taşı */
+}
+
+.fullscreen-btn span { /* Buton metni */
+  font-size: 0.85rem; /* Yazı boyutu */
+}
+
+.modal-backdrop { /* Modal arka planı */
+  position: fixed; /* Sabit */
+  inset: 0; /* Tüm ekran */
+  background: rgba(0,0,0,0.6); /* Saydam siyah */
+  display: none; /* Varsayılan gizli */
+  align-items: center; /* Dikey ortalama */
+  justify-content: center; /* Yatay ortalama */
+  z-index: 20; /* Üste taşır */
+}
+
+.modal-backdrop.active { /* Aktif modal */
+  display: flex; /* Göster */
+}
+
+.modal { /* Modal kutusu */
+  background: var(--card-light); /* Arka plan */
+  border-radius: var(--border-radius); /* Köşe */
+  padding: 24px 28px; /* İç boşluk */
+  width: min(900px, 92vw); /* Maks genişlik */
+  max-height: 90vh; /* Maks yükseklik */
+  overflow: auto; /* Kaydır */
+  box-shadow: 0 24px 60px rgba(0,0,0,0.45); /* Gölge */
+}
+
+.modal h3 { /* Modal başlığı */
+  margin-top: 0; /* Üst boşluk kaldır */
+}
+
+
+.dashboard-header { /* Dashboard başlık alanı */
+  display: flex; /* Yatay hizala */
+  justify-content: space-between; /* Dağıt */
+  align-items: center; /* Dikey hizala */
+  gap: 12px; /* Aralık */
+  margin-bottom: 12px; /* Alt boşluk */
+}
+
+.dashboard-grid { /* Dashboard ana ızgara */
+  display: grid; /* Izgara */
+  gap: 18px; /* Aralık */
+}
+
+.summary-cards { /* Özet kart grubu */
+  display: grid; /* Izgara */
+  gap: 16px; /* Aralık */
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Uyarlanabilir sütun */
+}
+
+.summary-card { /* Özet kart */
+  background: rgba(255,255,255,0.04); /* Saydam arka plan */
+  border: 1px solid rgba(255,255,255,0.08); /* Kenar */
+  border-radius: 16px; /* Köşe */
+  padding: 16px; /* İç boşluk */
+  display: flex; /* İç hizalama */
+  flex-direction: column; /* Dikey yerleşim */
+  gap: 6px; /* Aralık */
+}
+
+.summary-card h4 { /* Kart başlığı */
+  margin: 0; /* Boşluk kaldır */
+  font-size: 0.95rem; /* Yazı boyutu */
+  color: var(--muted); /* Sönük ton */
+}
+
+.summary-card strong { /* Kart değeri */
+  font-size: 1.4rem; /* Büyük metin */
+  font-weight: 700; /* Kalın */
+}
+
+.dashboard-section { /* Dashboard bölümü */
+  background: rgba(0,0,0,0.25); /* Arka plan */
+  border: 1px solid rgba(255,255,255,0.08); /* Kenar */
+  border-radius: 18px; /* Köşe */
+  padding: 18px; /* İç boşluk */
+}
+
+.dashboard-section h4 { /* Bölüm başlığı */
+  margin-top: 0; /* Üst boşluk yok */
+}
+
+.dashboard-table { /* Dashboard tablosu */
+  width: 100%; /* Tam genişlik */
+  border-collapse: collapse; /* Kenar birleştir */
+  font-size: 0.9rem; /* Yazı boyutu */
+}
+
+.dashboard-table th, .dashboard-table td { /* Hücreler */
+  border-bottom: 1px solid rgba(255,255,255,0.08); /* Alt çizgi */
+  padding: 8px 6px; /* İç boşluk */
+  text-align: left; /* Hizalama */
+}
+
+.dashboard-table th { /* Başlık */
+  color: var(--muted); /* Sönük */
+  font-weight: 600; /* Kalınlık */
+}
+
+.chart-card { /* Grafik kapsayıcı */
+  display: grid; /* Izgara */
+  gap: 12px; /* Aralık */
+}
+
+.chart-wrapper { /* Grafik alanı */
+  position: relative; /* Göreceli */
+  width: 100%; /* Tam genişlik */
+  height: 220px; /* Sabit yükseklik */
+  min-height: 220px; /* Minimum yükseklik */
+}
+
+.chart-canvas { /* Grafik canvas */
+  display: block; /* Blok eleman */
+  width: 100%; /* Tam genişlik */
+  max-width: 100%; /* Taşmayı engelle */
+  height: 100%; /* Tam yükseklik */
+  background: rgba(255,255,255,0.03); /* Hafif arka plan */
+  border-radius: 12px; /* Köşe */
+  border: 1px solid rgba(255,255,255,0.06); /* İnce kenar */
+}
+
+.analysis-panel { /* Dashboard analiz paneli */
+  display: grid; /* Izgara */
+  gap: 10px; /* Aralık */
+}
+
+.analysis-panel p { /* Analiz paragrafı */
+  margin: 0; /* Boşluk yok */
+  line-height: 1.6; /* Satır yüksekliği */
+}
+
+.analysis-panel ul { /* Analiz listesi */
+  margin: 0; /* Üst-alt yok */
+  padding-left: 18px; /* Sol boşluk */
+  line-height: 1.5; /* Satır yüksekliği */
+}
+
+.signature { /* İmza */
+  position: fixed; /* Sabit konum */
+  right: 18px; /* Sağ boşluk */
+  bottom: 14px; /* Alt boşluk */
+  font-family: 'Courier New', Courier, monospace; /* Monospace */
+  font-size: 0.85rem; /* Yazı boyutu */
+  color: rgba(255,255,255,0.55); /* Saydam gri */
+  letter-spacing: 0.28em; /* Harf aralığı */
+  pointer-events: none; /* Etkileşim yok */
+  transition: opacity 0.3s ease; /* Geçiş */
+  z-index: 50; /* Üst katman */
+}
+
+.signature:hover { /* Hover durumu */
+  opacity: 0.9; /* Opaklık */
+}
+
+.analysis-form { /* Analiz form satırı */
+  display: flex; /* Yatay hizala */
+  gap: 16px; /* Aralık */
+  align-items: flex-end; /* Alt hizala */
+  margin-bottom: 12px; /* Alt boşluk */
+}
+
+.analysis-section { /* Analiz blokları */
+  margin-top: 18px; /* Üst boşluk */
+}
+
+.analysis-table { /* Analiz tablosu */
+  width: 100%; /* Tam genişlik */
+  border-collapse: collapse; /* Kenarları birleştir */
+}
+
+.analysis-table th, .analysis-table td { /* Analiz hücreleri */
+  border-bottom: 1px solid rgba(255,255,255,0.08); /* Alt çizgi */
+  padding: 6px 8px; /* İç boşluk */
+  font-size: 0.88rem; /* Yazı boyutu */
+}
+
+.analysis-table th { /* Analiz başlıkları */
+  color: var(--muted); /* Sönük renk */
+  font-weight: 600; /* Kalınlık */
+}
+
+.analysis-text { /* Analiz açıklama metni */
+  margin: 0; /* Boşluk kaldır */
+  line-height: 1.5; /* Satır yüksekliği */
+}
+
+.analysis-list { /* What-if listesi */
+  margin: 8px 0 0 0; /* Boşluklar */
+  padding-left: 18px; /* Liste iç boşluk */
+  line-height: 1.5; /* Satır yüksekliği */
+}
+
+footer { /* Alt bilgi */
+  text-align: center; /* Ortala */
+  padding: 16px; /* İç boşluk */
+  color: var(--muted); /* Metin */
+}
+
+input[type="number"]::-webkit-inner-spin-button { /* Spin butonlarını gizle */
+  opacity: 0; /* Görünmez */
+}
+
+input[type="range"] { /* Slider stili */
+  width: 220px; /* Genişlik */
+  -webkit-appearance: none; /* Safari uyumu */
+  background: transparent; /* Arka plan */
+}
+
+input[type="range"]::-webkit-slider-runnable-track { /* Slider yolu */
+  height: 6px; /* Yükseklik */
+  background: rgba(255,255,255,0.18); /* Arka plan */
+  border-radius: 999px; /* Tam yuvarlak */
+}
+
+input[type="range"]::-webkit-slider-thumb { /* Slider tutamağı */
+  -webkit-appearance: none; /* Safari uyumu */
+  width: 16px; /* Genişlik */
+  height: 16px; /* Yükseklik */
+  border-radius: 50%; /* Yuvarlak */
+  background: var(--accent); /* Renk */
+  margin-top: -5px; /* Hizalama */
+}
+
+input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
+  width: 16px; /* Genişlik */
+  height: 16px; /* Yükseklik */
+  border-radius: 50%; /* Yuvarlak */
+  background: var(--accent); /* Renk */
+}
+
+@media (max-width: 960px) { /* Mobil uyum */
+  header .controls { /* Kontroller */
+    flex-direction: column; /* Dikey sırala */
+    align-items: stretch; /* Genişlet */
+  }
+  input[type="range"] { /* Slider */
+    width: 100%; /* Tam genişlik */
+  }
+}
+</style> <!-- Stil bitişi -->
+</head>
+<body> <!-- Gövde başlangıcı -->
+<header> <!-- Üst çubuk -->
+  <div class="controls"> <!-- Kontrol grubu -->
+    <button id="addStationBtn" type="button" class="primary" title="Yeni istasyon ekle">+ İstasyon Ekle</button> <!-- İstasyon ekleme -->
+    <button id="sampleSetupBtn" type="button" title="Örnek kurulum yükle">Örnek Kurulum</button> <!-- Hazır senaryo -->
+    <button id="analysisBtn" type="button" title="Analiz ve önerileri aç">Analiz/Öneri</button> <!-- Analiz modal tetikleyici -->
+    <button id="resultsBtn" type="button" title="Simülasyon sonuçlarını aç">Sonuçları Gör</button> <!-- Dashboard butonu -->
+    <button id="startBtn" type="button" class="primary" title="Simülasyonu başlat (B)">Başlat</button> <!-- Başlat butonu -->
+    <button id="stopBtn" type="button" class="danger" title="Simülasyonu durdur (D)" disabled>Durdur</button> <!-- Durdur butonu -->
+    <button id="resetBtn" type="button" title="Simülasyonu sıfırla (R)">Sıfırla</button> <!-- Sıfırla butonu -->
+    <label title="Animasyon hızı" style="display:flex;align-items:center;gap:8px;"> <!-- Hız kontrol etiketi -->
+      <span>Hız</span> <!-- Metin -->
+      <input id="speedSlider" type="range" min="0.25" max="16" step="0.25" value="1"> <!-- Slider -->
+      <span id="speedValue" class="badge">1×</span> <!-- Hız göstergesi -->
+    </label>
+    <label title="Hedef tamamlanacak ürün adedi" style="display:flex;align-items:center;gap:8px;"> <!-- Hedef alanı -->
+      <span>Hedef adet</span> <!-- Metin -->
+      <input id="targetInput" type="number" min="1" placeholder="sonsuz"> <!-- Hedef girişi -->
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;"> <!-- Giriş politikası etiketi -->
+      <span>Giriş</span> <!-- Metin -->
+      <select id="entryPolicySelect"> <!-- Politika seçimi -->
+        <option value="trigger">Ürün, tamamlandıkça girsin</option> <!-- Seçenek 1 -->
+        <option value="interval">Sabit giriş aralığı</option> <!-- Seçenek 2 -->
+      </select>
+      <input id="entryIntervalInput" type="number" min="1" value="30" style="width:120px;display:none;" placeholder="sn"> <!-- Aralık girişi -->
+    </label>
+    <span id="completedCounter" class="badge hud-badge" aria-live="polite">Tamamlanan: 0</span> <!-- Tamamlanan sayaç -->
+  </div>
+</header>
+<main> <!-- Ana içerik -->
+  <section class="section" aria-labelledby="stationsTitle"> <!-- İstasyonlar bölümü -->
+    <h2 id="stationsTitle">İstasyonlar</h2> <!-- Başlık -->
+    <p id="emptyState">İstasyon ekleyin veya <strong>Örnek Kurulum</strong> butonunu kullanın.</p> <!-- Boş durum -->
+    <div id="stationList" aria-live="polite"></div> <!-- Kart listesi -->
+  </section>
+  <section class="section" aria-labelledby="vizTitle"> <!-- Görselleştirme bölümü -->
+    <h2 id="vizTitle">Hat Akışı</h2> <!-- Başlık -->
+    <div id="visualPanel"> <!-- Görsel panel -->
+      <button id="fullscreenBtn" type="button" class="fullscreen-btn" title="Simülasyon alanını tam ekran yap"> <!-- Tam ekran -->
+        <span>🔳 Tam Ekran</span> <!-- Buton metni -->
+      </button>
+      <div class="zoom-toolbar" role="group" aria-label="Görsel ölçek denetimi"> <!-- Zoom kontrol grubu -->
+        <button id="zoomOutBtn" type="button" title="Küçült">−</button> <!-- Zoom küçült -->
+        <button id="zoomResetBtn" type="button" title="Ölçeği 100% yap"><span id="zoomValue">100%</span></button> <!-- Zoom değeri/yenile -->
+        <button id="zoomInBtn" type="button" title="Büyüt">+</button> <!-- Zoom büyüt -->
+      </div>
+      <svg id="lineSvg" role="img" aria-label="Hat akışı animasyonu"></svg> <!-- SVG alanı -->
+    </div>
+  </section>
+</main>
+<footer> <!-- Alt bilgi -->
+  <span>Klavyeden: <strong>B</strong> Başlat · <strong>D</strong> Durdur · <strong>R</strong> Sıfırla</span> <!-- Kısayol bilgisi -->
+</footer>
+
+<div class="signature" aria-hidden="true">E.DEMIR</div> <!-- İmza -->
+
+<div class="modal-backdrop" id="analysisModal"> <!-- Analiz modal arka planı -->
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="analysisTitle"> <!-- Analiz modal kutusu -->
+    <h3 id="analysisTitle">Analiz ve Öneri</h3> <!-- Analiz başlığı -->
+    <p style="margin-top:0;color:var(--muted);">Hat kapasitesi ve takt time senaryolarını inceleyin.</p> <!-- Açıklama -->
+    <div class="analysis-form"> <!-- Takt formu -->
+      <label for="taktInput" style="display:flex;flex-direction:column;gap:6px;flex:1;"> <!-- Takt etiket -->
+        <span>Takt Time (sn/ürün)</span> <!-- Etiket metni -->
+        <input id="taktInput" type="number" min="1" placeholder="Örn: 60" /> <!-- Takt girişi -->
+      </label>
+      <button id="analysisRecalcBtn" type="button" class="primary" style="align-self:flex-end;">Hesapla</button> <!-- Yenile butonu -->
+    </div>
+    <div id="analysisSummary" class="analysis-section"> <!-- Toplam süreler -->
+      <h4>İstasyon Özeti</h4> <!-- Özet başlığı -->
+      <table class="analysis-table" aria-label="İstasyon süreleri ve kapasite"> <!-- Analiz tablosu -->
+        <thead>
+          <tr>
+            <th>İstasyon</th>
+            <th>Toplam Süre (sn)</th>
+            <th>Operatör</th>
+            <th>Paralel</th>
+            <th>Teorik Kapasite (ürün/sn)</th>
+          </tr>
+        </thead>
+        <tbody id="analysisTableBody"></tbody>
+      </table>
+    </div>
+    <div id="analysisInsights" class="analysis-section"> <!-- Bottleneck yorumları -->
+      <h4>Bottleneck ve Takt Değerlendirmesi</h4> <!-- Başlık -->
+      <p class="analysis-text"></p> <!-- Dinamik yorum -->
+    </div>
+    <div id="analysisWhatIf" class="analysis-section"> <!-- What-if senaryosu -->
+      <h4>What-if: Operatör Artırımı</h4> <!-- Başlık -->
+      <ul class="analysis-list"></ul> <!-- Senaryo listesi -->
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:18px;"> <!-- Alt buton satırı -->
+      <button id="closeAnalysisBtn" class="primary">Kapat</button> <!-- Kapat butonu -->
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="reportModal"> <!-- Dashboard modal arka planı -->
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reportTitle"> <!-- Dashboard kutusu -->
+    <div class="dashboard-header"> <!-- Başlık satırı -->
+      <h3 id="reportTitle">Simülasyon Sonuçları</h3> <!-- Modal başlığı -->
+      <div style="display:flex;gap:8px;"> <!-- Buton grubu -->
+        <button id="downloadCsvBtn" type="button">CSV Olarak İndir</button> <!-- CSV butonu -->
+        <button id="downloadPdfBtn" type="button">PDF Olarak Kaydet</button> <!-- PDF butonu -->
+        <button id="closeReportBtn" type="button" class="danger">Kapat</button> <!-- Kapat butonu -->
+      </div>
+    </div>
+    <div class="dashboard-grid"> <!-- Dashboard içerik -->
+      <section class="summary-cards" aria-label="Genel özet kartları"> <!-- Özet kart grubu -->
+        <article class="summary-card"> <!-- Cycle kartı -->
+          <h4>Ortalama Cycle Time</h4> <!-- Başlık -->
+          <strong id="cardCycle">0 sn</strong> <!-- Değer -->
+          <span>Girişten çıkışa ortalama süre</span> <!-- Açıklama -->
+        </article>
+        <article class="summary-card"> <!-- Tamamlanan kartı -->
+          <h4>Toplam Tamamlanan</h4> <!-- Başlık -->
+          <strong id="cardCompleted">0</strong> <!-- Değer -->
+          <span>Hedeflenen ürünlerden biten</span> <!-- Açıklama -->
+        </article>
+        <article class="summary-card"> <!-- Throughput kartı -->
+          <h4>Throughput</h4> <!-- Başlık -->
+          <strong id="cardThroughput">0 /sn</strong> <!-- Değer -->
+          <span>Ürün/sn ve ürün/dk</span> <!-- Açıklama -->
+        </article>
+        <article class="summary-card"> <!-- WIP kartı -->
+          <h4>Ortalama WIP</h4> <!-- Başlık -->
+          <strong id="cardWip">0</strong> <!-- Değer -->
+          <span>Eşzamanlı sistemdeki ürün</span> <!-- Açıklama -->
+        </article>
+      </section>
+      <section class="dashboard-section" aria-label="İstasyon performans tablosu"> <!-- Performans bölümü -->
+        <h4>İstasyon Bazlı Performans</h4> <!-- Başlık -->
+        <table class="dashboard-table"> <!-- Performans tablosu -->
+          <thead>
+            <tr>
+              <th>İstasyon</th>
+              <th>Operatör</th>
+              <th>Ortalama Servis Süresi (sn)</th>
+              <th>Ortalama Kuyruk</th>
+              <th>Utilization (%)</th>
+              <th>Bekleme (sn)</th>
+              <th>Tamamlanan İş</th>
+            </tr>
+          </thead>
+          <tbody id="stationPerformanceBody"></tbody> <!-- Tablo gövdesi -->
+        </table>
+      </section>
+      <section class="dashboard-section" aria-label="Darboğaz özeti"> <!-- Darboğaz bölümü -->
+        <h4>Darboğaz Özeti</h4> <!-- Başlık -->
+        <table class="dashboard-table"> <!-- Darboğaz tablosu -->
+          <thead>
+            <tr>
+              <th>Kriter</th>
+              <th>İstasyon</th>
+              <th>Öneri</th>
+            </tr>
+          </thead>
+          <tbody id="bottleneckTableBody"></tbody> <!-- Darboğaz satırları -->
+        </table>
+      </section>
+      <section class="dashboard-section chart-card" aria-label="Kuyruk grafiği"> <!-- Kuyruk grafik bölümü -->
+        <h4>Kuyruk ve Utilization Profili</h4> <!-- Başlık -->
+        <div class="chart-wrapper"> <!-- Grafik alanı -->
+          <canvas id="queueChart" class="chart-canvas" aria-label="İstasyon kuyruk uzunlukları"></canvas> <!-- Kuyruk grafiği -->
+        </div>
+        <p style="margin:0;color:var(--muted);">İstasyonlara göre ortalama kuyruk uzunluğu ve utilization yoğunluğu.</p> <!-- Açıklama -->
+      </section>
+      <section class="dashboard-section chart-card" aria-label="Çıkış grafiği"> <!-- Throughput grafik bölümü -->
+        <h4>Zaman İçinde Tamamlanan Ürünler</h4> <!-- Başlık -->
+        <div class="chart-wrapper"> <!-- Grafik alanı -->
+          <canvas id="throughputChart" class="chart-canvas" aria-label="Tamamlanan ürün trendi"></canvas> <!-- Zaman serisi -->
+        </div>
+        <p style="margin:0;color:var(--muted);">Mantıksal zaman ekseninde kümülatif tamamlanan ürün.</p> <!-- Açıklama -->
+      </section>
+      <section class="dashboard-section analysis-panel" aria-label="Analiz ve öneriler"> <!-- Analiz sekmesi -->
+        <h4>Analiz / Öneriler</h4> <!-- Başlık -->
+        <p id="dashboardAnalysisText">Analiz yükleniyor...</p> <!-- Analiz metni -->
+        <ul id="dashboardAnalysisList"></ul> <!-- What-if listesi -->
+      </section>
+    </div>
+  </div>
+</div>
+
+<script> // Uygulama betiği başlangıcı
+
+window.addEventListener('error', event => console.error('Global error:', event.error || event.message)); // Global hata yakala
+
+const STORAGE_KEY = 'line-sim-state'; // Yerel depolama anahtarı
+const persistedSnapshot = loadPersistedState(); // Önceden kaydedilmiş durum
+
+// Yardımcı sabitler //
+const MAX_SERVERS = 16; // Maksimum paralel sunucu sayısı
+const UPDATE_INTERVAL_MS = 150; // UI metrik güncelleme aralığı
+const MOVE_DURATION_MS = 900; // Baloncuk hareket süresi
+const LOGICAL_RATE = 4; // 1 saniyede işlenecek mantıksal saniye
+
+// Küresel durum //
+const appState = window.appState ?? { // Uygulama genel durumu
+  stations: [], // İstasyon model listesi
+  running: false, // Simülasyon çalışıyor mu
+  targetCount: null, // Hedef ürün adedi
+  entryPolicy: 'trigger', // Giriş politikası seçimi
+  entryInterval: 30, // Sabit giriş aralığı
+  speed: 1, // Animasyon hızı
+  zoom: 1, // Görsel ölçek
+  taktTime: null, // Takt time değeri
+  simulation: null, // Simülasyon motoru referansı
+  lastUpdate: 0, // Son UI güncelleme zamanı
+  lastMetricRefresh: 0, // Son metrik yenileme zamanı
+  visualCursor: 0, // Görsel zaman imleci
+  nextStationId: 1 // Bir sonraki istasyon numarası
+};
+window.appState = appState; // Durumu küresele yaz
+
+let renderingPaused = false; // Geçici olarak yeniden çizimi durdurma bayrağı
+
+function loadPersistedState() { // Yerel depolamadan durumu oku
+  if (typeof localStorage === 'undefined') return null; // Tarayıcı dışı ortam koruması
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY); // Ham veri al
+    if (!raw) return null; // Veri yoksa çık
+    return JSON.parse(raw); // JSON çöz
+  } catch (error) {
+    console.warn('Durum yüklenirken hata:', error); // Hata logla
+    return null; // Güvenli dönüş
+  }
+}
+
+function saveState(state = appState) { // Durumu kaydet
+  if (typeof localStorage === 'undefined') return; // Tarayıcı dışı ortam koruması
+  try {
+    const snapshot = { // Kaydedilecek özet
+      stations: state.stations.map(st => ({ // Her istasyon için
+        id: st.id, // Kimlik
+        name: st.name, // İsim
+        parallelServers: st.parallelServers, // Paralel operatör
+        tasks: st.tasks.map(task => ({ // Görev listesi
+          name: task.name, // Görev adı
+          operators: task.operators, // Operatör sayısı
+          durationSec: task.durationSec // Süre
+        }))
+      })),
+      targetCount: state.targetCount, // Hedef adet
+      entryPolicy: state.entryPolicy, // Giriş politikası
+      entryInterval: state.entryInterval, // Giriş aralığı
+      speed: state.speed, // Hız
+      zoom: state.zoom, // Zoom değeri
+      taktTime: state.taktTime, // Takt time
+      nextStationId: state.nextStationId // Sıradaki kimlik
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot)); // JSON olarak yaz
+  } catch (error) {
+    console.warn('Durum kaydedilirken hata:', error); // Hata logla
+  }
+}
+
+// Model sınıfları //
+class Task { // Görev modeli
+  constructor(name, operators, durationSec) { // Kurucu
+    this.name = name; // Görev adı
+    this.operators = operators; // Operatör sayısı
+    this.durationSec = durationSec; // Süre
+  }
+}
+
+class Station { // İstasyon modeli
+  constructor(id, name) { // Kurucu
+    this.id = id; // Kimlik
+    this.name = name; // İsim
+    this.tasks = []; // Görev listesi
+    this.parallelServers = 1; // Paralel sunucu sayısı
+  }
+  totalDuration() { // Toplam görev süresi hesaplar
+    return this.tasks.reduce((sum, task) => sum + task.durationSec, 0); // Sürelerin toplamı
+  }
+}
+
+class FastQueue { // O(1) kuyruk yapısı
+  constructor() { // Kurucu
+    this.store = []; // İç dizi
+    this.head = 0; // Baş işaretçisi
+  }
+  enqueue(item) { // Kuyruğa ekle
+    this.store.push(item); // Dizinin sonuna ekle
+  }
+  dequeue() { // Kuyruktan çıkar
+    if (this.head >= this.store.length) return null; // Boşsa null döndür
+    const value = this.store[this.head]; // İlk elemanı al
+    this.head += 1; // Baş işaretçisini ilerlet
+    if (this.head > 32 && this.head * 2 > this.store.length) { // Temizlik eşiği
+      this.store = this.store.slice(this.head); // Diziyi daralt
+      this.head = 0; // Baş işaretçisini sıfırla
+    }
+    return value; // Elemanı döndür
+  }
+  peekAll() { // Kuyruktaki aktif elemanları döndür
+    return this.store.slice(this.head); // Aktif parçayı kopyala
+  }
+  get length() { // Uzunluk hesapla
+    return this.store.length - this.head; // Aktif eleman sayısı
+  }
+}
+
+class MinHeap { // Öncelik kuyruğu
+  constructor(compare) { // Kurucu
+    this.compare = compare; // Karşılaştırma fonksiyonu
+    this.data = []; // Depolama dizisi
+  }
+  peek() { // En küçük elemanı getir
+    return this.data.length ? this.data[0] : null; // İlk eleman veya null
+  }
+  push(value) { // Yeni eleman ekle
+    this.data.push(value); // Dizinin sonuna ekle
+    this.bubbleUp(this.data.length - 1); // Yukarı düzelt
+  }
+  pop() { // En küçük elemanı çıkar
+    if (!this.data.length) return null; // Boşsa null
+    const top = this.data[0]; // Kökü sakla
+    const last = this.data.pop(); // Son elemanı al
+    if (this.data.length) { // Hâlâ eleman varsa
+      this.data[0] = last; // Kökü son elemanla değiştir
+      this.bubbleDown(0); // Aşağı düzelt
+    }
+    return top; // Eski kökü döndür
+  }
+  size() { // Eleman sayısı
+    return this.data.length; // Uzunluk döndür
+  }
+  bubbleUp(index) { // Yukarı taşıma
+    while (index > 0) { // Kök değilse
+      const parent = Math.floor((index - 1) / 2); // Ebeveyn indeks
+      if (this.compare(this.data[index], this.data[parent]) >= 0) break; // Yerinde ise çık
+      [this.data[index], this.data[parent]] = [this.data[parent], this.data[index]]; // Elemanları değiştir
+      index = parent; // İndeksi ebeveyne ayarla
+    }
+  }
+  bubbleDown(index) { // Aşağı taşıma
+    const length = this.data.length; // Uzunluk önbelleği
+    while (true) { // Döngü
+      let smallest = index; // En küçük başlangıç
+      const left = 2 * index + 1; // Sol çocuk
+      const right = left + 1; // Sağ çocuk
+      if (left < length && this.compare(this.data[left], this.data[smallest]) < 0) smallest = left; // Sol daha küçükse
+      if (right < length && this.compare(this.data[right], this.data[smallest]) < 0) smallest = right; // Sağ daha küçükse
+      if (smallest === index) break; // Yerinde ise çık
+      [this.data[index], this.data[smallest]] = [this.data[smallest], this.data[index]]; // Elemanları değiştir
+      index = smallest; // İndeksi güncelle
+    }
+  }
+}
+
+// Simülasyon motoru //
+class SimulationEngine { // Motor sınıfı
+  constructor(stations, options, viz) { // Kurucu
+    this.stations = stations; // İstasyon modelleri
+    this.options = options; // Seçenekler
+    this.viz = viz; // Görselleştirme referansı
+    this.onLiveUpdate = null; // Canlı snapshot geri çağrısı
+    this.reset(); // Başlangıç sıfırlama
+  }
+  reset() { // Tüm durum sıfırlama
+    this.currentTime = 0; // Mantıksal zaman
+    this.eventQueue = new MinHeap(this.compareEvents); // Olay öncelik kuyruğu
+    this.nextJobId = 1; // Yeni iş kimliği
+    this.running = false; // Çalışma bayrağı
+    this.completedJobs = []; // Tamamlanan işler
+    this.runtimeStations = this.stations.map(station => ({ // Çalışma zamanlı istasyon durumları
+      station, // Referans
+      queue: new FastQueue(), // Kuyruk iş kimlikleri
+      servers: Array.from({ length: station.parallelServers }, () => null), // Sunucular
+      queueLength: 0, // Anlık kuyruk uzunluğu
+      lastQueueUpdate: 0, // Son güncelleme zamanı
+      queueArea: 0, // Kuyruk uzunluğu integrali
+      busyCount: 0, // Anlık meşgul sunucu adedi
+      lastBusyUpdate: 0, // Son meşgul güncellemesi
+      busyArea: 0, // Meşgul integrali
+      totalWaitTime: 0, // Toplam bekleme süresi
+      serviceTimeAccum: 0, // Toplam servis süresi
+      serviceCount: 0 // Toplam servis adedi
+    }));
+    this.jobs = new Map(); // İş nesneleri haritası
+    this.wipCount = 0; // Anlık WIP
+    this.wipArea = 0; // WIP integrali
+    this.lastWipUpdate = 0; // Son WIP güncellemesi
+    this.lastEventTime = 0; // Son işlem zamanı
+    this.engineCursor = 0; // Mantıksal hedef zaman
+    this.pendingStop = false; // Durdurma isteği
+    this.viz.clearJobs(); // Görsel baloncukları temizle
+  }
+  compareEvents = (a, b) => (a.time - b.time) || ((a.order || 0) - (b.order || 0)); // Olay karşılaştırıcısı
+  schedule(event) { // Olayı kuyruğa ekle
+    this.eventQueue.push(event); // Kuyruğa ekle
+  }
+  spawnJob(atTime) { // Yeni iş oluşturma
+    const jobId = this.nextJobId++; // Kimlik üret
+    const job = { // İş nesnesi
+      id: jobId, // Kimlik
+      stage: 0, // Şu anki istasyon
+      enterTime: atTime, // Sisteme giriş zamanı
+      exitTime: null, // Çıkış zamanı
+      history: [] // Aşamalar geçmişi
+    };
+    this.jobs.set(jobId, job); // Haritaya ekle
+    this.updateWip(this.wipCount + 1, atTime); // WIP artır
+    this.schedule({ type: 'arrival', jobId, stationIndex: 0, time: atTime, order: 0 }); // İlk istasyona varış planla
+    this.viz.ensureJob(jobId); // Görsel balon hazırla
+    console.debug(`[Motor] İş ${jobId} oluşturuldu, zaman ${atTime.toFixed(2)}`); // Oluşturma logu
+  }
+  start() { // Simülasyonu başlat
+    if (this.running) return; // Zaten çalışıyorsa çık
+    this.running = true; // Bayrağı işaretle
+    this.engineCursor = this.currentTime; // Zamanı hizala
+    if (this.currentTime === 0) { // İlk başlangıç mı
+      if (this.options.entryPolicy === 'interval') { // Sabit aralık ise
+        const interval = Math.max(1, this.options.entryInterval); // Güvenli aralık
+        const limit = this.options.targetCount ? this.options.targetCount : 1000; // Güvenli sınır
+        for (let t = 0; t < limit; t++) { // Döngü
+          const spawnTime = t * interval; // Varış zamanı
+          this.schedule({ type: 'spawn', time: spawnTime, order: -1, index: t }); // Spawn olayı
+        }
+      } else { // Tetiklemeli giriş
+        this.schedule({ type: 'spawn', time: 0, order: -1, index: 0 }); // İlk ürün
+      }
+    }
+  }
+  stop() { // Simülasyonu durdur
+    this.running = false; // Bayrağı kapat
+  }
+  requestStop() { // Durdurma talebi
+    this.pendingStop = true; // Bayrağı ayarla
+  }
+  processUntil(targetTime) { // Belirli zamana kadar olay işle
+    if (!this.running) return; // Çalışmıyorsa çık
+    this.engineCursor = targetTime; // İleri hedefi güncelle
+    let next = this.eventQueue.peek(); // Sıradaki olayı al
+    while (next && next.time <= this.engineCursor && this.running) { // Hedefe kadar döngü
+      const event = this.eventQueue.pop(); // En erken olayı çıkar
+      this.currentTime = event.time; // Mantıksal zamanı güncelle
+      this.handleEvent(event); // Olayı işle
+      if (this.pendingStop) { // Durdurma istekliyse
+        this.stop(); // Durdur
+        this.pendingStop = false; // Bayrağı temizle
+        break; // Döngüyü kır
+      }
+      next = this.eventQueue.peek(); // Sonraki olayı hazırla
+    }
+  }
+  peekNextEventTime() { // Sıradaki olay zamanını döndür
+    const next = this.eventQueue.peek(); // Tepe elemanı al
+    return next ? next.time : null; // Zaman veya null
+  }
+  handleEvent(event) { // Olay işleyici
+    switch (event.type) { // Tür kontrolü
+      case 'spawn': // İş oluşturma
+        this.handleSpawn(event); // Spawn işle
+        break; // Çık
+      case 'arrival': // İstasyona varış
+        this.handleArrival(event); // Varışı işle
+        break; // Çık
+      case 'serviceComplete': // Hizmet bitişi
+        this.handleServiceCompletion(event); // Tamamlamayı işle
+        break; // Çık
+    }
+  }
+  handleSpawn(event) { // Spawn işlemi
+    if (this.options.targetCount && this.nextJobId > this.options.targetCount) return; // Hedef sınırı
+    this.spawnJob(event.time); // Yeni iş oluştur
+    if (this.options.entryPolicy === 'interval') { // Sabit aralıkta
+      const nextIndex = (event.index || 0) + 1; // Sonraki indeks
+      if (!this.options.targetCount || nextIndex < this.options.targetCount) { // Hedef kontrolü
+        const interval = Math.max(1, this.options.entryInterval); // Aralık
+        const nextTime = nextIndex * interval; // Sonraki zaman
+        this.schedule({ type: 'spawn', time: nextTime, order: -1, index: nextIndex }); // Yeni spawn planla
+      }
+    }
+  }
+  handleArrival(event) { // Varış işlemleri
+    const rt = this.runtimeStations[event.stationIndex]; // İlgili istasyon runtime
+    if (!rt) return; // Güvenlik
+    const job = this.jobs.get(event.jobId); // İş nesnesi
+    if (!job) return; // Güvenlik
+    console.debug(`[Motor] İş ${job.id} ${rt.station.name} istasyonuna ${event.time.toFixed(2)} zamanında geldi`); // Varış logu
+    job.stage = event.stationIndex; // İstasyon kaydı
+    const arrivalRecord = { jobId: job.id, arrival: event.time }; // Kuyruk kaydı
+    rt.queue.enqueue(arrivalRecord); // Kuyruğa ekle
+    this.updateQueue(rt, rt.queue.length, event.time); // Kuyruk artışı
+    this.viz.ensureJob(job.id); // Balon var mı kontrol
+    this.viz.tagJob(job.id, 'waiting'); // Görsel durumu güncelle
+    this.tryStartService(rt, event.stationIndex, event.time); // Servis kontrolü
+    this.updateLayoutTargets(); // Yerleşimi güncelle
+  }
+  tryStartService(rt, stationIndex, time) { // Servise başlatma girişimi
+    const serviceTime = rt.station.totalDuration(); // Servis süresi
+    if (serviceTime <= 0) return; // Süre yoksa çık
+    for (let i = 0; i < rt.servers.length; i++) { // Her sunucuyu dolaş
+      if (rt.servers[i]) continue; // Doluysa geç
+      const queued = rt.queue.dequeue(); // FIFO ilk iş
+      if (!queued) break; // Kuyruk boşsa çık
+      this.updateQueue(rt, rt.queue.length, time); // Kuyruğu azalt
+      const job = this.jobs.get(queued.jobId); // İş nesnesi
+      if (!job) continue; // Güvenlik
+      const wait = time - queued.arrival; // Bekleme süresi
+      rt.totalWaitTime += wait; // Toplam bekleme artışı
+      job.history.push({ // Tarihçe kaydı
+        stationId: rt.station.id, // İstasyon kimliği
+        start: time, // Başlangıç
+        wait, // Bekleme
+        serviceTime // Servis süresi
+      });
+      this.updateBusy(rt, rt.busyCount + 1, time); // Meşgul artır
+      const endTime = time + serviceTime; // Bitiş zamanı
+      rt.servers[i] = { jobId: job.id, end: endTime, start: time }; // Sunucuya ata
+      rt.serviceTimeAccum += serviceTime; // Servis süre toplamı
+      rt.serviceCount += 1; // Servis sayısı
+      this.schedule({ type: 'serviceComplete', jobId: job.id, stationIndex, serverIndex: i, time: endTime, order: 1 }); // Hizmet bitiş planı
+      this.viz.tagJob(job.id, 'processing'); // Görsel durum
+      console.debug(`[Motor] İş ${job.id} ${rt.station.name} servisinde ${time.toFixed(2)}→${endTime.toFixed(2)} aralığında çalışıyor`); // Servis başlangıç logu
+    }
+  }
+  handleServiceCompletion(event) { // Servis bitiş işlemi
+    const rt = this.runtimeStations[event.stationIndex]; // İstasyon runtime
+    if (!rt) return; // Güvenlik
+    const server = rt.servers[event.serverIndex]; // Sunucu kaydı
+    if (!server || server.jobId !== event.jobId) return; // Kontrol
+    this.updateBusy(rt, Math.max(0, rt.busyCount - 1), event.time); // Meşgul azalt
+    rt.servers[event.serverIndex] = null; // Sunucuyu boşalt
+    const job = this.jobs.get(event.jobId); // İş nesnesi
+    if (!job) return; // Güvenlik
+    console.debug(`[Motor] İş ${event.jobId} ${rt.station.name} servisinden ${event.time.toFixed(2)} zamanında ayrıldı`); // Tamamlama logu
+    if (event.stationIndex === this.stations.length - 1) { // Son istasyon mu
+      job.exitTime = event.time; // Çıkış zamanı kaydet
+      this.completedJobs.push(job); // Tamamlanan listesine ekle
+      this.updateWip(this.wipCount - 1, event.time); // WIP azalt
+      this.viz.tagJob(job.id, 'completed'); // Görsel tamamlandı
+      this.viz.markForRemoval(job.id); // Balonu zamanla kaldır
+      if (this.options.targetCount && this.completedJobs.length >= this.options.targetCount) { // Hedef tamam mı
+        this.requestStop(); // Durdurma iste
+      }
+    } else { // Ara istasyon
+      const nextIndex = event.stationIndex + 1; // Sonraki istasyon
+      this.schedule({ type: 'arrival', jobId: job.id, stationIndex: nextIndex, time: event.time, order: 0 }); // Varışı planla
+    }
+    if (event.stationIndex === 0 && this.options.entryPolicy === 'trigger') { // İlk istasyon tetikleyici mi
+      if (!this.options.targetCount || this.nextJobId <= this.options.targetCount) { // Hedef kontrolü
+        this.schedule({ type: 'spawn', time: event.time, order: -1 }); // Yeni iş tetikleme
+      }
+    }
+    this.tryStartService(rt, event.stationIndex, event.time); // Kuyruktan yeni iş al
+    this.updateLayoutTargets(); // Yerleşim güncelle
+  }
+  updateQueue(rt, newLength, time) { // Kuyruk metriği güncelle
+    rt.queueArea += rt.queueLength * (time - rt.lastQueueUpdate); // Alan artışı
+    rt.queueLength = Math.max(0, newLength); // Yeni değer
+    rt.lastQueueUpdate = time; // Zaman kaydı
+  }
+  updateBusy(rt, newBusy, time) { // Meşgul metriği güncelle
+    rt.busyArea += rt.busyCount * (time - rt.lastBusyUpdate); // Alan artışı
+    rt.busyCount = Math.max(0, Math.min(newBusy, rt.servers.length)); // Yeni değer
+    rt.lastBusyUpdate = time; // Zaman kaydı
+  }
+  updateWip(newWip, time) { // WIP güncellemesi
+    this.wipArea += this.wipCount * (time - this.lastWipUpdate); // Alan artışı
+    this.wipCount = Math.max(0, newWip); // Yeni değer
+    this.lastWipUpdate = time; // Zaman kaydı
+  }
+  updateLayoutTargets(timeCursor = this.currentTime) { // Görsel yerleşimi tetikle
+    const renderTime = Math.max(timeCursor, this.currentTime); // Gösterim zamanı
+    const elapsed = Math.max(renderTime, 0.0001); // Geçen süre
+    const layout = this.runtimeStations.map(rt => { // Her istasyon için durum
+      const queueEntries = rt.queue.peekAll(); // Kuyruktaki işler
+      const servers = rt.servers.map(server => { // Sunucuları gez
+        if (!server) return null; // Boşsa null
+        const duration = Math.max(0.0001, server.end - server.start); // Süre
+        const remaining = Math.max(0, server.end - renderTime); // Kalan süre
+        const progress = Math.min(1, Math.max(0, (renderTime - server.start) / duration)); // İlerleme
+        return { // Sunucu verisi
+          jobId: server.jobId, // İş kimliği
+          start: server.start, // Başlangıç zamanı
+          end: server.end, // Bitiş zamanı
+          duration, // Süre
+          remaining, // Kalan süre
+          progress // İlerleme oranı
+        };
+      });
+      const busyCount = servers.filter(server => !!server).length; // Anlık meşgul sayısı
+      const queueLength = queueEntries.length; // Anlık kuyruk uzunluğu
+      const avgQueue = (rt.queueArea + queueLength * (renderTime - rt.lastQueueUpdate)) / elapsed; // Ortalama kuyruk
+      const capacity = Math.max(1, rt.servers.length); // Kapasite
+      const rawUtil = (rt.busyArea + rt.busyCount * (renderTime - rt.lastBusyUpdate)) / (elapsed * capacity); // Ham util
+      const avgUtil = Math.min(1, Math.max(0, rawUtil)); // Sınırlandırılmış util
+      return { // Yerleşim verisi
+        stationId: rt.station.id, // Kimlik
+        stationName: rt.station.name, // İstasyon adı
+        queue: queueEntries.map(entry => ({ jobId: entry.jobId, arrival: entry.arrival })), // Kuyruk iş listesi
+        servers, // Sunucu iş listesi
+        metrics: { // Canlı metrikler
+          queueLength, // Anlık kuyruk
+          busyCount, // Anlık meşgul sayısı
+          capacity, // Kapasite
+          avgQueue, // Ortalama kuyruk
+          avgUtil // Ortalama util
+        }
+      };
+    });
+    if (this.viz) this.viz.applyLayout(layout, renderTime); // Viz'e gönder
+    const snapshot = { // Anlık durum
+      time: renderTime, // Gösterim zamanı
+      completedCount: this.completedJobs.length, // Tamamlanan adet
+      wip: this.wipCount, // Anlık WIP
+      layout // Yerleşim verisi
+    };
+    if (typeof this.onLiveUpdate === 'function') this.onLiveUpdate(snapshot); // Callback çağır
+    return snapshot; // Snapshot döndür
+  }
+  buildReport() { // Rapor verisini hazırla
+    this.runtimeStations.forEach(rt => { // Nihai alan güncellemesi
+      this.updateQueue(rt, rt.queueLength, this.currentTime); // Kuyruk alanını güncelle
+      this.updateBusy(rt, rt.busyCount, this.currentTime); // Meşgul alanını güncelle
+    });
+    this.updateWip(this.wipCount, this.currentTime); // WIP alanını güncelle
+    const totalCompleted = this.completedJobs.length; // Tamamlanan adet
+    const horizon = this.currentTime || 1; // Toplam mantıksal süre
+    const cycleTimes = this.completedJobs.map(job => job.exitTime - job.enterTime); // Çevrim süreleri
+    const avgCycle = cycleTimes.length ? cycleTimes.reduce((a, b) => a + b, 0) / cycleTimes.length : 0; // Ortalama çevrim
+    const throughputPerSec = horizon ? totalCompleted / horizon : 0; // Ürün/sn
+    const throughputPerMin = throughputPerSec * 60; // Ürün/dk
+    const avgWip = this.wipArea / horizon; // Ortalama WIP
+    const stationRows = this.runtimeStations.map(rt => { // İstasyon raporu
+      const util = horizon ? (rt.busyArea / (horizon * (rt.servers.length || 1))) : 0; // Utilizasyon
+      const avgQ = horizon ? (rt.queueArea / horizon) : 0; // Ortalama kuyruk
+      const wait = rt.serviceCount ? (rt.totalWaitTime / rt.serviceCount) : 0; // Ortalama bekleme
+      const serviceTime = rt.station.totalDuration(); // Tek iş servis süresi
+      const capacityPerSec = serviceTime > 0 ? rt.station.parallelServers / serviceTime : 0; // Teorik kapasite
+      return { // Satır nesnesi
+        stationId: rt.station.id, // Kimlik
+        stationName: rt.station.name, // İsim
+        parallelServers: rt.station.parallelServers, // Paralel sayısı
+        utilization: util, // Utilizasyon
+        avgQueue: avgQ, // Kuyruk
+        avgWait: wait, // Bekleme
+        serviceTime, // Servis süresi
+        capacityPerSec, // Kapasite
+        serviceCount: rt.serviceCount // Tamamlanan iş adedi
+      };
+    });
+    const bottleneckUtil = stationRows.reduce((max, row) => (!max || row.utilization > max.utilization ? row : max), null); // Util darboğazı
+    const bottleneckService = stationRows.reduce((max, row) => (!max || row.serviceTime > max.serviceTime ? row : max), null); // Servis darboğazı
+    const completionSeries = this.completedJobs // Tamamlanan zaman serisi
+      .slice() // Kopya al
+      .sort((a, b) => a.exitTime - b.exitTime) // Zaman sıralaması
+      .map((job, index) => ({ time: job.exitTime, count: index + 1 })); // Kümülatif nokta
+    return { // Rapor objesi
+      totalCompleted, // Tamamlanan
+      horizon, // Simülasyon süresi
+      avgCycle, // Çevrim zamanı
+      throughputPerSec, // Ürün/sn
+      throughputPerMin, // Ürün/dk
+      avgWip, // Ortalama WIP
+      stationRows, // İstasyon satırları
+      bottleneckUtil, // Util darboğazı
+      bottleneckService, // Servis darboğazı
+      completionSeries // Tamamlanma serisi
+    };
+  }
+}
+
+// Görselleştirme sınıfı //
+class Visualization { // Görsel katman
+  constructor(svg) { // Kurucu
+    this.svg = svg; // SVG referansı
+    this.jobs = new Map(); // Baloncuk haritası
+    this.stationLayout = []; // İstasyon yerleşimi
+    this.metricGroup = null; // Metrik yazıları grubu
+    this.speed = 1; // Animasyon hızı
+    this.zoom = 1; // Zoom ölçeği
+    this.resizeObserver = new ResizeObserver(() => this.drawStations()); // Yeniden çizim dinleyicisi
+    this.resizeObserver.observe(svg.parentElement); // Paneli izle
+    this.frame = this.frame.bind(this); // Animasyon bağla
+    this.setZoom(this.zoom); // Başlangıç ölçeğini uygula
+    requestAnimationFrame(this.frame); // Döngüyü başlat
+  }
+  clearJobs() { // Baloncukları temizle
+    this.jobs.forEach(node => node.circle.remove()); // Tüm daireleri kaldır
+    this.jobs.clear(); // Haritayı boşalt
+  }
+  ensureJob(jobId) { // Balon var mı kontrol et
+    if (this.jobs.has(jobId)) return; // Varsa çık
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); // Yeni daire
+    circle.classList.add('job-bubble'); // Sınıf ekle
+    circle.setAttribute('r', 12); // Yarıçap
+    circle.setAttribute('cx', 0); // X
+    circle.setAttribute('cy', 0); // Y
+    this.svg.appendChild(circle); // SVG'ye ekle
+    this.jobs.set(jobId, { circle, targetX: 0, targetY: 0, x: 0, y: 0, startX: 0, startY: 0, startTime: performance.now(), duration: MOVE_DURATION_MS, removeAt: null }); // Kaydet
+  }
+  tagJob(jobId, state) { // Görsel durum etiketle
+    const node = this.jobs.get(jobId); // Balon al
+    if (!node) return; // Yoksa çık
+    node.circle.classList.remove('waiting', 'processing', 'completed'); // Sınıfları temizle
+    node.circle.classList.add(state); // Yeni sınıf ekle
+  }
+  markForRemoval(jobId) { // Balonu kaldırmaya hazırla
+    const node = this.jobs.get(jobId); // Balon al
+    if (!node) return; // Yoksa çık
+    node.removeAt = performance.now() + MOVE_DURATION_MS / this.speed; // Kaldırma zamanını ayarla
+  }
+  removeJob(jobId) { // Balonu kaldır
+    const node = this.jobs.get(jobId); // Balon al
+    if (!node) return; // Yoksa çık
+    node.circle.remove(); // SVG'den sil
+    this.jobs.delete(jobId); // Haritadan çıkar
+  }
+  setSpeed(speed) { // Hızı güncelle
+    this.speed = speed; // Hız ata
+  }
+  setZoom(scale) { // Zoom değerini güncelle
+    this.zoom = scale; // Ölçeği sakla
+    this.svg.style.transform = `scale(${scale})`; // CSS ölçeğini uygula
+  }
+  setStations(stations) { // İstasyon yerleşimini güncelle
+    this.stationLayout = stations.map((station, index) => ({ station, index })); // Yerleşim kaydı
+    this.drawStations(); // SVG'yi yeniden çiz
+  }
+  drawStations() { // İstasyon kutularını çiz
+    while (this.svg.firstChild) this.svg.removeChild(this.svg.firstChild); // Eski öğeleri temizle
+    const width = this.svg.clientWidth || this.svg.parentElement.clientWidth; // Genişlik
+    const height = this.svg.clientHeight || 360; // Yükseklik
+    const count = this.stationLayout.length; // İstasyon sayısı
+    const gap = 80; // Aralık
+    const stationWidth = Math.min(160, (width - gap * (count + 1)) / Math.max(1, count)); // Kutu genişliği
+    const startX = (width - (stationWidth * count + gap * (count - 1))) / 2; // Başlangıç X
+    const baseY = height / 2; // Orta Y
+    const stationsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Grup oluştur
+    const arrowsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Ok grubu
+    this.svg.appendChild(arrowsGroup); // Önce ok grubu
+    this.svg.appendChild(stationsGroup); // Sonra kutular
+    this.stationLayout.forEach((layout, idx) => { // Her istasyon için
+      const x = startX + idx * (stationWidth + gap); // X koordinatı
+      const y = baseY - 60; // Y koordinatı
+      layout.x = x; // Kaydet
+      layout.y = y; // Kaydet
+      layout.width = stationWidth; // Genişlik kaydı
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); // Dikdörtgen
+      rect.setAttribute('x', x); // X ayarı
+      rect.setAttribute('y', y); // Y ayarı
+      rect.setAttribute('width', stationWidth); // Genişlik
+      rect.setAttribute('height', 140); // Yükseklik
+      rect.setAttribute('rx', 22); // Köşe
+      rect.classList.add('station-shape'); // Sınıf ekle
+      stationsGroup.appendChild(rect); // SVG'ye ekle
+      layout.rect = rect; // Referansı sakla
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Etiket
+      label.classList.add('station-label'); // Sınıf
+      label.setAttribute('x', x + stationWidth / 2); // X
+      label.setAttribute('y', y + 24); // Y
+      label.setAttribute('text-anchor', 'middle'); // Ortala
+      label.textContent = this.stationLayout[idx].station.name || `S${idx + 1}`; // Metin
+      stationsGroup.appendChild(label); // SVG'ye ekle
+      if (idx < this.stationLayout.length - 1) { // Son değilse ok çiz
+        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Ok
+        const startArrowX = x + stationWidth; // Başlangıç X
+        const startArrowY = y + 70; // Başlangıç Y
+        const endArrowX = startX + (idx + 1) * (stationWidth + gap); // Bitiş X
+        const endArrowY = startArrowY; // Bitiş Y
+        const mid = (startArrowX + endArrowX) / 2; // Orta nokta
+        arrow.setAttribute('d', `M ${startArrowX} ${startArrowY} Q ${mid} ${startArrowY - 40} ${endArrowX} ${endArrowY}`); // Eğri çiz
+        arrow.setAttribute('stroke', 'rgba(255,255,255,0.18)'); // Kenar rengi
+        arrow.setAttribute('fill', 'none'); // Dolgu yok
+        arrow.setAttribute('stroke-width', 4); // Kalınlık
+        const arrowHead = document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); // Ok başı
+        arrowHead.setAttribute('points', `${endArrowX - 10},${endArrowY - 6} ${endArrowX},${endArrowY} ${endArrowX - 10},${endArrowY + 6}`); // Noktalar
+        arrowHead.setAttribute('fill', 'rgba(255,255,255,0.18)'); // Dolgu
+        arrowsGroup.appendChild(arrow); // Ok ekle
+        arrowsGroup.appendChild(arrowHead); // Ok başı ekle
+      }
+    });
+    this.metricGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Metrik grubu
+    this.svg.appendChild(this.metricGroup); // SVG'ye ekle
+    this.jobs.forEach(node => this.svg.appendChild(node.circle)); // Baloncukları üste taşı
+  }
+  applyLayout(layout, timeCursor = 0) { // Yerleşim verisini uygula
+    this.jobs.forEach((node, jobId) => { // Her iş için
+      let target = null; // Hedef koordinat
+      layout.forEach((item, idx) => { // İstasyonları dolaş
+        const queueIndex = item.queue.findIndex(entry => entry.jobId === jobId); // Kuyrukta mı
+        if (queueIndex !== -1) { // Kuyrukta ise
+          target = this.queuePosition(idx, queueIndex); // Hedef koordinat
+        }
+        const serverIndex = item.servers.findIndex(server => server && server.jobId === jobId); // Sunucuda mı
+        if (serverIndex !== -1) { // Sunucuda ise
+          target = this.serverPosition(idx, serverIndex, item.servers.length); // Hedef koordinat
+        }
+      });
+      if (!target) { // Hedef yoksa
+        const lastLayout = this.stationLayout[this.stationLayout.length - 1]; // Son istasyon
+        target = { x: lastLayout ? lastLayout.x + lastLayout.width + 60 : 40, y: 40 }; // Çıkış bölgesi
+      }
+      this.moveNode(jobId, target.x, target.y); // Hareket uygula
+    });
+    this.renderMetrics(layout, timeCursor); // Metrikleri çiz
+  }
+  queuePosition(stationIdx, queueIdx) { // Kuyruk pozisyonu hesapla
+    const layout = this.stationLayout[stationIdx]; // İstasyon yerleşimi
+    const x = layout.x + layout.width / 2; // Merkez X
+    const y = layout.y - 20 - queueIdx * 28; // Yukarı doğru istif
+    return { x, y }; // Koordinat döndür
+  }
+  serverPosition(stationIdx, serverIdx, totalServers) { // Sunucu pozisyonu hesapla
+    const layout = this.stationLayout[stationIdx]; // İstasyon yerleşimi
+    const spacing = layout.width / (totalServers + 1); // Aralık
+    const x = layout.x + spacing * (serverIdx + 1); // X koordinatı
+    const y = layout.y + 70; // Y koordinatı
+    return { x, y }; // Koordinat döndür
+  }
+  moveNode(jobId, targetX, targetY) { // Balonu hedefe taşı
+    const node = this.jobs.get(jobId); // Balon al
+    if (!node) return; // Yoksa çık
+    node.startX = node.x; // Başlangıç X
+    node.startY = node.y; // Başlangıç Y
+    node.targetX = targetX; // Hedef X
+    node.targetY = targetY; // Hedef Y
+    node.startTime = performance.now(); // Başlangıç zamanı
+    node.duration = MOVE_DURATION_MS / this.speed; // Süre hızla ölçeklenir
+    node.removeAt = null; // Kaldırma zamanını temizle
+  }
+  renderMetrics(layout, timeCursor) { // Metrikleri çiz
+    if (!this.metricGroup) return; // Grup yoksa çık
+    while (this.metricGroup.firstChild) this.metricGroup.removeChild(this.metricGroup.firstChild); // Eski metrikleri temizle
+    layout.forEach((item, idx) => { // Her istasyon için
+      const layoutInfo = this.stationLayout[idx]; // Yerleşim bilgisi
+      const queueText = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Kuyruk metni
+      queueText.classList.add('metric-tag'); // Sınıf ekle
+      queueText.setAttribute('x', layoutInfo.x + layoutInfo.width / 2); // X
+      queueText.setAttribute('y', layoutInfo.y + 110); // Y
+      queueText.setAttribute('text-anchor', 'middle'); // Ortala
+      const utilPercent = item.metrics.avgUtil * 100; // Ortalama util hesapla
+      queueText.textContent = `Kuyruk: ${item.metrics.queueLength} · Ort:${item.metrics.avgQueue.toFixed(1)}`; // Metin
+      const danger = item.metrics.avgQueue > 1.5 || item.metrics.avgUtil > 0.85; // Tehlike eşiği
+      if (danger) { // Kuyruk veya util yüksekse
+        queueText.classList.add('danger'); // Kuyruk uyarı sınıfı
+        if (layoutInfo.rect) layoutInfo.rect.classList.add('bottleneck'); // Kutuya vurgu
+      } else if (layoutInfo.rect) {
+        layoutInfo.rect.classList.remove('bottleneck'); // Vurguyu kaldır
+      }
+      this.metricGroup.appendChild(queueText); // SVG'ye ekle
+      const serviceText = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Servis metni
+      serviceText.classList.add('metric-tag'); // Sınıf ekle
+      serviceText.setAttribute('x', layoutInfo.x + layoutInfo.width / 2); // X
+      serviceText.setAttribute('y', layoutInfo.y + 126); // Y
+      serviceText.setAttribute('text-anchor', 'middle'); // Ortala
+      const activeServers = item.servers.filter(server => !!server); // Aktif sunucular
+      if (activeServers.length) { // Serviste iş varsa
+        const avgProgress = activeServers.reduce((sum, server) => sum + server.progress, 0) / activeServers.length; // Ortalama ilerleme
+        const maxRemaining = Math.max(...activeServers.map(server => server.remaining)); // Maks kalan süre
+        serviceText.textContent = `Servis: ${item.metrics.busyCount}/${item.metrics.capacity} · %${(avgProgress * 100).toFixed(0)} · kalan ${maxRemaining.toFixed(1)}sn`; // Servis metni
+      } else {
+        serviceText.textContent = 'Servis: boş'; // Servis yok metni
+      }
+      if (danger) serviceText.classList.add('danger'); // Servis uyarısı
+      this.metricGroup.appendChild(serviceText); // Servis metnini ekle
+    });
+  }
+  frame(timestamp) { // Animasyon döngüsü
+    const removal = []; // Silinecekler listesi
+    this.jobs.forEach((node, jobId) => { // Her balon için
+      const progress = Math.min(1, (timestamp - node.startTime) / Math.max(1, node.duration)); // İlerleme
+      const eased = progress < 1 ? (1 - Math.pow(1 - progress, 3)) : 1; // Easing hesabı
+      node.x = node.startX + (node.targetX - node.startX) * eased; // X interpolasyonu
+      node.y = node.startY + (node.targetY - node.startY) * eased; // Y interpolasyonu
+      node.circle.setAttribute('cx', node.x); // SVG X güncelle
+      node.circle.setAttribute('cy', node.y); // SVG Y güncelle
+      if (node.removeAt && timestamp >= node.removeAt) { // Kaldırma zamanı mı
+        removal.push(jobId); // Listeye ekle
+      }
+    });
+    removal.forEach(jobId => this.removeJob(jobId)); // Balonları sil
+    requestAnimationFrame(this.frame); // Sonraki kare
+  }
+}
+
+// UI yardımcıları //
+const stationListEl = document.getElementById('stationList'); // İstasyon liste alanı
+const emptyStateEl = document.getElementById('emptyState'); // Boş durum mesajı
+const addStationBtn = document.getElementById('addStationBtn'); // İstasyon ekleme butonu
+const startBtn = document.getElementById('startBtn'); // Başlat butonu
+const stopBtn = document.getElementById('stopBtn'); // Durdur butonu
+const resetBtn = document.getElementById('resetBtn'); // Sıfırla butonu
+const sampleBtn = document.getElementById('sampleSetupBtn'); // Örnek kurulum butonu
+const analysisBtn = document.getElementById('analysisBtn'); // Analiz butonu
+const speedSlider = document.getElementById('speedSlider'); // Hız slider
+const speedValue = document.getElementById('speedValue'); // Hız değeri
+const targetInput = document.getElementById('targetInput'); // Hedef girişi
+const entryPolicySelect = document.getElementById('entryPolicySelect'); // Giriş politikası seçimi
+const entryIntervalInput = document.getElementById('entryIntervalInput'); // Aralık girişi
+const taktInput = document.getElementById('taktInput'); // Takt time girişi
+const zoomOutBtn = document.getElementById('zoomOutBtn'); // Zoom küçült butonu
+const zoomInBtn = document.getElementById('zoomInBtn'); // Zoom büyüt butonu
+const zoomResetBtn = document.getElementById('zoomResetBtn'); // Zoom sıfırlama butonu
+const zoomValueEl = document.getElementById('zoomValue'); // Zoom metni
+const visualPanel = document.getElementById('visualPanel'); // Görsel panel kapsayıcı
+const fullscreenBtn = document.getElementById('fullscreenBtn'); // Tam ekran butonu
+const fullscreenLabel = fullscreenBtn ? fullscreenBtn.querySelector('span') : null; // Tam ekran etiket metni
+const resultsBtn = document.getElementById('resultsBtn'); // Sonuç açma butonu
+const reportModal = document.getElementById('reportModal'); // Rapor modalı
+const closeReportBtn = document.getElementById('closeReportBtn'); // Modal kapatma butonu
+const downloadCsvBtn = document.getElementById('downloadCsvBtn'); // CSV butonu
+const downloadPdfBtn = document.getElementById('downloadPdfBtn'); // PDF butonu
+const cardCycleEl = document.getElementById('cardCycle'); // Cycle kartı metni
+const cardCompletedEl = document.getElementById('cardCompleted'); // Tamamlanan kart metni
+const cardThroughputEl = document.getElementById('cardThroughput'); // Throughput kart metni
+const cardWipEl = document.getElementById('cardWip'); // WIP kart metni
+const stationPerformanceBody = document.getElementById('stationPerformanceBody'); // İstasyon tablo gövdesi
+const bottleneckTableBody = document.getElementById('bottleneckTableBody'); // Darboğaz tablo gövdesi
+const queueChartCanvas = document.getElementById('queueChart'); // Kuyruk grafiği canvası
+const throughputChartCanvas = document.getElementById('throughputChart'); // Throughput grafiği canvası
+const dashboardAnalysisText = document.getElementById('dashboardAnalysisText'); // Dashboard analiz metni
+const dashboardAnalysisList = document.getElementById('dashboardAnalysisList'); // Dashboard analiz listesi
+const completedCounterEl = document.getElementById('completedCounter'); // Tamamlanan sayaç etiketi
+const analysisModal = document.getElementById('analysisModal'); // Analiz modalı
+const closeAnalysisBtn = document.getElementById('closeAnalysisBtn'); // Analiz kapanış butonu
+const analysisRecalcBtn = document.getElementById('analysisRecalcBtn'); // Analiz hesaplama butonu
+const analysisTableBody = document.getElementById('analysisTableBody'); // Analiz tablo gövdesi
+const analysisText = document.querySelector('#analysisInsights .analysis-text'); // Analiz yorum metni
+const analysisList = document.querySelector('#analysisWhatIf .analysis-list'); // What-if listesi
+let latestReport = null; // Son oluşturulan rapor referansı
+let scheduledChartFrame = 0; // requestAnimationFrame kimliği
+
+updateFullscreenLabel(); // Başlangıçta tam ekran etiketi hizala
+
+const viz = new Visualization(document.getElementById('lineSvg')); // Görselleştirme örneği
+const stationRuntimeRefs = new Map(); // Canlı metrik referans haritası
+
+function renderGraph(stations) { // Akış grafiğini çiz
+  viz.setStations(stations); // Görselleştirme modelini güncelle
+}
+
+function updateZoomDisplay() { // Zoom metnini güncelle
+  if (zoomValueEl) zoomValueEl.textContent = `${Math.round(appState.zoom * 100)}%`; // Yüzdelik göster
+  if (zoomResetBtn) zoomResetBtn.title = `Ölçeği ${Math.round(appState.zoom * 100)}% durumundan 100% yap`; // İpucu güncelle
+  viz.setZoom(appState.zoom); // Görsel ölçeği uygula
+}
+
+function adjustZoom(delta) { // Zoom değerini değiştir
+  const next = Math.max(0.5, Math.min(2.5, parseFloat((appState.zoom + delta).toFixed(2)))); // Sınırla ve yuvarla
+  appState.zoom = next; // Duruma yaz
+  updateZoomDisplay(); // Görseli güncelle
+  saveState(appState); // Durumu kaydet
+}
+
+function resetZoom() { // Zoom'u sıfırla
+  appState.zoom = 1; // Varsayılan ölçek
+  updateZoomDisplay(); // Görseli güncelle
+  saveState(appState); // Durumu kaydet
+}
+
+function cloneStationsForRun() { // Simülasyon için istasyon kopyala
+  return appState.stations.map(source => { // Her istasyon için
+    const clone = new Station(source.id, source.name); // Yeni istasyon oluştur
+    clone.parallelServers = source.parallelServers; // Paralel sunucuları aktar
+    clone.tasks = source.tasks.map(task => new Task(task.name, task.operators, task.durationSec)); // Görevleri kopyala
+    return clone; // Sonucu döndür
+  });
+}
+
+function addStation(name = null) { // İstasyon ekleme fonksiyonu
+  const stationNumber = appState.nextStationId++; // Ardışık numarayı al
+  const stationId = `station-${stationNumber}`; // Kimliği üret
+  const stationName = name ? String(name) : `İstasyon ${stationNumber}`; // İsmi belirle
+  const station = new Station(stationId, stationName); // Yeni istasyon nesnesi
+  station.parallelServers = 1; // Varsayılan kapasite
+  station.tasks = []; // Görevleri boş başlat
+  appState.stations.push(station); // Listeye ekle
+  if (!renderingPaused) { // Yeniden çizim açıksa
+    renderStations(); // Kart listesini güncelle
+    renderGraph(appState.stations); // Akış diyagramını tazele
+    saveState(appState); // Durumu kaydet
+  }
+  console.info('Station added:', station); // Konsola bilgi düş
+  return station; // Yeni istasyonu döndür
+}
+
+function onAddStationClick(event) { // İstasyon ekle buton tıklaması
+  event?.preventDefault?.(); // Varsayılanı engelle
+  event?.stopPropagation?.(); // Kabarcık yayılmasını durdur
+  addStation(); // Yeni istasyon oluştur
+}
+
+function removeStation(id) { // İstasyon silme fonksiyonu
+  appState.stations = appState.stations.filter(station => station.id !== id); // Filtrele
+  renderStations(); // Yeniden çiz
+  renderGraph(appState.stations); // Akışı güncelle
+  saveState(appState); // Durumu kaydet
+}
+
+function moveStation(id, direction) { // İstasyon sıralama fonksiyonu
+  const index = appState.stations.findIndex(st => st.id === id); // İndeks bul
+  if (index === -1) return; // Bulunamadı
+  const newIndex = index + direction; // Yeni indeks
+  if (newIndex < 0 || newIndex >= appState.stations.length) return; // Sınır kontrolü
+  const [station] = appState.stations.splice(index, 1); // İstasyonu çıkar
+  appState.stations.splice(newIndex, 0, station); // Yeni konuma ekle
+  renderStations(); // UI yenile
+  renderGraph(appState.stations); // Akışı güncelle
+  saveState(appState); // Durumu kaydet
+}
+
+function addTask(stationId) { // Görev ekleme fonksiyonu
+  const station = appState.stations.find(st => st.id === stationId); // İstasyon bul
+  if (!station) return; // Yoksa çık
+  station.tasks.push(new Task('Görev', 1, 10)); // Varsayılan görev ekle
+  renderStations(); // UI yenile
+  renderGraph(appState.stations); // Akışı güncelle
+  saveState(appState); // Durumu kaydet
+}
+
+function removeTask(stationId, taskIndex) { // Görev silme fonksiyonu
+  const station = appState.stations.find(st => st.id === stationId); // İstasyon bul
+  if (!station) return; // Yoksa çık
+  if (station.tasks.length <= 1) return; // En az bir görev bırak
+  station.tasks.splice(taskIndex, 1); // Görevi çıkar
+  renderStations(); // UI yenile
+  renderGraph(appState.stations); // Akışı güncelle
+  saveState(appState); // Durumu kaydet
+}
+
+function renderStations() { // İstasyon kartlarını çiz
+  stationListEl.innerHTML = ''; // Listeyi temizle
+  stationRuntimeRefs.clear(); // Canlı referansları sıfırla
+  if (!appState.stations.length) { // İstasyon yoksa
+    emptyStateEl.style.display = 'block'; // Boş mesaj göster
+  } else {
+    emptyStateEl.style.display = 'none'; // Mesajı gizle
+  }
+  appState.stations.forEach((station, index) => { // Her istasyon için
+    const card = document.createElement('div'); // Kart divi
+    card.className = 'station-card'; // Sınıf ata
+    card.dataset.id = station.id; // Veri ata
+    card.draggable = !appState.running; // Çalışırken sürüklemeyi kapat
+    const header = document.createElement('div'); // Başlık satırı
+    header.className = 'station-header'; // Sınıf ata
+    const nameInput = document.createElement('input'); // İsim inputu
+    nameInput.value = station.name; // Değer ata
+    nameInput.disabled = appState.running; // Çalışırken kilitle
+    nameInput.addEventListener('input', () => { station.name = nameInput.value; renderGraph(appState.stations); saveState(appState); }); // İsim değişince güncelle
+    header.appendChild(nameInput); // Başlığa ekle
+    const totalLabel = document.createElement('span'); // Süre etiketi
+    totalLabel.className = 'badge'; // Sınıf ata
+    totalLabel.textContent = `Toplam: ${station.totalDuration()} sn`; // Metin
+    header.appendChild(totalLabel); // Başlığa ekle
+    card.appendChild(header); // Kart içine ekle
+
+    const runtimeLine = document.createElement('div'); // Canlı metrik satırı
+    runtimeLine.className = 'runtime-line'; // Sınıf ata
+    const capacityPill = document.createElement('span'); // Kapasite rozeti
+    capacityPill.className = 'runtime-pill'; // Sınıf ata
+    capacityPill.textContent = `Operatör: ${station.parallelServers} (Paralel: ${station.parallelServers})`; // Varsayılan metin
+    const queuePill = document.createElement('span'); // Kuyruk rozeti
+    queuePill.className = 'runtime-pill'; // Sınıf ata
+    queuePill.textContent = 'Kuyruk: 0'; // Varsayılan metin
+    const servicePill = document.createElement('span'); // Servis rozeti
+    servicePill.className = 'runtime-pill'; // Sınıf ata
+    servicePill.textContent = `Servis: 0/${station.parallelServers}`; // Varsayılan metin
+    const remainingPill = document.createElement('span'); // Kalan süre rozeti
+    remainingPill.className = 'runtime-pill'; // Sınıf ata
+    remainingPill.textContent = 'Kalan: -'; // Varsayılan metin
+    runtimeLine.appendChild(capacityPill); // Kapasiteyi ekle
+    runtimeLine.appendChild(queuePill); // Kuyruğu ekle
+    runtimeLine.appendChild(servicePill); // Servisi ekle
+    runtimeLine.appendChild(remainingPill); // Kalanı ekle
+    card.appendChild(runtimeLine); // Kart içine yerleştir
+    stationRuntimeRefs.set(station.id, { card, capacity: capacityPill, queue: queuePill, service: servicePill, remaining: remainingPill }); // Referansı kaydet
+
+    const serverRow = document.createElement('div'); // Sunucu satırı
+    serverRow.style.display = 'flex'; // Yatay düzen
+    serverRow.style.gap = '8px'; // Boşluk
+    serverRow.style.alignItems = 'center'; // Ortala
+    const serverLabel = document.createElement('span'); // Etiket
+    serverLabel.textContent = 'Operatör (Paralel Kapasite)'; // Metin
+    serverRow.appendChild(serverLabel); // Satıra ekle
+    const serverInput = document.createElement('input'); // Sayısal girdi
+    serverInput.type = 'number'; // Tip
+    serverInput.min = 1; // Minimum
+    serverInput.max = MAX_SERVERS; // Maksimum
+    serverInput.value = station.parallelServers; // Değer
+    serverInput.disabled = appState.running; // Çalışırken kapat
+    serverInput.style.width = '80px'; // Genişlik
+    serverInput.addEventListener('change', () => { // Değişim dinleyici
+      const value = Math.max(1, Math.min(MAX_SERVERS, Number(serverInput.value) || 1)); // Sınırla
+      station.parallelServers = value; // Ata
+      renderStations(); // Yeniden çiz
+      renderGraph(appState.stations); // Akışı güncelle
+      saveState(appState); // Durumu kaydet
+    });
+    serverRow.appendChild(serverInput); // Satıra ekle
+    card.appendChild(serverRow); // Kart içine ekle
+
+    const table = document.createElement('table'); // Görev tablosu
+    table.className = 'task-table'; // Sınıf ata
+    const thead = document.createElement('thead'); // Başlık
+    thead.innerHTML = '<tr><th>Görev Adı</th><th>Operatör</th><th>Süre (sn)</th><th></th></tr>'; // Başlık satırı
+    table.appendChild(thead); // Tabloya ekle
+    const tbody = document.createElement('tbody'); // Gövde
+    station.tasks.forEach((task, taskIndex) => { // Her görev için
+      const row = document.createElement('tr'); // Satır
+      const nameCell = document.createElement('td'); // Hücre
+      const nameField = document.createElement('input'); // Girdi
+      nameField.value = task.name; // Değer
+      nameField.disabled = appState.running; // Kilit
+      nameField.addEventListener('input', () => { task.name = nameField.value; saveState(appState); }); // Güncelle
+      nameCell.appendChild(nameField); // Hücreye ekle
+      row.appendChild(nameCell); // Satıra ekle
+
+      const opCell = document.createElement('td'); // Operatör hücresi
+      const opField = document.createElement('input'); // Girdi
+      opField.type = 'number'; // Tip
+      opField.min = 1; // Minimum
+      opField.value = task.operators; // Değer
+      opField.disabled = appState.running; // Kilit
+      opField.addEventListener('change', () => { // Değişim
+        const value = Math.max(1, Number(opField.value) || 1); // Sınırla
+        task.operators = value; // Ata
+        saveState(appState); // Durumu kaydet
+      });
+      opCell.appendChild(opField); // Hücreye ekle
+      row.appendChild(opCell); // Satıra ekle
+
+      const durationCell = document.createElement('td'); // Süre hücresi
+      const durationField = document.createElement('input'); // Girdi
+      durationField.type = 'number'; // Tip
+      durationField.min = 1; // Minimum
+      durationField.value = task.durationSec; // Değer
+      durationField.disabled = appState.running; // Kilit
+      durationField.addEventListener('change', () => { // Değişim
+        const value = Math.max(1, Number(durationField.value) || 1); // Sınırla
+        task.durationSec = value; // Ata
+        renderStations(); // Toplam süreyi güncelle
+        renderGraph(appState.stations); // Akışı güncelle
+        saveState(appState); // Durumu kaydet
+      });
+      durationCell.appendChild(durationField); // Hücreye ekle
+      row.appendChild(durationCell); // Satıra ekle
+
+      const actionCell = document.createElement('td'); // Aksiyon hücresi
+      if (!appState.running) { // Simülasyon kapalıysa
+        const removeBtn = document.createElement('button'); // Silme butonu
+        removeBtn.textContent = 'Sil'; // Metin
+        removeBtn.addEventListener('click', () => removeTask(station.id, taskIndex)); // Olay bağla
+        actionCell.appendChild(removeBtn); // Hücreye ekle
+      }
+      row.appendChild(actionCell); // Satıra ekle
+      tbody.appendChild(row); // Gövdeye ekle
+    });
+    table.appendChild(tbody); // Tabloya ekle
+    card.appendChild(table); // Kart içine ekle
+
+    if (!appState.running) { // Simülasyon dururken
+      const actions = document.createElement('div'); // Aksiyon satırı
+      actions.className = 'task-actions'; // Sınıf ata
+      const addTaskBtn = document.createElement('button'); // Görev ekleme butonu
+      addTaskBtn.textContent = '+ Görev'; // Metin
+      addTaskBtn.addEventListener('click', () => addTask(station.id)); // Olay bağla
+      actions.appendChild(addTaskBtn); // Satıra ekle
+      const moveGroup = document.createElement('div'); // Taşıma grubu
+      moveGroup.style.display = 'flex'; // Yatay
+      moveGroup.style.gap = '8px'; // Boşluk
+      const upBtn = document.createElement('button'); // Yukarı buton
+      upBtn.textContent = '↑'; // Metin
+      upBtn.disabled = index === 0; // İlk ise kilit
+      upBtn.addEventListener('click', () => moveStation(station.id, -1)); // Taşı
+      const downBtn = document.createElement('button'); // Aşağı buton
+      downBtn.textContent = '↓'; // Metin
+      downBtn.disabled = index === appState.stations.length - 1; // Son ise kilit
+      downBtn.addEventListener('click', () => moveStation(station.id, 1)); // Taşı
+      const deleteBtn = document.createElement('button'); // Silme butonu
+      deleteBtn.textContent = 'Sil'; // Metin
+      deleteBtn.className = 'danger'; // Renk
+      deleteBtn.addEventListener('click', () => removeStation(station.id)); // Sil
+      moveGroup.appendChild(upBtn); // Gruba ekle
+      moveGroup.appendChild(downBtn); // Gruba ekle
+      moveGroup.appendChild(deleteBtn); // Gruba ekle
+      actions.appendChild(moveGroup); // Satıra ekle
+      card.appendChild(actions); // Kart içine ekle
+    }
+    stationListEl.appendChild(card); // Listeye ekle
+  });
+}
+
+function applyLiveStationSnapshot(snapshot) { // Canlı metrikleri karta yaz
+  if (!snapshot || !Array.isArray(snapshot.layout)) return; // Geçerli veri kontrolü
+  snapshot.layout.forEach(item => { // Her istasyon verisi
+    const refs = stationRuntimeRefs.get(item.stationId); // Referansı al
+    if (!refs) return; // Yoksa geç
+    const busyServers = item.servers.filter(server => !!server); // Aktif sunucular
+    const avgProgress = busyServers.length ? busyServers.reduce((sum, server) => sum + server.progress, 0) / busyServers.length : 0; // Ortalama ilerleme
+    const maxRemaining = busyServers.length ? Math.max(...busyServers.map(server => server.remaining)) : 0; // Maks kalan süre
+    refs.capacity.textContent = `Operatör: ${item.metrics.capacity} (Paralel: ${item.metrics.capacity})`; // Kapasite metni
+    refs.queue.textContent = `Kuyruk: ${item.metrics.queueLength}`; // Kuyruk metni
+    refs.service.textContent = `Servis: ${item.metrics.busyCount}/${item.metrics.capacity}`; // Servis metni
+    refs.remaining.textContent = busyServers.length ? `Kalan: ${maxRemaining.toFixed(1)}sn · %${(avgProgress * 100).toFixed(0)}` : 'Kalan: -'; // Kalan süre metni
+    if (item.metrics.avgQueue > 1.5 || item.metrics.avgUtil > 0.85) { // Darboğaz koşulu
+      refs.card.classList.add('bottleneck'); // Kartı vurgula
+    } else {
+      refs.card.classList.remove('bottleneck'); // Vurguyu kaldır
+    }
+  });
+  if (completedCounterEl) { // Sayaç mevcutsa
+    completedCounterEl.textContent = `Tamamlanan: ${snapshot.completedCount}`; // Sayaç güncelle
+  }
+}
+
+let dragSourceId = null; // Sürüklenen istasyon kimliği
+
+stationListEl.addEventListener('dragstart', event => { // Sürükleme başlangıcı
+  const card = event.target.closest('.station-card'); // Kartı bul
+  if (!card) return; // Kart yoksa çık
+  dragSourceId = card.dataset.id; // Kaynağı kaydet
+  card.classList.add('dragging'); // Stil ekle
+  if (event.dataTransfer) { // DataTransfer mevcut mu
+    event.dataTransfer.effectAllowed = 'move'; // Taşıma modu
+    event.dataTransfer.setData('text/plain', dragSourceId); // Veri aktar
+  }
+});
+
+stationListEl.addEventListener('dragover', event => { // Kart üzerinde gezinme
+  if (!dragSourceId) return; // Kaynak yoksa çık
+  event.preventDefault(); // Bırakmaya izin ver
+  const card = event.target.closest('.station-card'); // Hedef kart
+  if (!card || card.dataset.id === dragSourceId) return; // Geçersiz hedef
+  stationListEl.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); // Eski vurguları temizle
+  card.classList.add('drag-over'); // Yeni vurguyu ekle
+});
+
+stationListEl.addEventListener('dragleave', event => { // Kart dışına çıkış
+  const card = event.target.closest('.station-card'); // Kart bul
+  if (card) card.classList.remove('drag-over'); // Vurguyu kaldır
+});
+
+stationListEl.addEventListener('drop', event => { // Bırakma işlemi
+  if (!dragSourceId) return; // Kaynak yoksa çık
+  event.preventDefault(); // Varsayılanı engelle
+  const targetCard = event.target.closest('.station-card'); // Hedef kart
+  stationListEl.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); // Vurguları temizle
+  const sourceIndex = appState.stations.findIndex(st => st.id === dragSourceId); // Kaynak indeks
+  if (sourceIndex === -1) return; // Geçersiz kaynak
+  const targetId = targetCard ? targetCard.dataset.id : null; // Hedef kimliği
+  if (targetId && targetId === dragSourceId) { // Aynı karta bırakıldıysa
+    dragSourceId = null; // Kaynağı temizle
+    renderStations(); // Yeniden çiz
+    renderGraph(appState.stations); // Akışı güncelle
+    return; // Çık
+  }
+  const [moved] = appState.stations.splice(sourceIndex, 1); // Kaynağı çıkar
+  let insertIndex = targetId ? appState.stations.findIndex(st => st.id === targetId) : appState.stations.length; // Hedef sonrası indeks
+  if (insertIndex === -1) insertIndex = appState.stations.length; // Hedef yoksa sona ekle
+  if (targetCard) { // Kart varsa konumu değerlendir
+    const rect = targetCard.getBoundingClientRect(); // Kart geometrisi
+    const after = event.clientY > rect.top + rect.height / 2; // Alt yarıda mı
+    if (after) insertIndex += 1; // Sonrasına ekle
+  }
+  appState.stations.splice(insertIndex, 0, moved); // Yeni konuma yerleştir
+  dragSourceId = null; // Kaynağı sıfırla
+  renderStations(); // Listeyi yenile
+  renderGraph(appState.stations); // Akışı güncelle
+  saveState(appState); // Durumu kaydet
+});
+
+stationListEl.addEventListener('dragend', () => { // Sürükleme bitişi
+  stationListEl.querySelectorAll('.station-card').forEach(card => card.classList.remove('dragging', 'drag-over')); // Sınıfları temizle
+  dragSourceId = null; // Kaynağı sıfırla
+});
+
+function validateSetup() { // Kurulum doğrulama
+  if (!appState.stations.length) { // İstasyon yoksa
+    alert('En az bir istasyon ekleyin.'); // Uyarı
+    return false; // Başarısız
+  }
+  for (const station of appState.stations) { // Her istasyon için
+    if (!station.tasks.length) { // Görev yoksa
+      alert(`${station.name} için en az bir görev tanımlayın.`); // Uyarı
+      return false; // Başarısız
+    }
+    if (station.parallelServers < 1 || station.parallelServers > MAX_SERVERS) { // Sunucu sınırı
+      alert(`${station.name} paralel operatör 1-${MAX_SERVERS} aralığında olmalı.`); // Uyarı
+      return false; // Başarısız
+    }
+    for (const task of station.tasks) { // Görev doğrula
+      if (!task.name.trim()) { // Boş isim
+        alert('Görev adı boş bırakılamaz.'); // Uyarı
+        return false; // Başarısız
+      }
+      if (task.durationSec <= 0) { // Süre kontrolü
+        alert("Görev süreleri 0'dan büyük olmalı."); // Uyarı
+        return false; // Başarısız
+      }
+    }
+  }
+  return true; // Başarılı
+}
+
+function startSimulation() { // Simülasyonu başlat
+  if (!validateSetup()) return; // Geçersizse çık
+  const options = { // Seçenekler
+    entryPolicy: appState.entryPolicy, // Giriş politikası
+    entryInterval: appState.entryInterval, // Giriş aralığı
+    targetCount: appState.targetCount // Hedef adet
+  };
+  appState.simulation = new SimulationEngine(cloneStationsForRun(), options, viz); // Motor oluştur
+  appState.simulation.onLiveUpdate = snapshot => applyLiveStationSnapshot(snapshot); // Canlı güncelleme bağla
+  appState.simulation.start(); // Başlat
+  appState.running = true; // Durum güncelle
+  appState.lastUpdate = performance.now(); // Zaman kaydı
+  appState.lastMetricRefresh = appState.lastUpdate; // Metrik zamanını sıfırla
+  appState.visualCursor = appState.simulation.currentTime; // Görsel zamanı hizala
+  appState.simulation.updateLayoutTargets(appState.visualCursor); // İlk snapshot
+  if (completedCounterEl) completedCounterEl.textContent = 'Tamamlanan: 0'; // Sayaç sıfırla
+  toggleEditing(false); // UI kilitle
+  startBtn.disabled = true; // Başlat kilit
+  stopBtn.disabled = false; // Durdur aç
+  runLoop(); // Döngüyü başlat
+}
+
+function stopSimulation(showReport = true) { // Simülasyonu durdur
+  if (!appState.simulation) return; // Motor yoksa çık
+  appState.simulation.stop(); // Motor durdur
+  appState.visualCursor = appState.simulation.currentTime; // Görsel zamanı güncelle
+  appState.simulation.updateLayoutTargets(appState.visualCursor); // Son durumu aktar
+  appState.running = false; // Durum güncelle
+  toggleEditing(true); // UI aç
+  startBtn.disabled = false; // Başlat aç
+  stopBtn.disabled = true; // Durdur kilit
+  appState.lastMetricRefresh = 0; // Metrik zamanını sıfırla
+  const canShowReport = showReport && document.fullscreenElement !== visualPanel; // Tam ekranda mı
+  if (canShowReport) openReportModal(); // Uygunsa raporu aç
+}
+
+function resetSimulation() { // Simülasyonu sıfırla
+  appState.running = false; // Durum
+  startBtn.disabled = false; // Başlat aç
+  stopBtn.disabled = true; // Durdur kilit
+  toggleEditing(true); // UI aç
+  if (appState.simulation) { // Motor varsa
+    appState.simulation.reset(); // Sıfırla
+  }
+  appState.lastMetricRefresh = 0; // Metrik zamanını sıfırla
+  appState.visualCursor = 0; // Görsel zamanı sıfırla
+  viz.clearJobs(); // Balonları temizle
+  if (completedCounterEl) completedCounterEl.textContent = 'Tamamlanan: 0'; // Sayaç sıfırla
+  stationRuntimeRefs.forEach((refs, stationId) => { // Her kart için
+    const station = appState.stations.find(st => st.id === stationId); // İstasyonu bul
+    const capacity = station ? station.parallelServers : 0; // Kapasite al
+    refs.card.classList.remove('bottleneck'); // Vurguyu kaldır
+    refs.capacity.textContent = `Operatör: ${capacity} (Paralel: ${capacity})`; // Kapasiteyi sıfırla
+    refs.queue.textContent = 'Kuyruk: 0'; // Kuyruğu sıfırla
+    refs.service.textContent = `Servis: 0/${capacity}`; // Servisi sıfırla
+    refs.remaining.textContent = 'Kalan: -'; // Kalan süreyi sıfırla
+  });
+}
+
+function toggleEditing(enabled) { // UI düzenleme durumunu ayarla
+  const inputs = stationListEl.querySelectorAll('input, button'); // Tüm kontroller
+  inputs.forEach(el => { // Her biri
+    if (el.dataset.lock === 'runtime') return; // Kilitli olanlar
+    if (el.id === 'stopBtn') return; // Durdur hariç
+    if (el.id === 'startBtn') return; // Başlat hariç
+    el.disabled = !enabled && !el.classList.contains('danger'); // Duruma göre kilitle
+  });
+  addStationBtn.disabled = !enabled; // İstasyon eklemeyi kilitle
+  sampleBtn.disabled = !enabled; // Örnek kurulum kilidi
+  entryPolicySelect.disabled = !enabled; // Giriş seçimini kilitle
+  entryIntervalInput.disabled = !enabled || appState.entryPolicy !== 'interval'; // Aralık girişi
+  targetInput.disabled = !enabled; // Hedef girişi
+}
+
+function runLoop() { // Simülasyon döngüsü
+  if (!appState.simulation || !appState.simulation.running) return; // Motor çalışmıyorsa çık
+  const now = performance.now(); // Şimdiki zaman
+  const deltaSec = (now - appState.lastUpdate) / 1000; // Geçen süre saniye
+  appState.lastUpdate = now; // Zaman güncelle
+  const nextEvent = appState.simulation.peekNextEventTime(); // Sonraki olay zamanı
+  let targetTime = appState.visualCursor + deltaSec * LOGICAL_RATE; // Hedef zaman
+  if (nextEvent !== null) targetTime = Math.min(targetTime, nextEvent); // Olayı aşma
+  targetTime = Math.max(targetTime, appState.simulation.currentTime); // Geri gitme
+  appState.visualCursor = targetTime; // Görsel zamanı güncelle
+  appState.simulation.processUntil(appState.visualCursor); // Olayları işle
+  viz.setSpeed(appState.speed); // Hızı güncelle
+  if (!appState.lastMetricRefresh || now - appState.lastMetricRefresh >= UPDATE_INTERVAL_MS) { // Periyodik metrik kontrolü
+    appState.simulation.updateLayoutTargets(appState.visualCursor); // Yerleşim güncelle
+    appState.lastMetricRefresh = now; // Zaman kaydı
+  }
+  if (!appState.simulation.running) { // Durduysa
+    stopSimulation(true); // Raporla durdur
+    return; // Çık
+  }
+  requestAnimationFrame(runLoop); // Sonraki karede devam
+}
+
+function collectStationSummaries(report) { // İstasyon özetlerini hazırla
+  return appState.stations.map(station => { // Tüm istasyonları gez
+    const duration = station.totalDuration(); // Servis süresi toplamı
+    const parallel = Math.max(1, station.parallelServers); // Paralel kapasite
+    const capacityPerSec = duration > 0 ? parallel / duration : 0; // Teorik kapasite
+    const reportRow = report?.stationRows?.find(row => row.stationId === station.id) || null; // Rapor satırı
+    const utilization = reportRow ? reportRow.utilization : null; // Utilizasyon değeri
+    const avgQueue = reportRow ? reportRow.avgQueue : null; // Ortalama kuyruk
+    const serviceCount = reportRow ? reportRow.serviceCount : 0; // Tamamlanan iş adedi
+    return { station, duration, parallel, capacityPerSec, utilization, avgQueue, serviceCount }; // Özet nesnesi
+  });
+}
+
+function createAnalysisNarrative(summaries, report, taktTime) { // Analiz anlatısını üret
+  if (!summaries.length) { // Özet yoksa
+    return { text: 'Analiz için önce istasyon tanımlayın.', scenarios: [] }; // Bilgi mesajı döndür
+  }
+  const taktRate = taktTime && taktTime > 0 ? 1 / taktTime : null; // Takt oranı
+  const bottleneckService = summaries.reduce((max, row) => (!max || row.duration > max.duration ? row : max), null); // Süre darboğazı
+  const bottleneckUtil = summaries.reduce((max, row) => { // Util darboğazı
+    if (row.utilization === null) return max; // Veri yoksa geç
+    if (!max || row.utilization > (max.utilization ?? 0)) return row; // Daha yüksekse seç
+    return max; // Aksi halde mevcut
+  }, null); // Sonuç
+  const serviceName = bottleneckService ? bottleneckService.station.name : '-'; // Servis darboğaz adı
+  const utilName = bottleneckUtil ? bottleneckUtil.station.name : '-'; // Util darboğaz adı
+  let text = `Bottleneck (servis): ${serviceName}.`; // Temel metin
+  text += ` Utilizasyon analizinde öne çıkan istasyon: ${utilName}.`; // Util bilgisi ekle
+  if (bottleneckService && bottleneckService.avgQueue !== null) { // Kuyruk bilgisi varsa
+    text += ` Ortalama kuyruk ${bottleneckService.avgQueue.toFixed(2)} iş.`; // Kuyruk metni
+  }
+  if (taktTime && bottleneckService) { // Takt girdisi varsa
+    if (bottleneckService.duration > taktTime) { // Süre taktı aşıyorsa
+      text += ` Takt ${taktTime.toFixed(2)} sn; bu istasyonda tek ürün süresi ${bottleneckService.duration.toFixed(2)} sn olduğundan paralel kapasite artışı önerilir.`; // Öneri metni
+    } else {
+      text += ` Takt ${taktTime.toFixed(2)} sn değerini bu istasyon karşılıyor; paralel artışı daha çok kuyruk dengesi için düşünülmeli.`; // Bilgi metni
+    }
+  } else {
+    text += ' Takt time girilmedi; öneriler teorik kapasite üzerinden hesaplandı.'; // Varsayılan bilgi
+  }
+  text += ' Paralel operatör eklemek servis süresini kısaltmaz, yalnız eşzamanlı iş kapasitesini artırır.'; // Sabit süre vurgusu
+  const targetRow = report?.bottleneckService?.stationId // Senaryo hedefi
+    ? summaries.find(row => row.station.id === report.bottleneckService.stationId) || bottleneckService
+    : bottleneckService; // Varsayılan hedef
+  if (!targetRow) return { text, scenarios: [] }; // Hedef yoksa çık
+  const baseThroughput = targetRow.duration > 0 ? targetRow.parallel / targetRow.duration : 0; // Mevcut kapasite
+  const scenarios = []; // Senaryo listesi
+  [1, 2].forEach(delta => { // +1 ve +2 operatör
+    const proposed = Math.min(MAX_SERVERS, targetRow.parallel + delta); // Yeni paralel kapasite
+    if (proposed === targetRow.parallel) { // Artış yoksa
+      scenarios.push(`+${delta} operatör: Kapasite ${MAX_SERVERS} sınırında; artış uygulanamaz.`); // Sınır mesajı
+      return; // Sonraki
+    }
+    const newThroughput = targetRow.duration > 0 ? proposed / targetRow.duration : 0; // Yeni kapasite
+    let queueNote = 'Kuyruk etkisi: '; // Kuyruk yorumu
+    if (taktRate) { // Takt oranı varsa
+      if (newThroughput >= taktRate) { // Takt yakalandıysa
+        queueNote += 'takt hızını yakalayıp kuyrukları eritmesi beklenir.'; // Eriyen kuyruk
+      } else if (newThroughput > baseThroughput) { // İyileşme var
+        queueNote += 'kuyruk büyüme hızını azaltır ancak takt altında kalır.'; // Azalan büyüme
+      } else {
+        queueNote += 'takt altında kaldığı için etkisi sınırlı olacaktır.'; // Sınırlı etki
+      }
+    } else if (newThroughput > baseThroughput) { // Takt yok ama artış var
+      queueNote += 'daha yüksek paralel kapasite ile bekleme süreleri kısalır.'; // Olumlu etki
+    } else {
+      queueNote += 'değişim yok.'; // Etki yok
+    }
+    scenarios.push(`+${delta} operatör → ${targetRow.parallel}→${proposed} paralel, kapasite ${baseThroughput.toFixed(3)}→${newThroughput.toFixed(3)} ürün/sn. ${queueNote} Servis süresi sabit kalır.`); // Senaryo metni
+  });
+  return { text, scenarios }; // Sonuç döndür
+}
+
+function toggleFullscreen() { // Tam ekran modunu değiştir
+  if (!visualPanel) return; // Panel yoksa çık
+  const active = document.fullscreenElement === visualPanel; // Şu an tam ekran mı
+  if (active) { // Zaten tam ekran ise
+    if (document.exitFullscreen) document.exitFullscreen().catch(error => console.warn('Tam ekran çıkışı başarısız:', error)); // Çıkış dene
+    return; // Çık
+  }
+  closeReport(); // Mevcut dashboard'u gizle
+  if (visualPanel.requestFullscreen) { // API varsa
+    visualPanel.requestFullscreen().catch(error => console.warn('Tam ekran isteği başarısız:', error)); // Hata logla
+  }
+}
+
+function updateFullscreenLabel() { // Tam ekran etiketini güncelle
+  if (!fullscreenLabel || !fullscreenBtn) return; // Elemanlar yoksa çık
+  const active = document.fullscreenElement === visualPanel; // Durumu kontrol et
+  fullscreenLabel.textContent = active ? '⤺ Çık' : '🔳 Tam Ekran'; // Metni ayarla
+  fullscreenBtn.setAttribute('aria-pressed', active ? 'true' : 'false'); // Durum niteliğini güncelle
+}
+
+function openAnalysisModal() { // Analiz modalını aç
+  runAnalysis(); // İçeriği üret
+  if (analysisModal) analysisModal.classList.add('active'); // Modalı göster
+}
+
+function closeAnalysisModal() { // Analiz modalını kapat
+  if (analysisModal) analysisModal.classList.remove('active'); // Modalı gizle
+}
+
+function runAnalysis() { // Analiz içeriğini hesapla
+  if (!analysisTableBody || !analysisText || !analysisList) return; // Eleman kontrolü
+  const taktTime = appState.taktTime && appState.taktTime > 0 ? appState.taktTime : null; // Takt değeri
+  let report = null; // Rapor saklama
+  try { // Güvenli çağrı
+    if (appState.simulation) report = appState.simulation.buildReport(); // Mevcut raporu al
+  } catch (error) { // Hata durumunda
+    console.warn('Analiz raporu oluşturulamadı:', error); // Uyarı
+  }
+  analysisTableBody.innerHTML = ''; // Tabloyu temizle
+  const summaries = collectStationSummaries(report); // Özet listesini üret
+  summaries.forEach(summary => { // Her özet için satır oluştur
+    const tr = document.createElement('tr'); // Tablo satırı
+    tr.innerHTML = `<td>${summary.station.name}</td><td>${summary.duration.toFixed(2)}</td><td>${summary.parallel}</td><td>${summary.parallel}</td><td>${summary.capacityPerSec.toFixed(3)}</td>`; // Hücreler
+    analysisTableBody.appendChild(tr); // Tabloya ekle
+  });
+  if (!summaries.length) { // İstasyon yoksa
+    analysisText.textContent = 'Analiz için önce en az bir istasyon tanımlayın.'; // Bilgi metni
+    analysisList.innerHTML = ''; // Listeyi temizle
+    return; // Çık
+  }
+  const narrative = createAnalysisNarrative(summaries, report, taktTime); // Anlatıyı hazırla
+  analysisText.textContent = narrative.text; // Metni yaz
+  analysisList.innerHTML = ''; // Listeyi temizle
+  narrative.scenarios.forEach(entry => { // Senaryoları ekle
+    const li = document.createElement('li'); // Liste elemanı
+    li.textContent = entry; // Metni ata
+    analysisList.appendChild(li); // Listeye ekle
+  });
+}
+
+  
+function openReportModal() { // Rapor modalını aç
+  if (!appState.simulation) return; // Motor yoksa çık
+  if (document.fullscreenElement === visualPanel && document.exitFullscreen) { // Tam ekranda ise
+    const exitResult = document.exitFullscreen(); // Çıkış isteği
+    if (exitResult && typeof exitResult.then === 'function') { // Promise döndüyse
+      exitResult.then(() => openReportModal()).catch(error => console.warn('Tam ekran çıkışı sırasında rapor açılamadı:', error)); // Yeniden dene
+    } else {
+      setTimeout(() => openReportModal(), 0); // Asenkron tekrar dene
+    }
+    return; // Bekle
+  }
+  const report = appState.simulation.buildReport(); // Raporu üret
+  if (cardCycleEl) cardCycleEl.textContent = `${report.avgCycle.toFixed(2)} sn`; // Cycle kartını güncelle
+  if (cardCompletedEl) cardCompletedEl.textContent = `${report.totalCompleted}`; // Tamamlanan kartını güncelle
+  if (cardThroughputEl) cardThroughputEl.textContent = `${report.throughputPerSec.toFixed(3)} /sn · ${report.throughputPerMin.toFixed(2)} /dk`; // Throughput kartını güncelle
+  if (cardWipEl) cardWipEl.textContent = report.avgWip.toFixed(2); // WIP kartını güncelle
+  if (stationPerformanceBody) { // İstasyon tablosunu doldur
+    stationPerformanceBody.innerHTML = ''; // Tabloyu temizle
+    if (!report.stationRows.length) { // Satır yoksa
+      const tr = document.createElement('tr'); // Tek satır
+      tr.innerHTML = '<td colspan="7">Veri yok</td>'; // Mesaj
+      stationPerformanceBody.appendChild(tr); // Tabloya ekle
+    } else {
+      report.stationRows.forEach(row => { // Her istasyon için
+        const tr = document.createElement('tr'); // Satır oluştur
+        tr.innerHTML = `<td>${row.stationName}</td><td>${row.parallelServers}</td><td>${row.serviceTime.toFixed(2)}</td><td>${row.avgQueue.toFixed(2)}</td><td>${(row.utilization * 100).toFixed(1)}</td><td>${row.avgWait.toFixed(2)}</td><td>${row.serviceCount}</td>`; // Hücreler
+        stationPerformanceBody.appendChild(tr); // Tabloya ekle
+      });
+    }
+  }
+  if (bottleneckTableBody) { // Darboğaz tablosunu doldur
+    bottleneckTableBody.innerHTML = ''; // Tabloyu temizle
+    const entries = [ // Kriter listesi
+      { label: 'Utilizasyon (en yüksek)', row: report.bottleneckUtil }, // Utilizasyon kriteri
+      { label: 'Servis Süresi (en uzun)', row: report.bottleneckService } // Servis süresi kriteri
+    ];
+    entries.forEach(entry => { // Her kriter için
+      const tr = document.createElement('tr'); // Satır oluştur
+      const stationName = entry.row ? entry.row.stationName : '-'; // İstasyon adı
+      const suggestion = buildBottleneckSuggestion(entry.row); // Öneriyi hesapla
+      tr.innerHTML = `<td>${entry.label}</td><td>${stationName}</td><td>${suggestion}</td>`; // Hücreler
+      bottleneckTableBody.appendChild(tr); // Tabloya ekle
+    });
+  }
+  latestReport = report; // Raporu hafızada sakla
+  const taktTime = appState.taktTime && appState.taktTime > 0 ? appState.taktTime : null; // Takt değeri
+  const narrative = createAnalysisNarrative(collectStationSummaries(report), report, taktTime); // Anlatıyı hazırla
+  if (dashboardAnalysisText) dashboardAnalysisText.textContent = narrative.text; // Analiz metnini yaz
+  if (dashboardAnalysisList) { // Analiz listesini hazırla
+    dashboardAnalysisList.innerHTML = ''; // Temizle
+    if (narrative.scenarios.length) { // Senaryolar varsa
+      narrative.scenarios.forEach(entry => { // Her senaryo için
+        const li = document.createElement('li'); // Liste elemanı
+        li.textContent = entry; // Metni ata
+        dashboardAnalysisList.appendChild(li); // Listeye ekle
+      });
+    } else {
+      const li = document.createElement('li'); // Bilgi elemanı
+      li.textContent = 'Ek senaryo bulunamadı.'; // Mesaj
+      dashboardAnalysisList.appendChild(li); // Listeye ekle
+    }
+  }
+  if (reportModal) reportModal.classList.add('active'); // Modalı göster
+  scheduleDashboardCharts(); // Grafiklerin çizimini planla
+  if (downloadCsvBtn) downloadCsvBtn.onclick = () => latestReport && downloadCsv(latestReport); // CSV butonunu güncel rapora bağla
+  if (downloadPdfBtn) { // PDF düğmesi için kontrol
+    const canPrint = typeof window.print === 'function'; // Yazdırma desteğini sorgula
+    downloadPdfBtn.disabled = !canPrint; // Destek yoksa pasifleştir
+    downloadPdfBtn.title = canPrint ? 'Yazdır veya PDF olarak kaydet' : 'Tarayıcı yazdırma desteği bulunamadı'; // İpucu ayarla
+    downloadPdfBtn.onclick = canPrint ? () => window.print() : null; // Olayı tanımla
+  }
+}
+
+function closeReport() { // Rapor modalını kapat
+  if (reportModal) reportModal.classList.remove('active'); // Modalı gizle
+  if (scheduledChartFrame) { // Bekleyen çizim varsa
+    cancelAnimationFrame(scheduledChartFrame); // Kareyi iptal et
+    scheduledChartFrame = 0; // Kimliği sıfırla
+  }
+}
+
+function downloadCsv(report) { // CSV indirme fonksiyonu
+  const lines = []; // Satır listesi
+  lines.push('Kategori,Değer'); // Başlık satırı
+  lines.push(`Tamamlanan,${report.totalCompleted}`); // Tamamlanan ürün
+  lines.push(`Süre(sn),${report.horizon.toFixed(2)}`); // Simülasyon süresi
+  lines.push(`Cycle(sn),${report.avgCycle.toFixed(2)}`); // Cycle time
+  lines.push(`Throughput(sn),${report.throughputPerSec.toFixed(3)}`); // Ürün/sn
+  lines.push(`Throughput(dk),${report.throughputPerMin.toFixed(3)}`); // Ürün/dk
+  lines.push(`Ortalama WIP,${report.avgWip.toFixed(2)}`); // Ortalama WIP
+  lines.push(''); // Boş satır
+  lines.push('İstasyon,Operatör,Paralel,Servis Süresi(sn),Tamamlanan İş,Teorik Kapasite(ürün/sn),Utilizasyon(%),Ortalama Kuyruk,Ortalama Bekleme(sn)'); // Tablo başlığı
+  report.stationRows.forEach(row => { // Her istasyon için
+    lines.push(`${row.stationName},${row.parallelServers},${row.parallelServers},${row.serviceTime.toFixed(2)},${row.serviceCount},${row.capacityPerSec.toFixed(3)},${(row.utilization * 100).toFixed(1)},${row.avgQueue.toFixed(2)},${row.avgWait.toFixed(2)}`); // Satırı ekle
+  });
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' }); // Blob oluştur
+  const url = URL.createObjectURL(blob); // URL üret
+  const link = document.createElement('a'); // Link oluştur
+  link.href = url; // URL ata
+  link.download = 'rapor.csv'; // Dosya adı
+  document.body.appendChild(link); // DOM'a ekle
+  link.click(); // İndirmeyi tetikle
+  document.body.removeChild(link); // DOM'dan kaldır
+  URL.revokeObjectURL(url); // URL temizle
+}
+
+function buildBottleneckSuggestion(row) { // Darboğaz önerisini üret
+  if (!row) return 'Veri yok.'; // Veri yoksa mesaj
+  if (row.parallelServers >= MAX_SERVERS) return `Operatör sayısı ${MAX_SERVERS} sınırında; artış uygulanamaz.`; // Sınır mesajı
+  const nextParallel = row.parallelServers + 1; // Yeni paralel kapasite
+  const baseCapacity = row.serviceTime > 0 ? row.parallelServers / row.serviceTime : 0; // Mevcut kapasite
+  const newCapacity = row.serviceTime > 0 ? nextParallel / row.serviceTime : baseCapacity; // Yeni kapasite
+  const ratio = baseCapacity > 0 ? newCapacity / baseCapacity : nextParallel; // Artış oranı
+  return `Operatör sayısı +1 olursa kapasite ${ratio.toFixed(2)} kat artar, servis süresi sabit kalır.`; // Metni döndür
+}
+
+function prepareChartCanvas(canvas) { // Canvas boyutunu hazırla
+  if (!canvas) return null; // Eleman yoksa çık
+  const ctx = canvas.getContext('2d'); // Bağlamı al
+  if (!ctx) return null; // Bağlam yoksa çık
+  const dpr = window.devicePixelRatio || 1; // Piksel oranı
+  const bounds = canvas.getBoundingClientRect(); // Piksel boyutlarını al
+  const width = Math.floor(bounds.width || canvas.clientWidth || 0); // Görünen genişlik
+  const height = Math.floor(bounds.height || canvas.clientHeight || 0); // Görünen yükseklik
+  if (!width || !height) return null; // Ölçü yoksa çık
+  canvas.width = width * dpr; // Piksel genişliği ayarla
+  canvas.height = height * dpr; // Piksel yüksekliği ayarla
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // Ölçeği uygula
+  ctx.clearRect(0, 0, width, height); // Canvas'ı temizle
+  ctx.font = '12px sans-serif'; // Yazı tipini ayarla
+  ctx.textBaseline = 'middle'; // Baz çizgi
+  return { ctx, width, height }; // Sonucu döndür
+}
+
+function scheduleDashboardCharts() { // Dashboard grafikleri için çizim zamanla
+  if (!reportModal || !reportModal.classList.contains('active')) return; // Modal kapalıysa çık
+  if (!latestReport) return; // Rapor yoksa çık
+  if (scheduledChartFrame) { // Önceden planlanmış kare varsa
+    cancelAnimationFrame(scheduledChartFrame); // Eski kareyi iptal et
+    scheduledChartFrame = 0; // Kimliği sıfırla
+  }
+  scheduledChartFrame = requestAnimationFrame(() => { // Yeni kare planla
+    scheduledChartFrame = 0; // Kimliği sıfırla
+    renderQueueChart(latestReport.stationRows); // Kuyruk grafiğini çiz
+    renderThroughputChart(latestReport.completionSeries, latestReport.horizon); // Throughput grafiğini çiz
+  });
+}
+
+function renderQueueChart(rows) { // Kuyruk grafiğini çiz
+  if (!queueChartCanvas) return; // Canvas yoksa çık
+  const surface = prepareChartCanvas(queueChartCanvas); // Canvas hazırlığı
+  if (!surface) return; // Hazırlık başarısızsa çık
+  const { ctx, width, height } = surface; // Boyutları al
+  if (!rows || !rows.length) { // Veri yoksa
+    ctx.fillStyle = 'rgba(255,255,255,0.6)'; // Metin rengi
+    ctx.textAlign = 'center'; // Ortala
+    ctx.fillText('Veri yok', width / 2, height / 2); // Mesaj yaz
+    return; // Çık
+  }
+  const padding = { top: 24, right: 18, bottom: 48, left: 54 }; // Kenar boşlukları
+  const chartWidth = Math.max(10, width - padding.left - padding.right); // Grafik genişliği
+  const chartHeight = Math.max(10, height - padding.top - padding.bottom); // Grafik yüksekliği
+  const maxQueue = Math.max(...rows.map(row => row.avgQueue), 1); // Maks kuyruk
+  const maxUtil = Math.max(...rows.map(row => row.utilization), 0.01); // Maks util
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)'; // Izgara rengi
+  ctx.beginPath(); // Çizim başlat
+  ctx.moveTo(padding.left, height - padding.bottom); // X ekseni başlangıcı
+  ctx.lineTo(width - padding.right, height - padding.bottom); // X ekseni
+  ctx.stroke(); // Çiz
+  const gap = chartWidth / rows.length; // Sütun aralığı
+  const barWidth = Math.min(48, gap * 0.6); // Sütun genişliği
+  rows.forEach((row, index) => { // Her istasyon için
+    const center = padding.left + gap * index + gap / 2; // Merkez x
+    const barHeight = (row.avgQueue / maxQueue) * chartHeight; // Bar yüksekliği
+    const barX = center - barWidth / 2; // Bar sol x
+    const barY = height - padding.bottom - barHeight; // Bar üst y
+    ctx.fillStyle = 'rgba(100,210,255,0.45)'; // Bar rengi
+    ctx.fillRect(barX, barY, barWidth, barHeight); // Bar çiz
+    const utilY = height - padding.bottom - (row.utilization / maxUtil) * chartHeight; // Util y
+    ctx.fillStyle = 'rgba(255,107,107,0.85)'; // Nokta rengi
+    ctx.beginPath(); // Yeni yol
+    ctx.arc(center, utilY, 4, 0, Math.PI * 2); // Nokta çiz
+    ctx.fill(); // Doldur
+    ctx.fillStyle = 'rgba(255,255,255,0.7)'; // Etiket rengi
+    ctx.textAlign = 'center'; // Ortala
+    ctx.fillText(row.stationName, center, height - padding.bottom + 18); // İsim yaz
+  });
+  ctx.fillStyle = 'rgba(255,255,255,0.6)'; // Başlık rengi
+  ctx.textAlign = 'left'; // Sol hizala
+  ctx.fillText('Ortalama Kuyruk', padding.left, padding.top - 10); // Kuyruk etiketi
+  ctx.textAlign = 'right'; // Sağ hizala
+  ctx.fillText('Utilizasyon %', width - padding.right, padding.top - 10); // Util etiketi
+}
+
+function renderThroughputChart(series, horizon) { // Zaman grafiğini çiz
+  if (!throughputChartCanvas) return; // Canvas yoksa çık
+  const surface = prepareChartCanvas(throughputChartCanvas); // Canvas hazırlığı
+  if (!surface) return; // Hazırlık başarısızsa çık
+  const { ctx, width, height } = surface; // Boyutları al
+  if (!series || !series.length) { // Veri yoksa
+    ctx.fillStyle = 'rgba(255,255,255,0.6)'; // Metin rengi
+    ctx.textAlign = 'center'; // Ortala
+    ctx.fillText('Henüz tamamlanan ürün yok', width / 2, height / 2); // Mesaj yaz
+    return; // Çık
+  }
+  const padding = { top: 24, right: 20, bottom: 42, left: 58 }; // Kenar boşlukları
+  const chartWidth = Math.max(10, width - padding.left - padding.right); // Grafik genişliği
+  const chartHeight = Math.max(10, height - padding.top - padding.bottom); // Grafik yüksekliği
+  const maxTime = Math.max(series[series.length - 1].time, horizon, 1); // Maks zaman
+  const maxCount = Math.max(series[series.length - 1].count, 1); // Maks adet
+  const points = series.map(point => ({ // Noktaları ölçekle
+    x: padding.left + (point.time / maxTime) * chartWidth, // X koordinatı
+    y: height - padding.bottom - (point.count / maxCount) * chartHeight // Y koordinatı
+  }));
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)'; // Eksen rengi
+  ctx.beginPath(); // Yol
+  ctx.moveTo(padding.left, padding.top); // Sol üst
+  ctx.lineTo(padding.left, height - padding.bottom); // Y ekseni
+  ctx.lineTo(width - padding.right, height - padding.bottom); // X ekseni
+  ctx.stroke(); // Çiz
+  ctx.strokeStyle = 'rgba(100,210,255,0.85)'; // Çizgi rengi
+  ctx.lineWidth = 2; // Çizgi kalınlığı
+  ctx.beginPath(); // Çizgi yolu
+  points.forEach((point, index) => { // Her nokta için
+    if (index === 0) ctx.moveTo(point.x, point.y); else ctx.lineTo(point.x, point.y); // Çizgi oluştur
+  });
+  ctx.stroke(); // Çiz
+  ctx.beginPath(); // Alan doldurma
+  points.forEach((point, index) => { // Noktaları tekrar gez
+    if (index === 0) ctx.moveTo(point.x, point.y); else ctx.lineTo(point.x, point.y); // Yol çiz
+  });
+  ctx.lineTo(points[points.length - 1].x, height - padding.bottom); // Sağ alt
+  ctx.lineTo(points[0].x, height - padding.bottom); // Sol alt
+  ctx.closePath(); // Yolu kapat
+  ctx.fillStyle = 'rgba(100,210,255,0.15)'; // Alan rengi
+  ctx.fill(); // Alanı doldur
+  ctx.fillStyle = 'rgba(255,255,255,0.6)'; // Yazı rengi
+  ctx.textAlign = 'center'; // X ekseni metni
+  for (let i = 0; i <= 4; i += 1) { // 5 bölme
+    const time = (maxTime / 4) * i; // Zaman değeri
+    const x = padding.left + (time / maxTime) * chartWidth; // X koordinatı
+    ctx.fillText(`${time.toFixed(0)} sn`, x, height - padding.bottom + 18); // Etiketi yaz
+  }
+  ctx.textAlign = 'right'; // Y ekseni metni
+  for (let i = 0; i <= 4; i += 1) { // 5 bölme
+    const count = (maxCount / 4) * i; // Adet değeri
+    const y = height - padding.bottom - (count / maxCount) * chartHeight; // Y koordinatı
+    ctx.fillText(`${count.toFixed(0)}`, padding.left - 6, y + 4); // Etiketi yaz
+  }
+}
+
+function loadSample() { // Örnek kurulum yükle
+  appState.stations = []; // Listeyi temizle
+  appState.nextStationId = 1; // Sayaç sıfırla
+  const s1 = new Station(`station-${appState.nextStationId++}`, 'S1'); // İstasyon1
+  s1.tasks = [new Task('Kesim', 1, 18), new Task('Montaj', 1, 38)]; // Görevler
+  const s2 = new Station(`station-${appState.nextStationId++}`, 'S2'); // İstasyon2
+  s2.tasks = [new Task('Kaynak', 1, 30)]; // Görev
+  const s3 = new Station(`station-${appState.nextStationId++}`, 'S3'); // İstasyon3
+  s3.tasks = [new Task('Boyama', 1, 40)]; // Görev
+  appState.stations.push(s1, s2, s3); // Listeye ekle
+  appState.entryPolicy = 'trigger'; // Tetikleme politikası
+  appState.targetCount = 20; // Hedef 20
+  syncControlsFromState(); // Kontrolleri hizala
+  renderStations(); // UI güncelle
+  renderGraph(appState.stations); // Akışı güncelle
+  saveState(appState); // Durumu kaydet
+}
+
+function syncControlsFromState() { // Kontrolleri duruma göre hizala
+  targetInput.value = appState.targetCount ?? ''; // Hedef alanı
+  entryPolicySelect.value = appState.entryPolicy; // Politika seçimi
+  entryIntervalInput.value = appState.entryInterval; // Aralık alanı
+  entryIntervalInput.style.display = appState.entryPolicy === 'interval' ? 'block' : 'none'; // Görünürlük
+  entryIntervalInput.disabled = appState.entryPolicy !== 'interval'; // Kilit durumu
+  speedSlider.value = appState.speed; // Hız kaydırgacı
+  const display = Number.isInteger(appState.speed) ? appState.speed.toFixed(0) : appState.speed.toFixed(2); // Gösterim metni
+  speedValue.textContent = `${display}×`; // Hız etiketi
+  if (taktInput) taktInput.value = appState.taktTime ?? ''; // Takt alanı
+  updateZoomDisplay(); // Zoom göstergesini yenile
+}
+
+function restoreFromSnapshot(snapshot) { // Yerel depolamadan gelen durumu uygula
+  if (!snapshot || typeof snapshot !== 'object') { // Veri yoksa
+    renderStations(); // Varsayılan çiz
+    renderGraph(appState.stations); // Akışı güncelle
+    syncControlsFromState(); // Kontrolleri hizala
+    return; // Çık
+  }
+  const safeStations = Array.isArray(snapshot.stations) ? snapshot.stations : []; // Güvenli istasyon listesi
+  appState.stations = safeStations.map(raw => { // Her istasyon için
+    const stationId = raw.id ? String(raw.id) : `station-${appState.nextStationId++}`; // Kimliği belirle
+    const stationName = raw.name ? String(raw.name) : stationId; // İsmi seç
+    const station = new Station(stationId, stationName); // Yeni istasyon
+    station.parallelServers = Math.max(1, Math.min(MAX_SERVERS, Number(raw.parallelServers) || 1)); // Paralel sınır
+    const rawTasks = Array.isArray(raw.tasks) ? raw.tasks : []; // Görev listesi
+    station.tasks = rawTasks.map(taskRaw => new Task( // Her görev için
+      taskRaw.name ? String(taskRaw.name) : 'Görev', // Görev adı
+      Math.max(1, Number(taskRaw.operators) || 1), // Operatör
+      Math.max(1, Number(taskRaw.durationSec) || 1) // Süre
+    ));
+    return station; // Hazır istasyon
+  });
+  const snapshotNext = snapshot.nextStationId ? Number(snapshot.nextStationId) : appState.nextStationId; // Sonraki sayaç
+  const computedNext = appState.stations.length ? Math.max(...appState.stations.map(st => {
+    const numeric = Number(String(st.id).split('-').pop()); // Kimlikten sayı çıkar
+    return Number.isFinite(numeric) ? numeric + 1 : 1; // Sonraki tahmin
+  })) : 1; // Boşsa 1
+  appState.nextStationId = Math.max(1, snapshotNext, computedNext); // Sayaç hizala
+  if (typeof snapshot.targetCount === 'number' && snapshot.targetCount > 0) { // Hedef geçerli mi
+    appState.targetCount = Math.floor(snapshot.targetCount); // Hedefi ata
+  }
+  if (typeof snapshot.entryInterval === 'number' && snapshot.entryInterval > 0) { // Aralık geçerli mi
+    appState.entryInterval = Math.floor(snapshot.entryInterval); // Aralığı ata
+  }
+  if (snapshot.entryPolicy === 'interval' || snapshot.entryPolicy === 'trigger') { // Politika doğrulama
+    appState.entryPolicy = snapshot.entryPolicy; // Politikayı ata
+  }
+  if (typeof snapshot.speed === 'number' && snapshot.speed > 0) { // Hız geçerli mi
+    appState.speed = Math.max(0.25, Math.min(16, snapshot.speed)); // Hızı sınırla
+  }
+  if (typeof snapshot.zoom === 'number' && snapshot.zoom > 0) { // Zoom geçerli mi
+    appState.zoom = Math.max(0.5, Math.min(2.5, snapshot.zoom)); // Zoom aralığını sınırla
+  }
+  if (typeof snapshot.taktTime === 'number' && snapshot.taktTime > 0) { // Takt değeri geçerli mi
+    appState.taktTime = snapshot.taktTime; // Takt time ata
+  }
+  syncControlsFromState(); // Kontrolleri güncelle
+  renderStations(); // Kartları çiz
+  renderGraph(appState.stations); // Akışı güncelle
+  saveState(appState); // Normalize edilmiş durumu kaydet
+}
+
+let eventsBound = false; // Olay bağlama bayrağı
+
+function bindKeyboardShortcuts(event) { // Klavye kısayol dinleyicisi
+  if (!event || !event.key) return; // Geçersizse çık
+  const tagName = event.target?.tagName; // Hedef etiketi
+  if (tagName === 'INPUT' || tagName === 'TEXTAREA') return; // Form odakta ise çık
+  const key = event.key.toLowerCase(); // Harfi küçült
+  if (key === 'b') startSimulation(); // B ile başlat
+  if (key === 'd') stopSimulation(true); // D ile durdur
+  if (key === 'r') resetSimulation(); // R ile sıfırla
+}
+
+function guardControlForm() { // Kontrol formu gönderimini engelle
+  document.querySelector('form#controls')?.addEventListener('submit', event => event.preventDefault()); // Submit engelle
+}
+
+function attachUiEvents() { // UI olaylarını bağla
+  if (eventsBound) return; // Zaten bağlıysa çık
+  eventsBound = true; // Bayrağı işaretle
+  guardControlForm(); // Form koruması ekle
+  const addBtn = document.querySelector('#addStationBtn, [data-action="add-station"]'); // Butonu bul
+  console.assert(addBtn, 'Add Station button not found'); // Kontrol
+  addBtn?.addEventListener('click', onAddStationClick, { once: false }); // Tıklama bağla
+  sampleBtn?.addEventListener('click', loadSample); // Örnek kurulum
+  startBtn?.addEventListener('click', () => startSimulation()); // Başlat
+  stopBtn?.addEventListener('click', () => stopSimulation(true)); // Durdur
+  resetBtn?.addEventListener('click', () => resetSimulation()); // Sıfırla
+  analysisBtn?.addEventListener('click', () => openAnalysisModal()); // Analiz modalını aç
+  resultsBtn?.addEventListener('click', () => openReportModal()); // Raporu aç
+  fullscreenBtn?.addEventListener('click', () => toggleFullscreen()); // Tam ekran değiştir
+  closeAnalysisBtn?.addEventListener('click', () => closeAnalysisModal()); // Analiz modalını kapat
+  analysisModal?.addEventListener('click', event => { if (event.target === analysisModal) closeAnalysisModal(); }); // Dışa tıklayınca kapat
+  analysisRecalcBtn?.addEventListener('click', () => runAnalysis()); // Analizi yenile
+  closeReportBtn?.addEventListener('click', () => closeReport()); // Rapor kapat
+  reportModal?.addEventListener('click', event => { if (event.target === reportModal) closeReport(); }); // Modal dışı kapat
+  speedSlider?.addEventListener('input', () => { // Hız değişimi
+    const value = Number(speedSlider.value); // Değer al
+    appState.speed = value; // Duruma ata
+    const display = Number.isInteger(value) ? value.toFixed(0) : value.toFixed(2); // Gösterim seçimi
+    speedValue.textContent = `${display}×`; // Etiketi güncelle
+    viz.setSpeed(appState.speed); // Animasyon hızını anında uygula
+    saveState(appState); // Durumu kaydet
+  });
+  targetInput?.addEventListener('input', () => { // Hedef değişimi
+    const value = Number(targetInput.value); // Değer al
+    appState.targetCount = value > 0 ? Math.floor(value) : null; // Ata
+    saveState(appState); // Durumu kaydet
+  });
+  taktInput?.addEventListener('change', () => { // Takt değişimi
+    const value = Number(taktInput.value); // Değer al
+    appState.taktTime = value > 0 ? value : null; // Duruma yaz
+    saveState(appState); // Durumu kaydet
+    runAnalysis(); // Analizi güncelle
+  });
+  entryPolicySelect?.addEventListener('change', () => { // Giriş politikası değişimi
+    appState.entryPolicy = entryPolicySelect.value; // Durum güncelle
+    if (entryIntervalInput) { // Aralık alanı varsa
+      entryIntervalInput.style.display = appState.entryPolicy === 'interval' ? 'block' : 'none'; // Alanı göster/gizle
+      entryIntervalInput.disabled = appState.entryPolicy !== 'interval'; // Kilit
+    }
+    saveState(appState); // Durumu kaydet
+  });
+  entryIntervalInput?.addEventListener('change', () => { // Aralık değişimi
+    const value = Math.max(1, Number(entryIntervalInput.value) || 1); // Sınırla
+    entryIntervalInput.value = value; // Alanı güncelle
+    appState.entryInterval = value; // Duruma ata
+    saveState(appState); // Durumu kaydet
+  });
+  zoomOutBtn?.addEventListener('click', () => adjustZoom(-0.25)); // Zoom azalt
+  zoomInBtn?.addEventListener('click', () => adjustZoom(0.25)); // Zoom artır
+  zoomResetBtn?.addEventListener('click', () => resetZoom()); // Zoom sıfırla
+  document.addEventListener('keydown', bindKeyboardShortcuts); // Klavye olayları
+  document.addEventListener('fullscreenchange', () => { // Tam ekran değişince
+    updateFullscreenLabel(); // Etiketi güncelle
+    scheduleDashboardCharts(); // Grafik boyutlarını tazele
+  });
+  window.addEventListener('resize', () => scheduleDashboardCharts()); // Pencere yeniden boyutlanınca grafikleri tazele
+}
+
+function initApp() { // Başlatıcı
+  attachUiEvents(); // Olayları bağla
+  if (persistedSnapshot) { // Kayıtlı durum varsa
+    restoreFromSnapshot(persistedSnapshot); // Durumu yükle
+  } else {
+    syncControlsFromState(); // Varsayılan kontroller
+    renderStations(); // Varsayılan çizim
+    renderGraph(appState.stations); // Akışı güncelle
+    saveState(appState); // Başlangıç durumunu yaz
+  }
+  setTimeout(() => { // Programatik doğrulama
+    const addBtn = document.querySelector('#addStationBtn, [data-action="add-station"]'); // Butonu bul
+    if (!addBtn) return; // Yoksa çık
+    const before = appState.stations.length; // Önceki sayaç
+    const previousNextId = appState.nextStationId; // Önceki kimlik sayacı
+    renderingPaused = true; // Yeniden çizimi geçici olarak durdur
+    try { // Korunan deneme bloğu
+      addBtn.click(); // Tıklamayı simüle et
+    } finally { // Her durumda çalışacak blok
+      renderingPaused = false; // Bayrağı eski haline getir
+    }
+    const after = appState.stations.length; // Sonraki sayaç
+    console.assert(after === before + 1, 'Station not added via programmatic click'); // Doğrulama
+    if (after === before + 1) { // Başarılıysa
+      appState.stations.pop(); // Eklenen istasyonu çıkar
+      appState.nextStationId = previousNextId; // Kimlik sayacını geri al
+      renderStations(); // Listeyi yenile
+      renderGraph(appState.stations); // Akışı güncelle
+      saveState(appState); // Durumu kaydet
+    }
+  }, 500); // 500ms sonra çalıştır
+}
+
+if (document.readyState === 'loading') { // DOM yükleniyorsa
+  document.addEventListener('DOMContentLoaded', initApp, { once: true }); // DOM hazır olunca çalıştır
+} else {
+  queueMicrotask(initApp); // Zaten yüklüyse hemen çalıştır
+}
+</script> <!-- Betik bitişi -->
+</body>
+</html>
