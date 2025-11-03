@@ -36,15 +36,202 @@ header { /* Üst çubuk stili */
   z-index: 10; /* Üstte kalması için */
   background: rgba(17, 19, 22, 0.94); /* Hafif saydam fon */
   backdrop-filter: blur(12px); /* Cam efekti */
-  padding: 16px 24px; /* İç boşluk */
+  padding: 16px 24px 12px 24px; /* İç boşluk */
   box-shadow: 0 2px 12px rgba(0,0,0,0.35); /* Gölge */
+  display: grid; /* Tab ve toolbar ızgarası */
+  gap: 12px; /* Satırlar arası boşluk */
 }
 
-header .controls { /* Kontrol satırı */
+.tab-bar { /* Sekme çubuğu */
   display: flex; /* Yatay hizalama */
-  flex-wrap: wrap; /* Satır atlama */
-  gap: 12px; /* Aralar boşluk */
+  flex-wrap: wrap; /* Satır kırılmasına izin ver */
+  gap: 8px; /* Sekmeler arası boşluk */
   align-items: center; /* Dikey ortalama */
+}
+
+.tab-button { /* Sekme düğmesi */
+  display: inline-flex; /* İçeriği hizala */
+  align-items: center; /* Dikey ortala */
+  gap: 8px; /* İkon boşluğu */
+  padding: 6px 14px; /* İç boşluk */
+  border-radius: 999px; /* Tam yuvarlak */
+  border: 1px solid rgba(255,255,255,0.16); /* İnce kenar */
+  background: rgba(26, 30, 36, 0.7); /* Panel fonu */
+  color: var(--text); /* Metin rengi */
+  cursor: pointer; /* El imleci */
+  transition: background var(--transition), border-color var(--transition), transform var(--transition); /* Geçişler */
+  user-select: none; /* Metni seçme */
+}
+
+.tab-button[data-active="true"] { /* Aktif sekme */
+  background: linear-gradient(135deg, rgba(100,210,255,0.92), rgba(143,123,255,0.9)); /* Degrade */
+  color: #06141c; /* Kontrast metin */
+  border-color: transparent; /* Kenarı kaldır */
+  box-shadow: 0 12px 28px rgba(0,0,0,0.35); /* Gölge */
+}
+
+.tab-button:hover:not([data-active="true"]) { /* Hover pasif sekme */
+  background: rgba(100,210,255,0.2); /* Vurgu fon */
+  border-color: rgba(100,210,255,0.4); /* Kenarı vurgula */
+}
+
+.tab-button[data-dirty="true"]::after { /* Kaydedilmemiş değişiklik göstergesi */
+  content: '•'; /* Nokta */
+  margin-left: 6px; /* Boşluk */
+  color: var(--accent); /* Vurgu rengi */
+  font-size: 1.2em; /* Boyut */
+}
+
+.tab-button span { /* Sekme adı */
+  pointer-events: none; /* İç metne tıklama yok */
+}
+
+.tab-close { /* Sekme kapatma ikonu */
+  background: transparent; /* Şeffaf */
+  border: none; /* Kenar yok */
+  color: inherit; /* Metni devral */
+  font-size: 0.9rem; /* Boyut */
+  cursor: pointer; /* El imleci */
+  padding: 0; /* Boşluk yok */
+  line-height: 1; /* Sıkı hizalama */
+}
+
+.tab-button[draggable="true"] { /* Sürüklenebilir sekme */
+  opacity: 1; /* Tam görünür */
+}
+
+.new-tab-btn { /* Yeni sekme butonu */
+  padding: 6px 12px; /* İç boşluk */
+  border-radius: 999px; /* Yuvarlak */
+  background: rgba(255,255,255,0.08); /* Hafif parlak */
+  border: 1px dashed rgba(255,255,255,0.2); /* Kesikli kenar */
+  color: var(--text); /* Metin rengi */
+  cursor: pointer; /* El imleci */
+  transition: background var(--transition), border-color var(--transition); /* Geçiş */
+}
+
+.new-tab-btn:hover { /* Hover yeni sekme */
+  background: rgba(100,210,255,0.2); /* Parlak */
+  border-color: rgba(100,210,255,0.5); /* Kenar */
+}
+
+.controls { /* Ana toolbar kapsayıcısı */
+  display: flex; /* Yatay hizalama */
+  flex-direction: column; /* Satırlar halinde düzenle */
+  gap: 12px; /* Satırlar arası boşluk */
+}
+
+.toolbar-row { /* Toolbar satırı */
+  display: flex; /* Yatay hizalama */
+  flex-wrap: wrap; /* Satır kırılmasına izin ver */
+  gap: 12px; /* Grup arası boşluk */
+  align-items: center; /* Dikey ortala */
+}
+
+.control-group { /* Buton grubu */
+  display: inline-flex; /* Yatay hizalama */
+  align-items: center; /* Dikey ortala */
+  gap: 8px; /* Eleman aralığı */
+  padding: 6px 10px; /* İç boşluk */
+  border-radius: 12px; /* Köşe yuvarla */
+  background: rgba(18, 20, 26, 0.7); /* Grup arka planı */
+  border: 1px solid rgba(255,255,255,0.08); /* İnce kenar */
+}
+
+.control-group[data-tone="accent"] { /* Vurgulu grup */
+  border-color: rgba(100,210,255,0.28); /* Kenarı parlat */
+}
+
+.control-group label { /* Grup içi etiket */
+  display: inline-flex; /* Yatay hizala */
+  align-items: center; /* Dikey ortala */
+  gap: 6px; /* Boşluk */
+}
+
+.mini-zoom { /* Zoom mini panel */
+  display: inline-flex; /* Yatay hizala */
+  align-items: center; /* Dikey ortala */
+  gap: 4px; /* Boşluk */
+  background: rgba(255,255,255,0.08); /* Hafif panel */
+  border-radius: 999px; /* Tam yuvarlak */
+  padding: 4px 8px; /* İç boşluk */
+}
+
+.mini-zoom button { /* Mini zoom butonları */
+  background: transparent; /* Şeffaf */
+  border: none; /* Kenar yok */
+  color: var(--text); /* Metin rengi */
+  font-weight: 600; /* Kalın */
+  cursor: pointer; /* El imleci */
+  padding: 2px 6px; /* İç boşluk */
+}
+
+.mini-zoom span { /* Zoom değeri */
+  min-width: 52px; /* Minimum genişlik */
+  text-align: center; /* Ortala */
+  font-variant-numeric: tabular-nums; /* Sabit rakam */
+}
+
+.language-menu { /* Dil menüsü */
+  position: absolute; /* Mutlak konum */
+  margin-top: 6px; /* Üst boşluk */
+  right: 0; /* Sağa hizala */
+  background: rgba(18,22,28,0.96); /* Menü arka planı */
+  border-radius: 12px; /* Köşe */
+  border: 1px solid rgba(255,255,255,0.14); /* İnce kenar */
+  box-shadow: 0 18px 40px rgba(0,0,0,0.45); /* Gölge */
+  display: none; /* Varsayılan gizli */
+  flex-direction: column; /* Dikey öğeler */
+  min-width: 160px; /* Minimum genişlik */
+  z-index: 30; /* Üst katman */
+}
+
+.language-menu button { /* Dil menü öğesi */
+  background: transparent; /* Şeffaf */
+  border: none; /* Kenar yok */
+  color: var(--text); /* Metin rengi */
+  padding: 10px 14px; /* İç boşluk */
+  text-align: left; /* Sola hizala */
+  cursor: pointer; /* El imleci */
+  transition: background var(--transition); /* Geçiş */
+}
+
+.language-menu button:hover { /* Hover dil öğesi */
+  background: rgba(100,210,255,0.22); /* Parlak */
+  color: #08202a; /* Kontrast metin */
+}
+
+.dropdown { /* Genel açılır menü */
+  position: relative; /* Menü için referans */
+}
+
+.dropdown-menu { /* Açılır menü paneli */
+  position: absolute; /* Mutlak konum */
+  top: calc(100% + 6px); /* Buton altı */
+  right: 0; /* Sağa hizala */
+  background: rgba(18,22,28,0.96); /* Menü fonu */
+  border-radius: 12px; /* Köşe */
+  border: 1px solid rgba(255,255,255,0.14); /* İnce kenar */
+  box-shadow: 0 18px 40px rgba(0,0,0,0.45); /* Gölge */
+  display: none; /* Varsayılan gizli */
+  min-width: 200px; /* Minimum genişlik */
+  z-index: 35; /* Katman */
+}
+
+.dropdown-menu button { /* Menü öğesi */
+  width: 100%; /* Tam genişlik */
+  background: transparent; /* Şeffaf */
+  border: none; /* Kenar yok */
+  color: var(--text); /* Metin rengi */
+  padding: 10px 16px; /* İç boşluk */
+  text-align: left; /* Sola hizala */
+  cursor: pointer; /* El imleci */
+  transition: background var(--transition); /* Geçiş */
+}
+
+.dropdown-menu button:hover { /* Hover menü öğesi */
+  background: rgba(100,210,255,0.2); /* Parlak */
+  color: #08202a; /* Kontrast */
 }
 
 button, input, select { /* Form kontrolleri ortak stil */
@@ -198,8 +385,8 @@ main { /* Ana içerik */
 #lineSvg { /* SVG alanı */
   width: 100%; /* Tam genişlik */
   height: 100%; /* Tam yükseklik */
-  transform-origin: center center; /* Zoom merkezini sabitle */
-  transition: transform var(--transition); /* Zoom geçişi */
+  touch-action: none; /* Dokunma kaydırmasını engelle */
+  background: transparent; /* Şeffaf arka plan */
 }
 
 .zoom-toolbar { /* Zoom denetimi kutusu */
@@ -232,6 +419,241 @@ main { /* Ana içerik */
 
 .zoom-toolbar span { /* Zoom metni */
   pointer-events: none; /* Etkileşimi kapat */
+}
+
+.node-layer, .edge-layer, .metric-layer { /* SVG katmanları */
+  pointer-events: none; /* Varsayılan etkileşimi kapat */
+}
+
+.station-node { /* İstasyon düğümü */
+  pointer-events: all; /* Etkileşimi aç */
+  cursor: grab; /* Sürükleme imleci */
+  transition: transform var(--transition); /* Geçiş efekti */
+}
+
+.station-node:active { /* Sürükleme sırasında */
+  cursor: grabbing; /* Grabbing imleci */
+}
+
+.node-connector-add .connector-circle { /* Bağlantı ekleme düğmesi */
+  fill: rgba(100,210,255,0.25); /* Varsayılan dolgu */
+  stroke: rgba(255,255,255,0.28); /* Kenar */
+  stroke-width: 1.4; /* Kenar kalınlığı */
+  transition: fill var(--transition), stroke var(--transition), transform var(--transition); /* Geçiş */
+}
+
+.node-connector-add:hover .connector-circle { /* Hover durumu */
+  fill: rgba(100,210,255,0.55); /* Vurgu dolgu */
+  stroke: rgba(255,255,255,0.7); /* Kenarı parlat */
+}
+
+.connector-plus { /* Artı işareti */
+  stroke: rgba(8,25,34,0.85); /* Çizgi rengi */
+  stroke-width: 2.2; /* Çizgi kalınlığı */
+  stroke-linecap: round; /* Uçları yuvarla */
+  pointer-events: none; /* Etkileşimi kapat */
+}
+
+.edge-group { /* Kenar grubu */
+  pointer-events: none; /* Varsayılan kapalı */
+}
+
+.edge-path { /* Kenar çizgisi */
+  opacity: 0.88; /* Şeffaflık */
+  stroke-linecap: round; /* Uçları yuvarla */
+  pointer-events: none; /* Etkileşimi kapat */
+}
+
+.edge-draft { /* Canlı bağlantı taslak çizgisi */
+  stroke: rgba(100,210,255,0.7); /* Taslak çizgi rengi */
+  stroke-width: 3; /* Çizgi kalınlığı */
+  stroke-dasharray: 10 6; /* Kesikli desen */
+  fill: none; /* Dolgu kapalı */
+  pointer-events: none; /* Etkileşim alma */
+}
+
+.station-node.drafting .station-shape { /* Kaynak düğüm vurgusu */
+  stroke: rgba(143,123,255,0.75); /* Vurgulu kenar */
+  stroke-width: 2; /* Kenar kalınlığı */
+}
+
+.station-node.draft-target .station-shape { /* Hedef düğüm vurgusu */
+  stroke: rgba(100,210,255,0.85); /* Hedef kenar rengi */
+  stroke-width: 2; /* Kenar kalınlığı */
+  filter: drop-shadow(0 0 18px rgba(100,210,255,0.45)); /* Parlama efekti */
+}
+
+.edge-label { /* Kenar etiketi */
+  fill: rgba(255,255,255,0.68); /* Metin rengi */
+  font-size: 0.72rem; /* Yazı boyutu */
+  pointer-events: none; /* Etkileşimi kapat */
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6); /* Gölge */
+}
+
+.edge-remove { /* Kenar silme işareti */
+  fill: rgba(255,255,255,0.82); /* Metin rengi */
+  font-size: 1rem; /* Yazı boyutu */
+  pointer-events: all; /* Etkileşime izin ver */
+  cursor: pointer; /* El imleci */
+  text-shadow: 0 2px 6px rgba(0,0,0,0.65); /* Gölge */
+  transition: transform var(--transition), fill var(--transition); /* Geçiş */
+}
+
+.edge-remove:hover { /* Hover durumda */
+  fill: var(--danger); /* Rengi kırmızı yap */
+  transform: scale(1.12); /* Hafif büyüt */
+}
+
+.fork-indicator { /* Fork simgesi */
+  stroke: var(--accent); /* Çizgi rengi */
+  stroke-width: 2; /* Kalınlık */
+  fill: none; /* Dolgu yok */
+  opacity: 0.9; /* Şeffaflık */
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4)); /* Gölge */
+  display: none; /* Varsayılan gizli */
+}
+
+.fork-node .station-shape { /* Fork düğümü vurgusu */
+  stroke: rgba(100,210,255,0.45); /* Kenarı vurgula */
+  stroke-width: 1.6; /* Kenar kalınlığı */
+}
+
+.fork-node .fork-indicator { /* Fork simgesi görünürlüğü */
+  display: block; /* Göster */
+}
+
+.graph-toast { /* Görsel bildirim kutusu */
+  position: absolute; /* Konumlandırma */
+  left: 50%; /* Yatay ortala */
+  bottom: 18px; /* Alt boşluk */
+  transform: translateX(-50%); /* Ortala */
+  background: rgba(18,22,28,0.88); /* Arka plan */
+  color: rgba(255,255,255,0.9); /* Metin */
+  padding: 10px 18px; /* İç boşluk */
+  border-radius: 999px; /* Yuvarlat */
+  font-size: 0.82rem; /* Yazı boyutu */
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35); /* Gölge */
+  backdrop-filter: blur(8px); /* Cam efekti */
+  opacity: 0; /* Başlangıçta gizli */
+  pointer-events: none; /* Etkileşim yok */
+  transition: opacity 200ms ease; /* Geçiş */
+  z-index: 70; /* Üst katman */
+}
+
+.graph-toast.success { /* Başarılı ton */
+  background: rgba(46, 204, 113, 0.85); /* Yeşil arka plan */
+  color: #041b0c; /* Metin rengi */
+}
+
+.graph-toast.warning { /* Uyarı tonu */
+  background: rgba(255, 196, 0, 0.85); /* Sarı arka plan */
+  color: #2d2300; /* Metin */
+}
+
+.graph-toast.error { /* Hata tonu */
+  background: rgba(255, 107, 107, 0.88); /* Kırmızı arka plan */
+  color: #220505; /* Metin */
+}
+
+.save-layout-btn { /* Yerleşim kaydet butonu */
+  position: absolute; /* Sabit konum */
+  top: 16px; /* Üst boşluk */
+  right: 16px; /* Sağ boşluk */
+  background: linear-gradient(135deg, rgba(100,210,255,0.95), rgba(143,123,255,0.95)); /* Degrade arka plan */
+  color: #071821; /* Metin rengi */
+  border: none; /* Kenarsız */
+  border-radius: 999px; /* Tam yuvarlat */
+  padding: 9px 20px; /* İç boşluk */
+  font-weight: 600; /* Kalınlık */
+  box-shadow: 0 14px 32px rgba(0,0,0,0.35); /* Gölge */
+  transition: transform var(--transition), box-shadow var(--transition), filter var(--transition); /* Geçişler */
+  cursor: pointer; /* İmleç */
+  z-index: 40; /* Üst katman */
+}
+
+.save-layout-btn:hover:not(:disabled) { /* Hover etkisi */
+  transform: translateY(-2px); /* Hafif yükselt */
+  filter: brightness(1.08); /* Parlaklık artır */
+}
+
+.save-layout-btn:disabled { /* Pasif durum */
+  opacity: 0.45; /* Soluklaştır */
+  cursor: not-allowed; /* İmleç */
+}
+
+.layout-toolbar { /* Yerleşim araç çubuğu */
+  position: absolute; /* Panel üzerinde konumla */
+  left: 16px; /* Sol boşluk */
+  bottom: 16px; /* Alt boşluk */
+  display: flex; /* Esnek hizalama */
+  flex-wrap: wrap; /* Satır kır */
+  gap: 8px; /* Boşluk */
+  padding: 8px 10px; /* İç boşluk */
+  border-radius: 14px; /* Köşe yuvarla */
+  background: rgba(12, 16, 22, 0.78); /* Saydam panel */
+  border: 1px solid rgba(255,255,255,0.12); /* İnce kenar */
+  box-shadow: 0 18px 34px rgba(0,0,0,0.45); /* Gölge */
+  z-index: 50; /* Katman */
+}
+
+.layout-toolbar button { /* Araç çubuğu butonu */
+  padding: 7px 14px; /* İç boşluk */
+  border-radius: 10px; /* Köşe yuvarla */
+  background: rgba(255,255,255,0.08); /* Saydam arka plan */
+  border: 1px solid rgba(255,255,255,0.18); /* Kenar */
+  color: var(--text); /* Metin rengi */
+  font-weight: 500; /* Kalınlık */
+  cursor: pointer; /* İmleç */
+  transition: background var(--transition), border-color var(--transition), transform var(--transition); /* Geçişler */
+}
+
+.layout-toolbar button:hover { /* Hover durumu */
+  background: rgba(100,210,255,0.25); /* Parlaklaştır */
+  border-color: rgba(100,210,255,0.65); /* Kenarı vurgula */
+  transform: translateY(-1px); /* Hafif kaldır */
+}
+
+.layout-toolbar button[data-active="true"] { /* Aktif durumda buton */
+  background: linear-gradient(135deg, rgba(100,210,255,0.9), rgba(143,123,255,0.9)); /* Degrade arka plan */
+  color: #081822; /* Kontrast metin */
+  border-color: transparent; /* Kenarı kaldır */
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35); /* Gölge */
+}
+
+body[data-edit-mode="view"] .layout-toolbar [data-edit-only="true"] { /* Görüntüle modunda gizlenecekler */
+  display: none; /* Gizle */
+}
+
+body[data-edit-mode="view"] .layout-toolbar { /* Görüntüle modunda araç çubuğu */
+  background: rgba(12, 16, 22, 0.6); /* Daha hafif fon */
+}
+
+.mode-toggle { /* Mod geçiş kapsayıcı */
+  display: inline-flex; /* Yatay düzen */
+  border-radius: 999px; /* Tam yuvarlak */
+  overflow: hidden; /* Sınırla */
+  border: 1px solid rgba(255,255,255,0.12); /* İnce kenar */
+  background: rgba(18, 20, 26, 0.8); /* Arka plan */
+}
+
+.mode-toggle button { /* Mod butonu */
+  border: none; /* Kenar yok */
+  background: transparent; /* Şeffaf arka plan */
+  color: var(--muted); /* Sönük metin */
+  padding: 8px 16px; /* İç boşluk */
+  font-weight: 600; /* Kalınlık */
+  cursor: pointer; /* İmleç */
+  transition: background var(--transition), color var(--transition); /* Geçişler */
+}
+
+.mode-toggle button[data-active="true"] { /* Aktif mod */
+  background: linear-gradient(135deg, rgba(100,210,255,0.9), rgba(143,123,255,0.9)); /* Degrade */
+  color: #071a23; /* Kontrast */
+}
+
+.mode-toggle button:disabled { /* Kilitli mod butonu */
+  opacity: 0.4; /* Soluklaştır */
+  cursor: not-allowed; /* İmleç değiştir */
 }
 
 .station-shape { /* SVG istasyon kutusu */
@@ -357,6 +779,13 @@ main { /* Ana içerik */
   margin-top: 0; /* Üst boşluk kaldır */
 }
 
+.modal-actions { /* Modal buton grubu */
+  display: flex; /* Yatay hizala */
+  justify-content: flex-end; /* Sağa yasla */
+  gap: 12px; /* Boşluk */
+  margin-top: 18px; /* Üst boşluk */
+}
+
 
 .dashboard-header { /* Dashboard başlık alanı */
   display: flex; /* Yatay hizala */
@@ -464,23 +893,6 @@ main { /* Ana içerik */
   line-height: 1.5; /* Satır yüksekliği */
 }
 
-.signature { /* İmza */
-  position: fixed; /* Sabit konum */
-  right: 18px; /* Sağ boşluk */
-  bottom: 14px; /* Alt boşluk */
-  font-family: 'Courier New', Courier, monospace; /* Monospace */
-  font-size: 0.85rem; /* Yazı boyutu */
-  color: rgba(255,255,255,0.55); /* Saydam gri */
-  letter-spacing: 0.28em; /* Harf aralığı */
-  pointer-events: none; /* Etkileşim yok */
-  transition: opacity 0.3s ease; /* Geçiş */
-  z-index: 50; /* Üst katman */
-}
-
-.signature:hover { /* Hover durumu */
-  opacity: 0.9; /* Opaklık */
-}
-
 .analysis-form { /* Analiz form satırı */
   display: flex; /* Yatay hizala */
   gap: 16px; /* Aralık */
@@ -520,9 +932,47 @@ main { /* Ana içerik */
 }
 
 footer { /* Alt bilgi */
-  text-align: center; /* Ortala */
-  padding: 16px; /* İç boşluk */
-  color: var(--muted); /* Metin */
+  margin-top: 24px; /* Üst boşluk */
+  padding: 24px 32px; /* İç boşluk */
+  background: rgba(17,19,22,0.72); /* Arka plan */
+  border-top: 1px solid rgba(255,255,255,0.08); /* Üst kenar */
+}
+
+.footer-content { /* Footer iç düzeni */
+  display: flex; /* Yatay hizala */
+  flex-wrap: wrap; /* Satır kır */
+  align-items: center; /* Dikey ortala */
+  justify-content: space-between; /* Alanı yay */
+  gap: 16px; /* Eleman boşluğu */
+}
+
+.footer-brand { /* Kurumsal bilgi */
+  font-family: 'Poppins', 'Segoe UI', sans-serif; /* Yazı tipi */
+  font-weight: 600; /* Kalınlık */
+  letter-spacing: 0.08em; /* Harf aralığı */
+  text-transform: uppercase; /* Büyük harf */
+  color: rgba(255,255,255,0.88); /* Metin rengi */
+}
+
+.footer-hints { /* Kısayol bilgisi */
+  color: var(--muted); /* Sönük metin */
+  font-size: 0.9rem; /* Yazı boyutu */
+}
+
+.footer-signature { /* İmza metni */
+  font-family: 'Poppins', 'Segoe UI', sans-serif; /* Yazı tipi */
+  font-weight: 600; /* Kalınlık */
+  letter-spacing: 0.08em; /* Harf aralığı */
+  text-transform: uppercase; /* Büyük harf */
+  color: rgba(255,255,255,0.88); /* Metin rengi */
+}
+
+.footer-meta { /* Sağ taraftaki meta */
+  display: flex; /* Yatay hizala */
+  gap: 12px; /* Boşluk */
+  align-items: center; /* Dikey ortala */
+  color: rgba(255,255,255,0.68); /* Metin rengi */
+  font-size: 0.9rem; /* Yazı boyutu */
 }
 
 input[type="number"]::-webkit-inner-spin-button { /* Spin butonlarını gizle */
@@ -570,32 +1020,76 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
 </head>
 <body> <!-- Gövde başlangıcı -->
 <header> <!-- Üst çubuk -->
-  <div class="controls"> <!-- Kontrol grubu -->
-    <button id="addStationBtn" type="button" class="primary" title="Yeni istasyon ekle">+ İstasyon Ekle</button> <!-- İstasyon ekleme -->
-    <button id="sampleSetupBtn" type="button" title="Örnek kurulum yükle">Örnek Kurulum</button> <!-- Hazır senaryo -->
-    <button id="analysisBtn" type="button" title="Analiz ve önerileri aç">Analiz/Öneri</button> <!-- Analiz modal tetikleyici -->
-    <button id="resultsBtn" type="button" title="Simülasyon sonuçlarını aç">Sonuçları Gör</button> <!-- Dashboard butonu -->
-    <button id="startBtn" type="button" class="primary" title="Simülasyonu başlat (B)">Başlat</button> <!-- Başlat butonu -->
-    <button id="stopBtn" type="button" class="danger" title="Simülasyonu durdur (D)" disabled>Durdur</button> <!-- Durdur butonu -->
-    <button id="resetBtn" type="button" title="Simülasyonu sıfırla (R)">Sıfırla</button> <!-- Sıfırla butonu -->
-    <label title="Animasyon hızı" style="display:flex;align-items:center;gap:8px;"> <!-- Hız kontrol etiketi -->
-      <span>Hız</span> <!-- Metin -->
-      <input id="speedSlider" type="range" min="0.25" max="16" step="0.25" value="1"> <!-- Slider -->
-      <span id="speedValue" class="badge">1×</span> <!-- Hız göstergesi -->
-    </label>
-    <label title="Hedef tamamlanacak ürün adedi" style="display:flex;align-items:center;gap:8px;"> <!-- Hedef alanı -->
-      <span>Hedef adet</span> <!-- Metin -->
-      <input id="targetInput" type="number" min="1" placeholder="sonsuz"> <!-- Hedef girişi -->
-    </label>
-    <label style="display:flex;align-items:center;gap:8px;"> <!-- Giriş politikası etiketi -->
-      <span>Giriş</span> <!-- Metin -->
-      <select id="entryPolicySelect"> <!-- Politika seçimi -->
-        <option value="trigger">Ürün, tamamlandıkça girsin</option> <!-- Seçenek 1 -->
-        <option value="interval">Sabit giriş aralığı</option> <!-- Seçenek 2 -->
-      </select>
-      <input id="entryIntervalInput" type="number" min="1" value="30" style="width:120px;display:none;" placeholder="sn"> <!-- Aralık girişi -->
-    </label>
-    <span id="completedCounter" class="badge hud-badge" aria-live="polite">Tamamlanan: 0</span> <!-- Tamamlanan sayaç -->
+  <div class="tab-bar" id="tabBar" role="tablist" aria-label="Senaryo sekmeleri"> <!-- Sekme çubuğu -->
+    <button id="newTabBtn" type="button" class="new-tab-btn" data-i18n="tabs.new" data-i18n-title="title.newTab" title="Yeni sekme aç">+ Yeni Sekme</button> <!-- Yeni sekme -->
+  </div>
+  <div class="controls"> <!-- Kontrol satırları -->
+    <div class="toolbar-row"> <!-- Üst satır -->
+      <div class="control-group" data-group="simulation" data-tone="accent"> <!-- Simülasyon grubu -->
+        <button id="startBtn" type="button" class="primary" data-i18n="toolbar.start" data-i18n-title="title.start" title="Simülasyonu başlat (B)">Başlat</button> <!-- Başlat -->
+        <button id="stopBtn" type="button" class="danger" data-i18n="toolbar.stop" data-i18n-title="title.stop" title="Simülasyonu durdur (D)" disabled>Durdur</button> <!-- Durdur -->
+        <button id="resetBtn" type="button" data-i18n="toolbar.reset" data-i18n-title="title.reset" title="Simülasyonu sıfırla (R)">Sıfırla</button> <!-- Sıfırla -->
+        <button id="clearBtn" type="button" data-i18n="toolbar.clear" data-i18n-title="title.clear" title="Aktif sekmeyi temizle">Temizle</button> <!-- Temizle -->
+      </div>
+      <div class="control-group" data-group="view"> <!-- Görünüm grubu -->
+        <button id="fullscreenBtn" type="button" class="fullscreen-btn" data-i18n-title="title.fullscreen" title="Simülasyon alanını tam ekran yap"><span data-i18n="toolbar.fullscreen">🔳 Tam Ekran</span></button> <!-- Tam ekran -->
+        <div class="mini-zoom" role="group" aria-label="Yakınlaştırma"> <!-- Mini zoom -->
+          <button id="zoomOutBtn" type="button" data-i18n-title="title.zoomOut" title="Görünümü küçült">−</button> <!-- Zoom out -->
+          <button id="zoomResetBtn" type="button" data-i18n-title="title.zoomReset" title="Ölçeği 100% yap"><span id="zoomValue">100%</span></button> <!-- Zoom sıfırla -->
+          <button id="zoomInBtn" type="button" data-i18n-title="title.zoomIn" title="Görünümü büyüt">+</button> <!-- Zoom in -->
+        </div>
+        <div class="dropdown" id="languageDropdown"> <!-- Dil seçimi -->
+          <button id="languageBtn" type="button" data-i18n-title="title.language" title="Dili değiştir">🌐 TR</button> <!-- Dil butonu -->
+          <div class="language-menu" id="languageMenu" role="menu" aria-label="Dil seçenekleri"> <!-- Dil menüsü -->
+            <button type="button" data-lang="tr">Türkçe</button> <!-- Türkçe -->
+            <button type="button" data-lang="en">English</button> <!-- İngilizce -->
+            <button type="button" data-lang="de">Deutsch</button> <!-- Almanca -->
+          </div>
+        </div>
+      </div>
+      <div class="control-group" data-group="storage"> <!-- Kayıt grubu -->
+        <button id="saveScenarioBtn" type="button" data-i18n="toolbar.save" data-i18n-title="title.save" title="Geçerli sekmeyi kaydet">Kaydet</button> <!-- Kaydet -->
+        <button id="loadScenarioBtn" type="button" data-i18n="toolbar.load" data-i18n-title="title.load" title="Kayıtlı senaryoyu yükle">Yükle</button> <!-- Yükle -->
+        <button id="newTabToolbarBtn" type="button" data-i18n="toolbar.newTab" data-i18n-title="title.newTab" title="Yeni sekme aç">Yeni Sekme</button> <!-- Yeni Sekme -->
+      </div>
+      <div class="control-group dropdown" data-group="other"> <!-- Diğer işlemler -->
+        <button id="otherMenuBtn" type="button" data-i18n="toolbar.other" data-i18n-title="title.other" title="Diğer araçlar">Diğer ▸</button> <!-- Diğer menü -->
+        <div class="dropdown-menu" id="otherMenu" role="menu" aria-label="Diğer işlemler"> <!-- Açılır menü -->
+          <button id="analysisBtn" type="button" data-i18n="menu.analysis" data-i18n-title="title.analysis" title="Analiz ve önerileri aç">Analiz/Öneri</button> <!-- Analiz -->
+          <button id="resultsBtn" type="button" data-i18n="menu.results" data-i18n-title="title.results" title="Simülasyon sonuçlarını aç">Sonuçları Gör</button> <!-- Sonuç -->
+          <button id="sampleSetupBtn" type="button" data-i18n="menu.sample" data-i18n-title="title.sample" title="Örnek kurulum yükle">Örnek Kurulum</button> <!-- Örnek -->
+        </div>
+      </div>
+    </div>
+    <div class="toolbar-row"> <!-- Alt satır -->
+      <div class="control-group" data-group="model"> <!-- Modelleme -->
+        <button id="addStationBtn" type="button" class="primary" data-i18n="toolbar.addStation" data-i18n-title="title.addStation" title="Yeni istasyon ekle">+ İstasyon Ekle</button> <!-- İstasyon ekle -->
+      </div>
+      <div class="control-group" data-group="mode"> <!-- Mod seçimi -->
+        <div class="mode-toggle" role="group" aria-label="Düzenleme modu"> <!-- Mod toggle -->
+          <button id="viewModeBtn" type="button" data-active="true" data-i18n="mode.view" data-i18n-title="title.modeView" title="Görüntüleme moduna geç">Görüntüle</button> <!-- Görüntüle -->
+          <button id="editModeBtn" type="button" data-i18n="mode.edit" data-i18n-title="title.modeEdit" title="Yerleşimi düzenle">Düzenle</button> <!-- Düzenle -->
+        </div>
+      </div>
+      <div class="control-group" data-group="speed"> <!-- Hız kontrolü -->
+        <label for="speedSlider" data-i18n="toolbar.speed" data-i18n-title="title.speed" title="Animasyon hızını ayarla">Hız</label> <!-- Hız etiketi -->
+        <input id="speedSlider" type="range" min="0.25" max="16" step="0.25" value="1" data-i18n-title="title.speed" title="Animasyon hızını ayarla"> <!-- Slider -->
+        <span id="speedValue" class="badge">1×</span> <!-- Hız göstergesi -->
+      </div>
+      <div class="control-group" data-group="target"> <!-- Hedef kontrolü -->
+        <label for="targetInput" data-i18n="toolbar.target" data-i18n-title="title.target" title="Hedef tamamlanacak ürün adedi">Hedef adet</label> <!-- Hedef etiketi -->
+        <input id="targetInput" type="number" min="1" placeholder="sonsuz" data-i18n-placeholder="toolbar.target" data-i18n-title="title.target" title="Hedef tamamlanacak ürün adedi"> <!-- Hedef girişi -->
+      </div>
+      <div class="control-group" data-group="entry"> <!-- Giriş politikası -->
+        <label for="entryPolicySelect" data-i18n="toolbar.entry" data-i18n-title="title.entry" title="Giriş politikası">Giriş</label> <!-- Giriş etiketi -->
+        <select id="entryPolicySelect"> <!-- Politika seçimi -->
+          <option value="trigger" data-i18n="entry.trigger">Ürün, tamamlandıkça girsin</option> <!-- Seçenek 1 -->
+          <option value="interval" data-i18n="entry.interval">Sabit giriş aralığı</option> <!-- Seçenek 2 -->
+        </select>
+        <input id="entryIntervalInput" type="number" min="1" value="30" style="width:120px;display:none;" placeholder="sn" data-i18n-title="title.entry" title="Giriş politikası"> <!-- Aralık girişi -->
+      </div>
+      <span id="completedCounter" class="badge hud-badge" aria-live="polite">Tamamlanan: 0</span> <!-- Tamamlanan sayaç -->
+    </div>
   </div>
 </header>
 <main> <!-- Ana içerik -->
@@ -607,23 +1101,28 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
   <section class="section" aria-labelledby="vizTitle"> <!-- Görselleştirme bölümü -->
     <h2 id="vizTitle">Hat Akışı</h2> <!-- Başlık -->
     <div id="visualPanel"> <!-- Görsel panel -->
-      <button id="fullscreenBtn" type="button" class="fullscreen-btn" title="Simülasyon alanını tam ekran yap"> <!-- Tam ekran -->
-        <span>🔳 Tam Ekran</span> <!-- Buton metni -->
-      </button>
-      <div class="zoom-toolbar" role="group" aria-label="Görsel ölçek denetimi"> <!-- Zoom kontrol grubu -->
-        <button id="zoomOutBtn" type="button" title="Küçült">−</button> <!-- Zoom küçült -->
-        <button id="zoomResetBtn" type="button" title="Ölçeği 100% yap"><span id="zoomValue">100%</span></button> <!-- Zoom değeri/yenile -->
-        <button id="zoomInBtn" type="button" title="Büyüt">+</button> <!-- Zoom büyüt -->
+      <button id="saveLayoutBtn" type="button" class="save-layout-btn" title="Geçerli yerleşimi kaydet">Yerleşimi Kaydet</button> <!-- Yerleşim kaydet butonu -->
+      <div class="layout-toolbar" role="group" aria-label="Yerleşim araçları">
+        <button id="centerLayoutBtn" type="button" title="Görünümü merkeze getir">Merkeze Topla</button>
+        <button id="resetLayoutBtn" type="button" data-edit-only="true" title="Yerleşimi varsayılana döndür">Yerleşimi Sıfırla</button>
+        <button id="normalizeLayoutBtn" type="button" data-edit-only="true" title="Transformları yeniden hizala">Düzeni Onar</button>
+        <button id="refreshBubblesBtn" type="button" title="Baloncuk konumlarını yenile">Baloncukları Yenile</button>
       </div>
       <svg id="lineSvg" role="img" aria-label="Hat akışı animasyonu"></svg> <!-- SVG alanı -->
     </div>
   </section>
 </main>
 <footer> <!-- Alt bilgi -->
-  <span>Klavyeden: <strong>B</strong> Başlat · <strong>D</strong> Durdur · <strong>R</strong> Sıfırla</span> <!-- Kısayol bilgisi -->
+  <div class="footer-content"> <!-- Footer içeriği -->
+    <div class="footer-brand">Franz Kiel Türkiye (FKT)</div> <!-- Kurumsal metin -->
+    <div class="footer-hints"> <!-- Kısayol bilgisi -->
+      Klavyeden: <strong>B</strong> Başlat · <strong>D</strong> Durdur · <strong>R</strong> Sıfırla
+    </div>
+    <div class="footer-signature"> <!-- İmza alanı -->
+      <span>E.DEMIR</span>
+    </div>
+  </div>
 </footer>
-
-<div class="signature" aria-hidden="true">E.DEMIR</div> <!-- İmza -->
 
 <div class="modal-backdrop" id="analysisModal"> <!-- Analiz modal arka planı -->
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="analysisTitle"> <!-- Analiz modal kutusu -->
@@ -728,6 +1227,36 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
           <tbody id="bottleneckTableBody"></tbody> <!-- Darboğaz satırları -->
         </table>
       </section>
+      <section class="dashboard-section" aria-label="Fork çıkışları özeti"> <!-- Fork bölümü -->
+        <h4>Fork Çıkışları</h4> <!-- Başlık -->
+        <table class="dashboard-table"> <!-- Fork tablosu -->
+          <thead>
+            <tr>
+              <th>İstasyon</th>
+              <th>Çıkış Sayısı</th>
+              <th>Üretilen Çocuk</th>
+              <th>Fork Olayı</th>
+            </tr>
+          </thead>
+          <tbody id="forkSummaryBody"></tbody> <!-- Fork satırları -->
+        </table>
+      </section>
+      <section class="dashboard-section" aria-label="Tamamlanan iş rotaları"> <!-- İş akışı bölümü -->
+        <h4>Tamamlanan İş Akışları</h4> <!-- Başlık -->
+        <table class="dashboard-table"> <!-- İş tablosu -->
+          <thead>
+            <tr>
+              <th>İş Kimliği</th>
+              <th>Üst İş</th>
+              <th>Rota</th>
+              <th>Çıkış İstasyonu</th>
+              <th>Çıkış Zamanı (sn)</th>
+            </tr>
+          </thead>
+          <tbody id="jobLineageBody"></tbody> <!-- İş satırları -->
+        </table>
+        <p style="margin:6px 0 0 0;color:var(--muted);font-size:0.8rem;">Tablo, en güncel tamamlanan işleri rota ve soy bilgisi ile listeler.</p> <!-- Açıklama -->
+      </section>
       <section class="dashboard-section chart-card" aria-label="Kuyruk grafiği"> <!-- Kuyruk grafik bölümü -->
         <h4>Kuyruk ve Utilization Profili</h4> <!-- Başlık -->
         <div class="chart-wrapper"> <!-- Grafik alanı -->
@@ -751,12 +1280,709 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
   </div>
 </div>
 
+<div class="modal-backdrop" id="restoreModal"> <!-- Kurtarma modal arka planı -->
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="restoreTitle"> <!-- Kurtarma modal kutusu -->
+    <h3 id="restoreTitle" data-i18n="restore.title">Son denemeyi geri yüklemek ister misiniz?</h3> <!-- Başlık -->
+    <p data-i18n="restore.message">Uygulama kapanmadan önceki son oturum bulundu. Geri yüklensin mi?</p> <!-- Mesaj -->
+    <div class="modal-actions"> <!-- Buton grubu -->
+      <button id="restoreYesBtn" type="button" class="primary" data-i18n="restore.yes">Evet, geri yükle</button> <!-- Evet butonu -->
+      <button id="restoreNoBtn" type="button" data-i18n="restore.no">Hayır, boş başla</button> <!-- Hayır butonu -->
+      <button id="restoreNeverBtn" type="button" data-i18n="restore.never">Bir daha sorma</button> <!-- Bir daha sorma -->
+    </div>
+  </div>
+</div>
+
 <script> // Uygulama betiği başlangıcı
 
 window.addEventListener('error', event => console.error('Global error:', event.error || event.message)); // Global hata yakala
 
-const STORAGE_KEY = 'line-sim-state'; // Yerel depolama anahtarı
-const persistedSnapshot = loadPersistedState(); // Önceden kaydedilmiş durum
+const APP_VERSION = '2024.09.1'; // Uygulama sürümü
+const OPEN_TABS_KEY = 'line-sim-tabs-v1'; // Açık sekmeleri saklayan anahtar
+const LEGACY_STORAGE_KEY = 'line-sim-state'; // Eski tek sekmeli kayıt anahtarı
+const SCENARIO_STORE_KEY = 'line-sim-scenarios-v1'; // Kaydedilmiş senaryolar deposu
+const SNAPSHOT_KEY = 'line-sim-last-session'; // Çökme kurtarma görüntüsü anahtarı
+const RESTORE_PROMPT_KEY = 'line-sim-restore-prompt'; // Kurtarma uyarı tercihi anahtarı
+const LANGUAGE_KEY = 'line-sim-language'; // Dil tercihi anahtarı
+const persistedState = loadPersistedState(); // Önceden kaydedilmiş sekmeler
+let savedScenarios = loadScenarioStore(); // Kaydedilmiş senaryolar listesi
+
+const translations = { // Çok dilli sözlük
+  tr: { // Türkçe
+    'tabs.new': '+ Yeni Sekme',
+    'tabs.default': 'Sekme {{index}}',
+    'tabs.restore': 'Son Deneme ({{stamp}})',
+    'toolbar.start': 'Başlat',
+    'toolbar.stop': 'Durdur',
+    'toolbar.reset': 'Sıfırla',
+    'toolbar.clear': 'Temizle',
+    'toolbar.fullscreen': '🔳 Tam Ekran',
+    'toolbar.save': 'Kaydet',
+    'toolbar.load': 'Yükle',
+    'toolbar.newTab': 'Yeni Sekme',
+    'toolbar.other': 'Diğer ▸',
+    'toolbar.addStation': '+ İstasyon Ekle',
+    'toolbar.speed': 'Hız',
+    'toolbar.target': 'Hedef adet',
+    'toolbar.entry': 'Giriş',
+    'title.start': 'Simülasyonu başlat (B)',
+    'title.stop': 'Simülasyonu durdur (D)',
+    'title.reset': 'Simülasyonu sıfırla (R)',
+    'title.clear': 'Aktif sekmeyi temizle',
+    'title.fullscreen': 'Simülasyon alanını tam ekran yap',
+    'title.save': 'Geçerli sekmeyi kaydet',
+    'title.load': 'Kayıtlı senaryoyu yükle',
+    'title.newTab': 'Yeni sekme aç',
+    'title.other': 'Diğer araçlar',
+    'title.analysis': 'Analiz ve önerileri aç',
+    'title.results': 'Simülasyon sonuçlarını aç',
+    'title.sample': 'Örnek kurulum yükle',
+    'title.addStation': 'Yeni istasyon ekle',
+    'title.modeView': 'Görüntüleme moduna geç',
+    'title.modeEdit': 'Yerleşimi düzenle',
+    'title.speed': 'Animasyon hızını ayarla',
+    'title.target': 'Hedef tamamlanacak ürün adedi',
+    'title.entry': 'Giriş politikası',
+    'title.language': 'Dili değiştir',
+    'title.zoomOut': 'Görünümü küçült',
+    'title.zoomIn': 'Görünümü büyüt',
+    'title.zoomReset': 'Ölçeği 100% yap',
+    'mode.view': 'Görüntüle',
+    'mode.edit': 'Düzenle',
+    'entry.trigger': 'Ürün, tamamlandıkça girsin',
+    'entry.interval': 'Sabit giriş aralığı',
+    'menu.analysis': 'Analiz/Öneri',
+    'menu.results': 'Sonuçları Gör',
+    'menu.sample': 'Örnek Kurulum',
+    'toast.runningLock': 'Simülasyon sürerken bağlantılar düzenlenemez.',
+    'toast.noTargets': 'Uygun hedef istasyon bulunamadı.',
+    'toast.edgeExists': 'Bu istasyon zaten seçilen hedefe bağlı.',
+    'toast.edgeCycle': 'Döngü oluşturduğu için bağlantı reddedildi.',
+    'toast.edgeAdded': '{{source}} → {{target}} bağlantısı eklendi.',
+    'toast.edgeRemoved': '{{source}} → {{target}} bağlantısı silindi.',
+    'toast.edgeCancelled': 'Bağlantı oluşturma iptal edildi.',
+    'toast.edgePrompt': '{{source}} çıkışını bağlamak için hedef istasyona tıklayın.',
+    'toast.edgeMissing': 'Silinecek bağlantı bulunamadı.',
+    'toast.clearDone': 'Aktif sekme temizlendi.',
+    'toast.saveSuccess': '"{{name}}" kaydedildi.',
+    'toast.saveOverwrite': '"{{name}}" güncellendi.',
+    'toast.saveCancelled': 'Kaydetme iptal edildi.',
+    'toast.loadEmpty': 'Lütfen yüklenecek bir senaryo seçin.',
+    'toast.loadSuccess': '"{{name}}" yeni sekmede açıldı.',
+    'toast.snapshotFailed': 'Kurtarma başarısız. Boş sekme ile başlandı.',
+    'toast.snapshotRestored': 'Son oturum geri yüklendi.',
+    'toast.snapshotDeclined': 'Kurtarma atlandı.',
+    'toast.languageUpdated': 'Dil {{language}} olarak ayarlandı.',
+    'toast.renameDone': 'Sekme adı güncellendi.',
+    'toast.renameCancelled': 'Yeniden adlandırma iptal edildi.',
+    'toast.renameRequired': 'Sekme adı boş olamaz.',
+    'confirm.clear': 'Aktif sekmedeki tüm veri silinsin mi?',
+    'confirm.unsavedTabSwitch': 'Kaydedilmemiş değişiklikler var. Sekme değiştirilsin mi?',
+    'confirm.overwrite': 'Bu adla bir kayıt var. Üzerine yazmak ister misiniz?',
+    'prompt.saveName': 'Senaryo adını girin',
+    'prompt.renameTab': 'Sekme adını girin',
+    'prompt.loadName': 'Yüklenecek senaryo adını girin',
+    'counter.completed': 'Tamamlanan: {{count}}',
+    'restore.title': 'Son denemeyi geri yüklemek ister misiniz?',
+    'restore.message': 'Uygulama kapanmadan önceki son oturum bulundu. Geri yüklensin mi?',
+    'restore.yes': 'Evet, geri yükle',
+    'restore.no': 'Hayır, boş başla',
+    'restore.never': 'Bir daha sorma'
+  },
+  en: { // İngilizce
+    'tabs.new': '+ New Tab',
+    'tabs.default': 'Tab {{index}}',
+    'tabs.restore': 'Last Session ({{stamp}})',
+    'toolbar.start': 'Start',
+    'toolbar.stop': 'Stop',
+    'toolbar.reset': 'Reset',
+    'toolbar.clear': 'Clear',
+    'toolbar.fullscreen': '🔳 Full Screen',
+    'toolbar.save': 'Save',
+    'toolbar.load': 'Load',
+    'toolbar.newTab': 'New Tab',
+    'toolbar.other': 'More ▸',
+    'toolbar.addStation': '+ Add Station',
+    'toolbar.speed': 'Speed',
+    'toolbar.target': 'Target count',
+    'toolbar.entry': 'Entry',
+    'title.start': 'Start the simulation (B)',
+    'title.stop': 'Stop the simulation (D)',
+    'title.reset': 'Reset the simulation (R)',
+    'title.clear': 'Clear the active tab',
+    'title.fullscreen': 'Toggle full screen for the flow view',
+    'title.save': 'Save the current tab',
+    'title.load': 'Load a saved scenario',
+    'title.newTab': 'Open a new tab',
+    'title.other': 'Other tools',
+    'title.analysis': 'Open analysis and suggestions',
+    'title.results': 'Open simulation results',
+    'title.sample': 'Load the sample layout',
+    'title.addStation': 'Add a new station',
+    'title.modeView': 'Switch to view mode',
+    'title.modeEdit': 'Switch to edit mode',
+    'title.speed': 'Adjust animation speed',
+    'title.target': 'Target number of completed items',
+    'title.entry': 'Entry policy',
+    'title.language': 'Change language',
+    'title.zoomOut': 'Zoom out',
+    'title.zoomIn': 'Zoom in',
+    'title.zoomReset': 'Reset zoom to 100%',
+    'mode.view': 'View',
+    'mode.edit': 'Edit',
+    'entry.trigger': 'Inject when upstream frees',
+    'entry.interval': 'Fixed entry interval',
+    'menu.analysis': 'Analysis & Advice',
+    'menu.results': 'Simulation Results',
+    'menu.sample': 'Sample Layout',
+    'toast.runningLock': 'Connections cannot be edited while the simulation is running.',
+    'toast.noTargets': 'No valid target stations available.',
+    'toast.edgeExists': 'This station already connects to that target.',
+    'toast.edgeCycle': 'Connection rejected because it would create a cycle.',
+    'toast.edgeAdded': '{{source}} → {{target}} connection added.',
+    'toast.edgeRemoved': '{{source}} → {{target}} connection removed.',
+    'toast.edgeCancelled': 'Connection creation cancelled.',
+    'toast.edgePrompt': 'Click a target station to link {{source}}.',
+    'toast.edgeMissing': 'No connection found to remove.',
+    'toast.clearDone': 'Active tab cleared.',
+    'toast.saveSuccess': '"{{name}}" saved.',
+    'toast.saveOverwrite': '"{{name}}" updated.',
+    'toast.saveCancelled': 'Save cancelled.',
+    'toast.loadEmpty': 'Please select a scenario to load.',
+    'toast.loadSuccess': '"{{name}}" opened in a new tab.',
+    'toast.snapshotFailed': 'Recovery failed. Starting with an empty tab.',
+    'toast.snapshotRestored': 'Last session restored.',
+    'toast.snapshotDeclined': 'Recovery skipped.',
+    'toast.languageUpdated': 'Language set to {{language}}.',
+    'toast.renameDone': 'Tab name updated.',
+    'toast.renameCancelled': 'Rename cancelled.',
+    'toast.renameRequired': 'Tab name cannot be empty.',
+    'confirm.clear': 'Clear all data in the active tab?',
+    'confirm.unsavedTabSwitch': 'You have unsaved changes. Switch tabs anyway?',
+    'confirm.overwrite': 'A scenario with this name exists. Overwrite it?',
+    'prompt.saveName': 'Enter scenario name',
+    'prompt.renameTab': 'Enter tab name',
+    'prompt.loadName': 'Enter scenario name to load',
+    'counter.completed': 'Completed: {{count}}',
+    'restore.title': 'Restore last session?',
+    'restore.message': 'A previous session snapshot was found. Do you want to restore it?',
+    'restore.yes': 'Restore',
+    'restore.no': 'Start fresh',
+    'restore.never': 'Don’t ask again'
+  },
+  de: { // Almanca
+    'tabs.new': '+ Neuer Tab',
+    'tabs.default': 'Tab {{index}}',
+    'tabs.restore': 'Letzter Versuch ({{stamp}})',
+    'toolbar.start': 'Starten',
+    'toolbar.stop': 'Stopp',
+    'toolbar.reset': 'Zurücksetzen',
+    'toolbar.clear': 'Leeren',
+    'toolbar.fullscreen': '🔳 Vollbild',
+    'toolbar.save': 'Speichern',
+    'toolbar.load': 'Laden',
+    'toolbar.newTab': 'Neuer Tab',
+    'toolbar.other': 'Weitere ▸',
+    'toolbar.addStation': '+ Station hinzufügen',
+    'toolbar.speed': 'Geschwindigkeit',
+    'toolbar.target': 'Zielmenge',
+    'toolbar.entry': 'Zufluss',
+    'title.start': 'Simulation starten (B)',
+    'title.stop': 'Simulation stoppen (D)',
+    'title.reset': 'Simulation zurücksetzen (R)',
+    'title.clear': 'Aktiven Tab leeren',
+    'title.fullscreen': 'Flussansicht in den Vollbildmodus wechseln',
+    'title.save': 'Aktuellen Tab speichern',
+    'title.load': 'Gespeichertes Szenario laden',
+    'title.newTab': 'Neuen Tab öffnen',
+    'title.other': 'Weitere Werkzeuge',
+    'title.analysis': 'Analyse und Empfehlungen öffnen',
+    'title.results': 'Simulationsergebnisse öffnen',
+    'title.sample': 'Beispielaufbau laden',
+    'title.addStation': 'Neue Station hinzufügen',
+    'title.modeView': 'In den Anzeige-Modus wechseln',
+    'title.modeEdit': 'In den Bearbeitungsmodus wechseln',
+    'title.speed': 'Animationsgeschwindigkeit anpassen',
+    'title.target': 'Zielmenge abgeschlossener Teile',
+    'title.entry': 'Zuflussregel',
+    'title.language': 'Sprache ändern',
+    'title.zoomOut': 'Verkleinern',
+    'title.zoomIn': 'Vergrößern',
+    'title.zoomReset': 'Zoom auf 100 % zurücksetzen',
+    'mode.view': 'Anzeigen',
+    'mode.edit': 'Bearbeiten',
+    'entry.trigger': 'Produkte eintreten, wenn frei',
+    'entry.interval': 'Fester Eintrittsabstand',
+    'menu.analysis': 'Analyse & Empfehlung',
+    'menu.results': 'Simulationsergebnisse',
+    'menu.sample': 'Beispielaufbau',
+    'toast.runningLock': 'Während der Simulation können Verbindungen nicht geändert werden.',
+    'toast.noTargets': 'Keine gültigen Zielstationen gefunden.',
+    'toast.edgeExists': 'Diese Station ist bereits mit dem Ziel verbunden.',
+    'toast.edgeCycle': 'Verbindung abgelehnt, da ein Zyklus entstehen würde.',
+    'toast.edgeAdded': 'Verbindung {{source}} → {{target}} hinzugefügt.',
+    'toast.edgeRemoved': 'Verbindung {{source}} → {{target}} entfernt.',
+    'toast.edgeCancelled': 'Verbindungsaufbau abgebrochen.',
+    'toast.edgePrompt': 'Klicken Sie auf eine Zielstation, um {{source}} zu verbinden.',
+    'toast.edgeMissing': 'Keine zu entfernende Verbindung gefunden.',
+    'toast.clearDone': 'Aktiver Tab geleert.',
+    'toast.saveSuccess': '"{{name}}" gespeichert.',
+    'toast.saveOverwrite': '"{{name}}" aktualisiert.',
+    'toast.saveCancelled': 'Speichern abgebrochen.',
+    'toast.loadEmpty': 'Bitte wählen Sie ein Szenario zum Laden.',
+    'toast.loadSuccess': '"{{name}}" wurde in einem neuen Tab geöffnet.',
+    'toast.snapshotFailed': 'Wiederherstellung fehlgeschlagen. Leerer Tab gestartet.',
+    'toast.snapshotRestored': 'Letzte Sitzung wiederhergestellt.',
+    'toast.snapshotDeclined': 'Wiederherstellung übersprungen.',
+    'toast.languageUpdated': 'Sprache auf {{language}} gesetzt.',
+    'toast.renameDone': 'Tab-Name aktualisiert.',
+    'toast.renameCancelled': 'Umbenennen abgebrochen.',
+    'toast.renameRequired': 'Tab-Name darf nicht leer sein.',
+    'confirm.clear': 'Alle Daten im aktiven Tab löschen?',
+    'confirm.unsavedTabSwitch': 'Es gibt ungespeicherte Änderungen. Trotzdem wechseln?',
+    'confirm.overwrite': 'Ein Szenario mit diesem Namen existiert. Überschreiben?',
+    'prompt.saveName': 'Szenarionamen eingeben',
+    'prompt.renameTab': 'Tab-Namen eingeben',
+    'prompt.loadName': 'Zu ladenden Szenarionamen eingeben',
+    'counter.completed': 'Fertiggestellt: {{count}}',
+    'restore.title': 'Letzte Sitzung wiederherstellen?',
+    'restore.message': 'Eine vorherige Sitzung wurde gefunden. Möchten Sie sie wiederherstellen?',
+    'restore.yes': 'Wiederherstellen',
+    'restore.no': 'Neu starten',
+    'restore.never': 'Nicht erneut fragen'
+  }
+};
+
+const languageNames = { tr: 'Türkçe', en: 'English', de: 'Deutsch' }; // Dil adları
+
+function t(key, params = {}, fallback = '') { // Çeviri yardımcı fonksiyonu
+  const lang = appState.language && translations[appState.language] ? appState.language : 'tr'; // Geçerli dil
+  const table = translations[lang] || translations.tr; // Dil tablosu
+  const base = table[key] !== undefined ? table[key] : translations.tr[key]; // İlk bulunan değer
+  const template = base !== undefined ? base : (fallback || key); // Şablon seç
+  if (typeof template !== 'string') return template; // Şablon metin değilse direkt döndür
+  return template.replace(/\{\{(\w+)\}\}/g, (_, token) => (params[token] !== undefined ? params[token] : `{{${token}}}`)); // Değişkenleri yerleştir
+}
+
+function applyTranslations(root = document) { // Veri-özniteliklerine göre metinleri güncelle
+  root.querySelectorAll('[data-i18n]').forEach(node => { // Metin içerenler
+    const key = node.dataset.i18n; // Anahtar
+    node.textContent = t(key); // Çeviri uygula
+  });
+  root.querySelectorAll('[data-i18n-placeholder]').forEach(node => { // Placeholder için
+    const key = node.dataset.i18nPlaceholder; // Anahtar
+    node.placeholder = t(key); // Çeviri uygula
+  });
+  root.querySelectorAll('[data-i18n-title]').forEach(node => { // Başlık için
+    const key = node.dataset.i18nTitle; // Anahtar
+    node.title = t(key); // Çeviri uygula
+  });
+}
+
+function createEmptySnapshot() { // Boş bir sekme snapshotı üret
+  return {
+    stations: [], // İstasyon listesi
+    targetCount: null, // Hedef ürün
+    entryPolicy: 'trigger', // Giriş politikası
+    entryInterval: 30, // Varsayılan aralık
+    speed: 1, // Hız
+    zoom: 1, // Yakınlaştırma
+    taktTime: null, // Takt süresi
+    nextStationId: 1, // İlk istasyon kimliği
+    mode: 'view', // Başlangıç modu
+    language: appState.language, // Aktif dil
+    timestamp: Date.now(), // Zaman damgası
+    appVersion: APP_VERSION // Sürüm
+  };
+}
+
+function normalizeSnapshot(snapshot) { // Snapshot verisini güvenli hale getir
+  const base = createEmptySnapshot(); // Boş şablon
+  if (!snapshot || typeof snapshot !== 'object') return base; // Geçersizse boş döndür
+  const safeStations = Array.isArray(snapshot.stations) ? snapshot.stations : []; // Güvenli istasyon listesi
+  return {
+    ...base,
+    ...snapshot,
+    stations: safeStations // İstasyonları ata
+  };
+}
+
+function normalizeStoredTab(raw, index = 0) { // Depodan gelen sekmeyi normalize et
+  const snapshot = normalizeSnapshot(raw?.snapshot); // Snapshot temizle
+  const fallbackName = t('tabs.default', { index: index + 1 }); // Varsayılan ad
+  const name = typeof raw?.name === 'string' && raw.name.trim().length ? raw.name.trim() : fallbackName; // Ad seç
+  const id = typeof raw?.id === 'string' && raw.id.trim().length ? raw.id : `tab-${Date.now()}-${index}`; // Kimlik üret
+  return {
+    id,
+    name,
+    snapshot,
+    dirty: !!raw?.dirty,
+    createdAt: raw?.createdAt || Date.now(),
+    updatedAt: raw?.updatedAt || Date.now()
+  };
+}
+
+function getActiveTab() { // Aktif sekmeyi döndür
+  return appState.tabs.find(tab => tab.id === appState.activeTabId) || null; // Yoksa null
+}
+
+function renderTabs() { // Sekme çubuğunu yeniden çiz
+  if (!tabBarEl || !newTabBtn) return; // Eleman yoksa çık
+  const preservedButton = newTabBtn; // Yeni sekme butonunu sakla
+  tabBarEl.innerHTML = ''; // İçeriği temizle
+  appState.tabs.forEach(tab => { // Her sekme için
+    const button = document.createElement('button'); // Sekme düğmesi
+    button.type = 'button'; // Buton tipi
+    button.className = 'tab-button'; // Stil sınıfı
+    button.dataset.tabId = tab.id; // Kimlik
+    button.dataset.active = tab.id === appState.activeTabId ? 'true' : 'false'; // Aktiflik
+    button.dataset.dirty = tab.dirty ? 'true' : 'false'; // Kirli bayrağı
+    button.draggable = true; // Sürüklenebilir yap
+    const titleSpan = document.createElement('span'); // Ad etiketi
+    titleSpan.textContent = tab.name; // Adı yaz
+    button.appendChild(titleSpan); // Butona ekle
+    const closeSpan = document.createElement('span'); // Kapatma alanı
+    closeSpan.className = 'tab-close'; // Stil sınıfı
+    closeSpan.setAttribute('role', 'button'); // Erişilebilirlik
+    closeSpan.setAttribute('aria-label', 'Close'); // ARIA etiketi
+    closeSpan.textContent = '×'; // Simge
+    button.appendChild(closeSpan); // Butona ekle
+    tabBarEl.appendChild(button); // Sekme çubuğuna ekle
+  });
+  tabBarEl.appendChild(preservedButton); // Yeni sekme butonunu sona ekle
+  applyTranslations(tabBarEl); // Metinleri güncelle
+}
+
+function updateCompletedCounter(count = 0) { // Tamamlanan ürün sayacını güncelle
+  appState.completedDisplayCount = count; // Son değeri sakla
+  if (!completedCounterEl) return; // Sayaç yoksa çık
+  completedCounterEl.textContent = t('counter.completed', { count }); // Çeviriyle yaz
+}
+
+function initializeTabs() { // Saklanan sekmeleri yükle
+  const storedTabs = Array.isArray(persistedState.tabs) ? persistedState.tabs.map((tab, index) => normalizeStoredTab(tab, index)) : []; // Depodan gelen sekmeler
+  if (!storedTabs.length && persistedState.legacySnapshot) { // Eski tek snapshot varsa
+    storedTabs.push(normalizeStoredTab({ snapshot: persistedState.legacySnapshot, name: t('tabs.default', { index: 1 }), dirty: true }, 0)); // Legacy verisini sekmeye dönüştür
+  }
+  if (!storedTabs.length) { // Hiç sekme yoksa
+    storedTabs.push(normalizeStoredTab({ snapshot: createEmptySnapshot(), name: t('tabs.default', { index: 1 }), dirty: false }, 0)); // Boş sekme oluştur
+  }
+  appState.tabs = storedTabs; // Sekmeleri ata
+  const activeCandidate = storedTabs.some(tab => tab.id === persistedState.activeTabId) ? persistedState.activeTabId : storedTabs[0].id; // Aktif sekmeyi seç
+  appState.activeTabId = activeCandidate; // Aktif kimliği ata
+  const maxCounter = storedTabs.reduce((max, tab) => { // Sayaç için maksimumu bul
+    const match = String(tab.id).match(/tab-\d+-(\d+)/); // Kimlikten sayı çıkar
+    const value = match ? Number(match[1]) : 0; // Sayıya çevir
+    return Number.isFinite(value) ? Math.max(max, value) : max; // Maks al
+  }, 0); // Başlangıç
+  appState.tabCounter = Math.max(maxCounter + 1, storedTabs.length + 1); // Sayaç güncelle
+  renderTabs(); // Sekmeleri çiz
+  const activeTab = getActiveTab(); // Aktif sekme
+  if (activeTab) { // Aktif sekme varsa
+    if (activeTab.snapshot?.language && activeTab.snapshot.language !== appState.language) setLanguage(activeTab.snapshot.language, { silent: true }); // Dil uygula
+    restoreFromSnapshot(activeTab.snapshot, { persist: false, applyLanguage: false }); // Snapshotı uygula
+  }
+  persistTabsState(); // Sekmeleri sakla
+}
+
+function handleNewTab() { // Yeni boş sekme aç
+  const snapshot = createEmptySnapshot(); // Boş snapshot
+  const name = t('tabs.default', { index: appState.tabs.length + 1 }); // Varsayılan ad
+  const id = `tab-${Date.now()}-${appState.tabCounter++}`; // Benzersiz kimlik
+  const tab = { id, name, snapshot, dirty: false, createdAt: Date.now(), updatedAt: Date.now() }; // Sekme nesnesi
+  appState.tabs.push(tab); // Listeye ekle
+  appState.activeTabId = tab.id; // Aktif yap
+  renderTabs(); // Sekmeleri yenile
+  restoreFromSnapshot(snapshot, { persist: false, applyLanguage: false }); // Boş snapshotı uygula
+  persistTabsState(); // Sekmeleri sakla
+}
+
+function closeTab(tabId) { // Sekmeyi kapat
+  const index = appState.tabs.findIndex(tab => tab.id === tabId); // Sekme indeksini bul
+  if (index === -1) return; // Bulunamazsa çık
+  const tab = appState.tabs[index]; // Sekme referansı
+  if (tab.dirty) { // Kaydedilmemiş değişiklik varsa
+    const proceed = window.confirm(t('confirm.unsavedTabSwitch')); // Kullanıcı onayı al
+    if (!proceed) return; // İptal edildi
+  }
+  appState.tabs.splice(index, 1); // Sekmeyi listeden çıkar
+  if (!appState.tabs.length) { // Hiç sekme kalmadıysa
+    const fallback = normalizeStoredTab({ snapshot: createEmptySnapshot(), name: t('tabs.default', { index: 1 }), dirty: false }, 0); // Yeni sekme oluştur
+    appState.tabs.push(fallback); // Listeye ekle
+    appState.activeTabId = fallback.id; // Aktif yap
+    renderTabs(); // Sekmeleri çiz
+    restoreFromSnapshot(fallback.snapshot, { persist: false, applyLanguage: false }); // Snapshotı uygula
+    persistTabsState(); // Sekmeleri kaydet
+    return; // Tamamlandı
+  }
+  if (appState.activeTabId === tabId) { // Kapatılan sekme aktifse
+    const nextIndex = index >= appState.tabs.length ? appState.tabs.length - 1 : index; // Yeni aktif indeks
+    appState.activeTabId = appState.tabs[nextIndex].id; // Aktif kimliği ata
+    restoreFromSnapshot(appState.tabs[nextIndex].snapshot, { persist: false, applyLanguage: false }); // Snapshotı uygula
+  }
+  renderTabs(); // Sekmeleri yenile
+  persistTabsState(); // Kaydet
+}
+
+function renameTab(tabId) { // Sekmeyi yeniden adlandır
+  const tab = appState.tabs.find(item => item.id === tabId); // Sekmeyi bul
+  if (!tab) return; // Bulunamadıysa çık
+  const proposal = window.prompt(t('prompt.renameTab'), tab.name); // Kullanıcı girdisi
+  if (proposal === null) { // İptal edildi
+    showGraphToast(t('toast.renameCancelled'), 'info'); // Bildirim
+    return; // Çık
+  }
+  const trimmed = proposal.trim(); // Kırpılmış metin
+  if (!trimmed) { // Boşsa
+    showGraphToast(t('toast.renameRequired'), 'warning'); // Uyarı göster
+    return; // Çık
+  }
+  tab.name = trimmed; // Yeni adı ata
+  tab.updatedAt = Date.now(); // Güncelleme zamanı yaz
+  renderTabs(); // Sekmeleri yenile
+  persistTabsState(); // Sekmeleri kaydet
+  showGraphToast(t('toast.renameDone'), 'success'); // Başarı bildirimi
+}
+
+function reorderTabs(sourceId, targetId = null) { // Sekmeleri yeniden sırala
+  const fromIndex = appState.tabs.findIndex(tab => tab.id === sourceId); // Kaynak indeks
+  if (fromIndex === -1) return; // Bulunamadıysa çık
+  const [tab] = appState.tabs.splice(fromIndex, 1); // Sekmeyi listeden çıkar
+  if (!targetId) { // Hedef belirtilmediyse
+    appState.tabs.push(tab); // Sona ekle
+  } else {
+    const toIndex = appState.tabs.findIndex(item => item.id === targetId); // Hedef indeks
+    const safeIndex = toIndex === -1 ? appState.tabs.length : toIndex; // Güvenli indeks
+    appState.tabs.splice(safeIndex, 0, tab); // İstenen yere ekle
+  }
+}
+
+function storeActiveTabSnapshot(reason = 'update') { // Aktif sekmenin snapshotını güncelle
+  const active = getActiveTab(); // Aktif sekme
+  if (!active) return; // Yoksa çık
+  const snapshot = captureStatePayload(); // Anlık görüntü
+  updateActiveTabSnapshot(snapshot, { markDirty: undefined, reason }); // Kaydet ama kirli durumunu koru
+}
+
+function activateTab(tabId, options = {}) { // Sekme değiştir
+  if (appState.activeTabId === tabId) return true; // Zaten aktif
+  const target = appState.tabs.find(tab => tab.id === tabId); // Hedef sekme
+  if (!target) return false; // Bulunamadı
+  const current = getActiveTab(); // Mevcut aktif
+  if (current && current.dirty && !options.force) { // Kaydedilmemiş değişiklik varsa
+    const proceed = window.confirm(t('confirm.unsavedTabSwitch')); // Onay iste
+    if (!proceed) return false; // İptal edildi
+  }
+  if (current) storeActiveTabSnapshot('switch'); // Mevcut sekmeyi sakla
+  appState.activeTabId = target.id; // Aktif kimliği güncelle
+  renderTabs(); // Sekmeleri yenile
+  restoreFromSnapshot(target.snapshot, { persist: false, applyLanguage: false }); // Hedef snapshotı uygula
+  persistTabsState(); // Sekmeleri kaydet
+  return true; // Başarılı
+}
+
+function handleTabClick(event) { // Sekme tıklama delegasyonu
+  const closeTarget = event.target.closest('.tab-close'); // Kapatma simgesi var mı
+  if (closeTarget && closeTarget.parentElement?.dataset?.tabId) { // Kapatma tıklandıysa
+    event.stopPropagation(); // Kabarcığı durdur
+    closeTab(closeTarget.parentElement.dataset.tabId); // Sekmeyi kapat
+    return; // İşlem bitti
+  }
+  const button = event.target.closest('.tab-button'); // Sekme butonunu bul
+  if (!button) return; // Yoksa çık
+  activateTab(button.dataset.tabId); // Sekmeyi etkinleştir
+}
+
+function handleTabDoubleClick(event) { // Sekme çift tıklama işlemi
+  const button = event.target.closest('.tab-button'); // Sekme butonunu al
+  if (!button) return; // Yoksa çık
+  event.preventDefault(); // Varsayılanı engelle
+  renameTab(button.dataset.tabId); // Yeniden adlandır
+}
+
+function handleTabDragStart(event) { // Sekme sürükleme başlangıcı
+  const button = event.target.closest('.tab-button'); // Sürüklenen buton
+  if (!button) return; // Yoksa çık
+  draggingTabId = button.dataset.tabId; // Kimliği sakla
+  if (event.dataTransfer) { // DataTransfer varsa
+    event.dataTransfer.setData('text/plain', draggingTabId); // Kimliği veriye yaz
+    event.dataTransfer.effectAllowed = 'move'; // Hareket izni ver
+  }
+}
+
+function handleTabDragOver(event) { // Sekme sürükleme üstünde
+  if (!draggingTabId) return; // Sürükleme yoksa çık
+  event.preventDefault(); // Bırakmaya izin ver
+  if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'; // Etkiyi ayarla
+}
+
+function handleTabDrop(event) { // Sekme bırakma olayı
+  if (!draggingTabId) return; // Sürüklenen yoksa çık
+  event.preventDefault(); // Varsayılanı engelle
+  const button = event.target.closest('.tab-button'); // Hedef buton
+  const targetId = button ? button.dataset.tabId : null; // Hedef kimlik
+  reorderTabs(draggingTabId, targetId); // Sekmeleri sırala
+  renderTabs(); // Sekme çubuğunu yenile
+  persistTabsState(); // Durumu kaydet
+  draggingTabId = null; // Sürükleme durumunu sıfırla
+}
+
+function handleTabDragEnd() { // Sürükleme bitişi
+  draggingTabId = null; // Bayrağı temizle
+}
+
+function handleSaveScenario() { // Senaryoyu kaydet
+  storeActiveTabSnapshot('save'); // Aktif sekme snapshotını güncelle
+  const active = getActiveTab(); // Aktif sekmeyi al
+  const defaultName = active ? active.name : t('prompt.saveName'); // Önerilen ad
+  const input = window.prompt(t('prompt.saveName'), defaultName); // Kullanıcıdan ad iste
+  if (input === null) { // İptal edildiyse
+    showGraphToast(t('toast.saveCancelled'), 'info'); // Bilgi ver
+    return false; // Başarısız
+  }
+  const name = input.trim(); // Adı kırp
+  if (!name) { // Boş ad
+    showGraphToast(t('toast.renameRequired'), 'warning'); // Uyarı göster
+    return false; // Başarısız
+  }
+  const snapshot = captureStatePayload(); // Snapshot çıkar
+  const entry = { name, snapshot, language: appState.language, timestamp: Date.now(), appVersion: APP_VERSION }; // Kayıt nesnesi
+  const existingIndex = savedScenarios.findIndex(item => item.name === name); // Var olan kayıt var mı
+  if (existingIndex !== -1) { // Üzerine yazma durumu
+    const confirmOverwrite = window.confirm(t('confirm.overwrite')); // Onay al
+    if (!confirmOverwrite) { // Reddedildiyse
+      showGraphToast(t('toast.saveCancelled'), 'info'); // Bilgi ver
+      return false; // Çık
+    }
+    savedScenarios[existingIndex] = entry; // Kaydı güncelle
+    showGraphToast(t('toast.saveOverwrite', { name }), 'success'); // Başarı bildirimi
+  } else {
+    savedScenarios.push(entry); // Yeni kayıt ekle
+    showGraphToast(t('toast.saveSuccess', { name }), 'success'); // Başarı bildirimi
+  }
+  persistScenarioStore(savedScenarios); // Depoyu yaz
+  updateActiveTabSnapshot(snapshot, { markDirty: false, reason: 'save' }); // Sekmeyi temiz olarak işaretle
+  renderTabs(); // Sekmeleri yenile
+  return true; // Başarılı
+}
+
+function handleLoadScenario() { // Senaryoyu yükle
+  savedScenarios = loadScenarioStore(); // Depoyu tazele
+  if (!savedScenarios.length) { // Kayıt yoksa
+    showGraphToast(t('toast.loadEmpty'), 'info'); // Bilgi ver
+    return false; // Çık
+  }
+  const listText = savedScenarios.map((item, index) => `${index + 1}) ${item.name}`).join('\n'); // Liste metni
+  const input = window.prompt(`${t('prompt.loadName')}\n${listText}`, savedScenarios[0].name); // Kullanıcı seçimi
+  if (input === null) return false; // İptal edildiyse çık
+  const name = input.trim(); // Adı kırp
+  if (!name) { // Boşsa
+    showGraphToast(t('toast.loadEmpty'), 'info'); // Bilgi ver
+    return false; // Çık
+  }
+  const entry = savedScenarios.find(item => item.name === name); // Kaydı bul
+  if (!entry) { // Bulunamadıysa
+    showGraphToast(t('toast.loadEmpty'), 'info'); // Bilgi ver
+    return false; // Çık
+  }
+  if (entry.language && entry.language !== appState.language) setLanguage(entry.language, { silent: true }); // Dil uygula
+  const snapshot = normalizeSnapshot(entry.snapshot); // Snapshotı temizle
+  const id = `tab-${Date.now()}-${appState.tabCounter++}`; // Benzersiz sekme kimliği
+  const tab = { id, name: entry.name, snapshot, dirty: false, createdAt: entry.timestamp || Date.now(), updatedAt: Date.now() }; // Sekme nesnesi
+  appState.tabs.push(tab); // Listeye ekle
+  appState.activeTabId = id; // Aktif yap
+  renderTabs(); // Sekmeleri yenile
+  restoreFromSnapshot(snapshot, { persist: false, applyLanguage: false }); // Durumu uygula
+  updateActiveTabSnapshot(snapshot, { markDirty: false, reason: 'load' }); // Sekmeyi temizle
+  persistTabsState(); // Sekmeleri sakla
+  showGraphToast(t('toast.loadSuccess', { name: entry.name }), 'success'); // Başarı bildirimi
+  return true; // Başarılı
+}
+
+function clearActiveTab() { // Aktif sekmeyi temizle
+  const confirmClear = window.confirm(t('confirm.clear')); // Onay iste
+  if (!confirmClear) return false; // İptal edildi
+  cancelConnectionDraft('mode-change'); // Aktif taslağı kapat
+  if (appState.simulation) stopSimulation(false); // Simülasyonu durdur
+  resetSimulation(); // Motoru sıfırla
+  appState.simulation = null; // Motor referansını temizle
+  appState.stations = []; // İstasyon listesini boşalt
+  appState.nextStationId = 1; // Kimlik sayacını sıfırla
+  appState.targetCount = null; // Hedefi sıfırla
+  appState.entryPolicy = 'trigger'; // Giriş politikasını varsay
+  appState.entryInterval = 30; // Aralığı varsay
+  appState.taktTime = null; // Takt time sıfırla
+  appState.zoom = 1; // Zoom sıfırla
+  appState.speed = 1; // Hızı varsay
+  viz.clearJobs(); // Baloncukları temizle
+  viz.setSpeed(appState.speed); // Görsel hızını sıfırla
+  updateZoomDisplay(); // Zoom göstergesini yenile
+  syncControlsFromState(); // Kontrolleri hizala
+  renderStations(); // Kartları boşalt
+  renderGraph(appState.stations); // Grafiği temizle
+  updateCompletedCounter(0); // Sayaç sıfırla
+  const snapshot = captureStatePayload(); // Yeni snapshot çıkar
+  updateActiveTabSnapshot(snapshot, { markDirty: true, reason: 'clear' }); // Sekmeyi kirli işaretle
+  showGraphToast(t('toast.clearDone'), 'success'); // Başarı bildirimi
+  renderTabs(); // Sekme göstergesini yenile
+  return true; // Başarılı
+}
+
+function updateLanguageButton() { // Dil düğmesini güncelle
+  if (!languageBtn) return; // Buton yoksa çık
+  const code = appState.language ? appState.language.toUpperCase() : 'TR'; // Kod
+  languageBtn.textContent = `🌐 ${code}`; // Metni yaz
+}
+
+function setLanguage(lang, options = {}) { // Dili değiştir
+  const { silent = false } = options; // Sessiz mod parametresi
+  const normalized = translations[lang] ? lang : 'tr'; // Geçerli dili seç
+  if (appState.language === normalized) return; // Zaten seçiliyse çık
+  appState.language = normalized; // Durumu güncelle
+  document.documentElement.lang = normalized; // HTML dilini ayarla
+  persistLanguagePreference(normalized); // Tercihi kaydet
+  applyTranslations(document); // Metinleri çevir
+  updateLanguageButton(); // Dil düğmesini güncelle
+  renderTabs(); // Sekme başlıklarını yenile
+  renderStations(); // İstasyon kartlarını yeniden çiz
+  syncControlsFromState(); // Kontrolleri hizala
+  updateCompletedCounter(appState.completedDisplayCount || 0); // Sayaç çevirisini yenile
+  if (!silent) { // Sessiz değilse
+    const label = languageNames[normalized] || normalized.toUpperCase(); // Dil adı
+    showGraphToast(t('toast.languageUpdated', { language: label }), 'info'); // Bildirim göster
+  }
+}
+
+function closeDropdownMenu() { // Açık menüyü kapat
+  if (openDropdownMenu) openDropdownMenu.style.display = 'none'; // Menü gizle
+  if (dropdownOutsideHandler) document.removeEventListener('mousedown', dropdownOutsideHandler, true); // Dinleyiciyi kaldır
+  openDropdownMenu = null; // Referansı sıfırla
+  dropdownOutsideHandler = null; // Dinleyiciyi sıfırla
+}
+
+function openDropdownMenuFor(menuEl) { // Belirli menüyü aç
+  if (!menuEl) return; // Menü yoksa çık
+  if (openDropdownMenu && openDropdownMenu !== menuEl) closeDropdownMenu(); // Öncekini kapat
+  menuEl.style.display = 'flex'; // Göster
+  menuEl.style.flexDirection = 'column'; // Dikey sırala
+  openDropdownMenu = menuEl; // Referans kaydet
+  dropdownOutsideHandler = event => { // Dış tıklama dinleyicisi
+    if (!openDropdownMenu) return; // Menü yoksa çık
+    if (openDropdownMenu.contains(event.target)) return; // Menü içinde ise çık
+    if (event.target === languageBtn || event.target === otherMenuBtn) return; // Tetikleyen buton ise çık
+    closeDropdownMenu(); // Menüyü kapat
+  }; // Dinleyici sonu
+  document.addEventListener('mousedown', dropdownOutsideHandler, true); // Dinleyiciyi bağla
+}
+
+function toggleDropdown(menuEl) { // Açılır menüyü aç/kapat
+  if (!menuEl) return; // Menü yoksa çık
+  if (openDropdownMenu === menuEl) { // Zaten açık mı
+    closeDropdownMenu(); // Kapat
+  } else {
+    openDropdownMenuFor(menuEl); // Aç
+    applyTranslations(menuEl); // Menü metinlerini güncelle
+  }
+}
 
 // Yardımcı sabitler //
 const MAX_SERVERS = 16; // Maksimum paralel sunucu sayısı
@@ -778,50 +2004,249 @@ const appState = window.appState ?? { // Uygulama genel durumu
   lastUpdate: 0, // Son UI güncelleme zamanı
   lastMetricRefresh: 0, // Son metrik yenileme zamanı
   visualCursor: 0, // Görsel zaman imleci
-  nextStationId: 1 // Bir sonraki istasyon numarası
+  nextStationId: 1, // Bir sonraki istasyon numarası
+  mode: 'view', // Ekran modu
+  pausedForEdit: false, // Düzenleme için duraklatıldı mı
+  language: loadLanguagePreference(), // Aktif dil
+  tabs: [], // Açık sekmeler
+  activeTabId: null, // Aktif sekme kimliği
+  tabCounter: 1, // Sekme kimliği üreteci
+  edgeDraft: null, // Bağlantı oluşturma durumu
+  completedDisplayCount: 0 // Görüntülenen tamamlanan sayısı
 };
 window.appState = appState; // Durumu küresele yaz
+document.body.dataset.editMode = appState.mode; // Başlangıç modunu body'ye işle
+document.documentElement.lang = appState.language; // HTML dilini ayarla
 
 let renderingPaused = false; // Geçici olarak yeniden çizimi durdurma bayrağı
 
-function loadPersistedState() { // Yerel depolamadan durumu oku
-  if (typeof localStorage === 'undefined') return null; // Tarayıcı dışı ortam koruması
+function loadPersistedState() { // Yerel depolamadan açık sekmeleri oku
+  if (typeof localStorage === 'undefined') { // Tarayıcı desteklemiyorsa
+    return { tabs: [], activeTabId: null, legacySnapshot: null }; // Boş dönüş
+  }
   try {
-    const raw = localStorage.getItem(STORAGE_KEY); // Ham veri al
-    if (!raw) return null; // Veri yoksa çık
-    return JSON.parse(raw); // JSON çöz
+    const raw = localStorage.getItem(OPEN_TABS_KEY); // Sekme dizisini al
+    if (raw) { // Veri bulunduysa
+      const parsed = JSON.parse(raw); // JSON çöz
+      const tabs = Array.isArray(parsed.tabs) ? parsed.tabs : []; // Sekmeleri doğrula
+      const activeTabId = typeof parsed.activeTabId === 'string' ? parsed.activeTabId : (tabs[0]?.id ?? null); // Aktif sekme seç
+      return { tabs, activeTabId, legacySnapshot: null }; // Sonucu döndür
+    }
+    const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY); // Eski anahtarı dene
+    if (legacyRaw) { // Eski kayıt varsa
+      const legacySnapshot = JSON.parse(legacyRaw); // JSON çöz
+      return { tabs: [], activeTabId: null, legacySnapshot }; // Eski snapshot ile dön
+    }
   } catch (error) {
-    console.warn('Durum yüklenirken hata:', error); // Hata logla
-    return null; // Güvenli dönüş
+    console.warn('Sekme durumu yüklenirken hata:', error); // Hata logla
+  }
+  return { tabs: [], activeTabId: null, legacySnapshot: null }; // Varsayılan
+}
+
+function loadLanguagePreference() { // Dil tercihlerini oku
+  if (typeof localStorage === 'undefined') return 'tr'; // Varsayılan Türkçe
+  const stored = localStorage.getItem(LANGUAGE_KEY); // Kaydı al
+  return stored === 'en' || stored === 'de' ? stored : 'tr'; // Geçerli dillerden birini döndür
+}
+
+function persistLanguagePreference(lang) { // Dil tercihini kaydet
+  if (typeof localStorage === 'undefined') return; // Ortam koruması
+  try {
+    localStorage.setItem(LANGUAGE_KEY, lang); // Dil değerini yaz
+  } catch (error) {
+    console.warn('Dil tercihi kaydedilemedi:', error); // Hata logla
   }
 }
 
-function saveState(state = appState) { // Durumu kaydet
-  if (typeof localStorage === 'undefined') return; // Tarayıcı dışı ortam koruması
+function loadScenarioStore() { // Kaydedilmiş senaryoları oku
+  if (typeof localStorage === 'undefined') return []; // Tarayıcı koruması
   try {
-    const snapshot = { // Kaydedilecek özet
-      stations: state.stations.map(st => ({ // Her istasyon için
-        id: st.id, // Kimlik
-        name: st.name, // İsim
-        parallelServers: st.parallelServers, // Paralel operatör
-        tasks: st.tasks.map(task => ({ // Görev listesi
-          name: task.name, // Görev adı
-          operators: task.operators, // Operatör sayısı
-          durationSec: task.durationSec // Süre
-        }))
-      })),
-      targetCount: state.targetCount, // Hedef adet
-      entryPolicy: state.entryPolicy, // Giriş politikası
-      entryInterval: state.entryInterval, // Giriş aralığı
-      speed: state.speed, // Hız
-      zoom: state.zoom, // Zoom değeri
-      taktTime: state.taktTime, // Takt time
-      nextStationId: state.nextStationId // Sıradaki kimlik
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot)); // JSON olarak yaz
+    const raw = localStorage.getItem(SCENARIO_STORE_KEY); // Ham veri al
+    if (!raw) return []; // Veri yoksa boş
+    const parsed = JSON.parse(raw); // JSON çöz
+    if (!Array.isArray(parsed)) return []; // Dizi değilse boş
+    return parsed.filter(item => item && typeof item === 'object' && typeof item.name === 'string'); // Geçerli kayıtları döndür
   } catch (error) {
-    console.warn('Durum kaydedilirken hata:', error); // Hata logla
+    console.warn('Senaryo deposu okunamadı:', error); // Hata logla
+    return []; // Güvenli dönüş
   }
+}
+
+function persistScenarioStore(store) { // Senaryo deposunu yaz
+  if (typeof localStorage === 'undefined') return; // Tarayıcı koruması
+  try {
+    localStorage.setItem(SCENARIO_STORE_KEY, JSON.stringify(store)); // JSON olarak kaydet
+  } catch (error) {
+    console.warn('Senaryo deposu kaydedilirken hata:', error); // Hata logla
+  }
+}
+
+function loadCrashSnapshotPayload() { // Kurtarma anlık görüntüsünü oku
+  if (typeof localStorage === 'undefined') return null; // Tarayıcı koruması
+  try {
+    const raw = localStorage.getItem(SNAPSHOT_KEY); // Ham veriyi al
+    if (!raw) return null; // Veri yoksa çık
+    if (raw.length > 2 * 1024 * 1024) { // Boyut sınırı
+      localStorage.removeItem(SNAPSHOT_KEY); // Aşımda temizle
+      return null; // Veri yok say
+    }
+    const parsed = JSON.parse(raw); // JSON çöz
+    if (!parsed || typeof parsed !== 'object' || !parsed.snapshot) return null; // Geçersizse çık
+    return {
+      snapshot: parsed.snapshot, // Snapshot verisi
+      savedAt: parsed.savedAt || Date.now(), // Kaydedilme zamanı
+      reason: parsed.reason || 'unknown' // Sebep bilgisi
+    }; // Yapıyı döndür
+  } catch (error) {
+    console.warn('Kurtarma verisi okunamadı:', error); // Hata logla
+    return null; // Güvenli çık
+  }
+}
+
+function clearCrashSnapshot() { // Kurtarma verisini temizle
+  if (typeof localStorage === 'undefined') return; // Tarayıcı koruması
+  try {
+    localStorage.removeItem(SNAPSHOT_KEY); // Anahtarı sil
+  } catch (error) {
+    console.warn('Kurtarma verisi silinemedi:', error); // Hata logla
+  }
+}
+
+function shouldPromptRestore() { // Kurtarma uyarısı gösterilmeli mi
+  if (typeof localStorage === 'undefined') return false; // Tarayıcı koruması
+  return localStorage.getItem(RESTORE_PROMPT_KEY) !== 'off'; // Tercihi kontrol et
+}
+
+function showRestorePrompt(payload) { // Kurtarma modalını aç
+  if (!restoreModal) return; // Modal yoksa çık
+  pendingRestoreSnapshot = payload; // Veriyi sakla
+  restoreModal.classList.add('active'); // Modalı görünür yap
+  applyTranslations(restoreModal); // Metinleri güncelle
+}
+
+function hideRestorePrompt() { // Kurtarma modalını kapat
+  if (!restoreModal) return; // Modal yoksa çık
+  restoreModal.classList.remove('active'); // Sınıfı kaldır
+  pendingRestoreSnapshot = null; // Veriyi temizle
+}
+
+function handleRestoreConfirm() { // Kurtarma onayı işle
+  if (!pendingRestoreSnapshot) { hideRestorePrompt(); return; } // Veri yoksa çık
+  const payload = pendingRestoreSnapshot; // Veriyi al
+  hideRestorePrompt(); // Modalı kapat
+  clearCrashSnapshot(); // Snapshotı temizle
+  const snapshot = normalizeSnapshot(payload.snapshot); // Snapshotı temizle
+  const locale = appState.language === 'en' ? 'en-US' : appState.language === 'de' ? 'de-DE' : 'tr-TR'; // Tarih yereli
+  const formatter = new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'short' }); // Formatlayıcı
+  const stamp = formatter.format(new Date(payload.savedAt || Date.now())); // Zaman damgası
+  const tabName = t('tabs.restore', { stamp }); // Sekme adı
+  const id = `tab-${Date.now()}-${appState.tabCounter++}`; // Benzersiz kimlik
+  const tab = { id, name: tabName, snapshot, dirty: false, createdAt: payload.savedAt || Date.now(), updatedAt: Date.now() }; // Sekme nesnesi
+  appState.tabs.push(tab); // Sekme ekle
+  appState.activeTabId = id; // Aktif yap
+  renderTabs(); // Sekmeleri yenile
+  if (snapshot.language && snapshot.language !== appState.language) setLanguage(snapshot.language, { silent: true }); // Dil uygula
+  restoreFromSnapshot(snapshot, { persist: false, applyLanguage: false }); // Snapshotı uygula
+  updateActiveTabSnapshot(snapshot, { markDirty: false, reason: 'restore' }); // Sekmeyi temizle
+  persistTabsState(); // Sekmeleri kaydet
+  showGraphToast(t('toast.snapshotRestored'), 'success'); // Başarı bildirimi
+}
+
+function handleRestoreDecline() { // Kurtarma reddi
+  hideRestorePrompt(); // Modalı kapat
+  clearCrashSnapshot(); // Snapshotı temizle
+  showGraphToast(t('toast.snapshotDeclined'), 'info'); // Bilgi ver
+}
+
+function handleRestoreNever() { // Bir daha sorma seçeneği
+  hideRestorePrompt(); // Modalı kapat
+  clearCrashSnapshot(); // Snapshotı temizle
+  if (typeof localStorage !== 'undefined') localStorage.setItem(RESTORE_PROMPT_KEY, 'off'); // Tercihi yaz
+  showGraphToast(t('toast.snapshotDeclined'), 'info'); // Bilgi ver
+}
+
+function captureStatePayload(state = appState) { // Aktif sekme anlık görüntüsünü hazırla
+  return {
+    stations: state.stations.map(st => ({ // Her istasyon için kopya
+      id: st.id, // Kimlik
+      name: st.name, // İsim
+      parallelServers: st.parallelServers, // Operatör
+      position: st.position ? { x: st.position.x, y: st.position.y } : null, // Konum
+      outputs: Array.isArray(st.outputs) ? st.outputs.slice() : [], // Çıkışlar
+      tasks: st.tasks.map(task => ({ // Görev listesi
+        name: task.name, // Görev adı
+        operators: task.operators, // Operatör sayısı
+        durationSec: task.durationSec // Süre
+      }))
+    })),
+    targetCount: state.targetCount ?? null, // Hedef adet
+    entryPolicy: state.entryPolicy, // Giriş politikası
+    entryInterval: state.entryInterval, // Giriş aralığı
+    speed: state.speed, // Hız değeri
+    zoom: state.zoom, // Yakınlaştırma
+    taktTime: state.taktTime ?? null, // Takt zamanı
+    nextStationId: state.nextStationId, // Sonraki istasyon kimliği
+    mode: state.mode, // Arayüz modu
+    language: state.language, // Dil ayarı
+    timestamp: Date.now(), // Zaman damgası
+    appVersion: APP_VERSION // Sürüm bilgisi
+  }; // Snapshot döndür
+}
+
+function persistTabsState() { // Sekme durumunu yerelde sakla
+  if (typeof localStorage === 'undefined') return; // Ortam koruması
+  try {
+    const payload = { // Yazılacak veri
+      tabs: appState.tabs.map(tab => ({ // Her sekme için
+        id: tab.id, // Kimlik
+        name: tab.name, // Ad
+        snapshot: tab.snapshot, // Anlık görüntü
+        createdAt: tab.createdAt, // Oluşturulma
+        updatedAt: tab.updatedAt, // Güncellenme
+        dirty: !!tab.dirty // Kaydedilmemiş değişiklik bayrağı
+      })),
+      activeTabId: appState.activeTabId // Aktif sekme kimliği
+    };
+    localStorage.setItem(OPEN_TABS_KEY, JSON.stringify(payload)); // JSON olarak kaydet
+  } catch (error) {
+    console.warn('Sekme durumu kaydedilemedi:', error); // Hata logla
+  }
+}
+
+let crashSnapshotTimer = null; // Çökme anlık görüntüsü zamanlayıcısı
+
+function scheduleCrashSnapshot(reason = 'update') { // Çökme kurtarma için zamanlayıcı ayarla
+  if (typeof localStorage === 'undefined') return; // Ortam koruması
+  if (crashSnapshotTimer) clearTimeout(crashSnapshotTimer); // Önceki zamanlayıcıyı iptal et
+  crashSnapshotTimer = window.setTimeout(() => writeCrashSnapshot(reason), 1000); // 1 sn sonra yaz
+}
+
+function writeCrashSnapshot(reason = 'manual') { // Çökme kurtarma görüntüsünü yaz
+  if (typeof localStorage === 'undefined') return; // Ortam koruması
+  try {
+    const snapshot = captureStatePayload(); // Güncel snapshot
+    const payload = { snapshot, reason, savedAt: Date.now() }; // Kaydedilecek veri
+    localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(payload)); // JSON olarak sakla
+  } catch (error) {
+    console.warn('Kurtarma görüntüsü kaydedilemedi:', error); // Hata logla
+  }
+}
+
+function saveState(state = appState, reason = 'update') { // Aktif sekmeyi güncelle
+  const snapshot = captureStatePayload(state); // Snapshot üret
+  updateActiveTabSnapshot(snapshot, { markDirty: true, reason }); // Sekmeye uygula
+}
+
+function updateActiveTabSnapshot(snapshot, options = {}) { // Sekme snapshotını güncelle
+  if (!snapshot) return; // Geçersizse çık
+  const active = appState.tabs.find(tab => tab.id === appState.activeTabId); // Aktif sekmeyi bul
+  if (!active) return; // Yoksa çık
+  active.snapshot = snapshot; // Snapshot ata
+  active.updatedAt = Date.now(); // Güncelleme zamanı yaz
+  if (options.markDirty === true) active.dirty = true; // Kirli bayrağını ayarla
+  if (options.markDirty === false) active.dirty = false; // Temiz olarak işaretle
+  persistTabsState(); // Sekmeleri kaydet
+  scheduleCrashSnapshot(options.reason || 'update'); // Kurtarma için zamanla
 }
 
 // Model sınıfları //
@@ -839,6 +2264,8 @@ class Station { // İstasyon modeli
     this.name = name; // İsim
     this.tasks = []; // Görev listesi
     this.parallelServers = 1; // Paralel sunucu sayısı
+    this.outputs = []; // Çıkış bağlantıları listesi
+    this.position = { x: 0, y: 0 }; // Yerleşim koordinatı
   }
   totalDuration() { // Toplam görev süresi hesaplar
     return this.tasks.reduce((sum, task) => sum + task.durationSec, 0); // Sürelerin toplamı
@@ -926,6 +2353,21 @@ class SimulationEngine { // Motor sınıfı
     this.options = options; // Seçenekler
     this.viz = viz; // Görselleştirme referansı
     this.onLiveUpdate = null; // Canlı snapshot geri çağrısı
+    this.stationIndexById = new Map(); // İstasyon indeks haritası
+    this.stations.forEach((station, index) => { // Tüm istasyonları dolaş
+      if (!Array.isArray(station.outputs)) station.outputs = []; // Çıkış listesini normalize et
+      this.stationIndexById.set(station.id, index); // Kimlikten indeks ata
+    });
+    const incoming = new Set(); // Giriş yapan istasyonları takip et
+    this.stations.forEach(station => { // Her istasyon için
+      (Array.isArray(station.outputs) ? station.outputs : []).forEach(targetId => incoming.add(targetId)); // Hedefleri işaretle
+    });
+    this.entryStations = this.stations // Giriş düğümlerini hesapla
+      .filter(station => !incoming.has(station.id)) // Girişi olmayanları seç
+      .map(station => station.id); // Kimlik listesi
+    if (!this.entryStations.length && this.stations.length) { // Hiç giriş yoksa
+      this.entryStations = [this.stations[0].id]; // İlk istasyonu varsay
+    }
     this.reset(); // Başlangıç sıfırlama
   }
   reset() { // Tüm durum sıfırlama
@@ -948,6 +2390,7 @@ class SimulationEngine { // Motor sınıfı
       serviceTimeAccum: 0, // Toplam servis süresi
       serviceCount: 0 // Toplam servis adedi
     }));
+    this.entrySpawnCursor = 0; // Giriş istasyon seçim imlecini sıfırla
     this.jobs = new Map(); // İş nesneleri haritası
     this.wipCount = 0; // Anlık WIP
     this.wipArea = 0; // WIP integrali
@@ -956,23 +2399,63 @@ class SimulationEngine { // Motor sınıfı
     this.engineCursor = 0; // Mantıksal hedef zaman
     this.pendingStop = false; // Durdurma isteği
     this.viz.clearJobs(); // Görsel baloncukları temizle
+    this.forkStats = new Map(this.stations.map(station => [station.id, { produced: 0, forkEvents: 0 }])); // Fork istatistiklerini sıfırla
   }
   compareEvents = (a, b) => (a.time - b.time) || ((a.order || 0) - (b.order || 0)); // Olay karşılaştırıcısı
   schedule(event) { // Olayı kuyruğa ekle
     this.eventQueue.push(event); // Kuyruğa ekle
   }
-  spawnJob(atTime) { // Yeni iş oluşturma
+  resolveEntryStation(preferredId) { // Giriş istasyonunu belirle
+    const total = this.entryStations.length; // Toplam giriş sayısı
+    const hasCandidate = id => this.stationIndexById.has(id); // İstasyonun geçerli olup olmadığını denetle
+    if (preferredId && this.entryStations.includes(preferredId) && hasCandidate(preferredId)) { // Tercih geçerliyse
+      const index = this.entryStations.indexOf(preferredId); // Tercihin indeksini bul
+      this.entrySpawnCursor = total ? (index + 1) % total : 0; // İmleci bir sonraki girişe hazırla
+      return preferredId; // Tercih edilen kimliği döndür
+    }
+    if (!total) return null; // Kayıtlı giriş yoksa null dön
+    let cursor = this.entrySpawnCursor % (total || 1); // Döngü başlangıç konumunu hesapla
+    for (let attempt = 0; attempt < total; attempt++) { // Tüm girişleri sırayla kontrol et
+      const candidate = this.entryStations[cursor]; // Aday kimliği seç
+      if (hasCandidate(candidate)) { // Geçerliyse
+        this.entrySpawnCursor = (cursor + 1) % total; // İmleci sonraki adaya ilerlet
+        return candidate; // Aday kimliği döndür
+      }
+      cursor = (cursor + 1) % total; // Sıradaki adayı dene
+    }
+    return null; // Hiç geçerli giriş bulunamazsa null dön
+  }
+  spawnJob(atTime, preferredStationId = null) { // Yeni iş oluşturma
+    const entryStationId = this.resolveEntryStation(preferredStationId); // İşin gireceği istasyonu seç
+    if (!entryStationId) { // Uygun giriş yoksa
+      console.warn('[Motor] Giriş istasyonu bulunamadı, iş oluşturulamadı.'); // Uyarı logla
+      return; // Fonksiyondan çık
+    }
+    const entryIndex = this.stationIndexById.get(entryStationId); // Giriş istasyon indeksini al
+    if (entryIndex === undefined) { // İndeks bulunamadıysa
+      console.warn(`[Motor] Giriş istasyonu ${entryStationId} için indeks bulunamadı.`); // Uyarı logla
+      return; // Fonksiyondan çık
+    }
     const jobId = this.nextJobId++; // Kimlik üret
     const job = { // İş nesnesi
       id: jobId, // Kimlik
       stage: 0, // Şu anki istasyon
       enterTime: atTime, // Sisteme giriş zamanı
       exitTime: null, // Çıkış zamanı
-      history: [] // Aşamalar geçmişi
+      history: [], // Aşamalar geçmişi
+      parentId: null, // Üst iş kimliği
+      forkIndex: null, // Fork dalı
+      materialType: 'default', // Malzeme türü
+      attrs: {}, // Özellik sözlüğü
+      lineage: [], // Soy ağacı
+      route: [], // Ziyaret edilen istasyonlar
+      routeId: '', // Rota kimliği
+      currentStationId: null, // Bulunduğu istasyon
+      lastTargetId: null // Son hedef istasyon
     };
     this.jobs.set(jobId, job); // Haritaya ekle
     this.updateWip(this.wipCount + 1, atTime); // WIP artır
-    this.schedule({ type: 'arrival', jobId, stationIndex: 0, time: atTime, order: 0 }); // İlk istasyona varış planla
+    this.schedule({ type: 'arrival', jobId, stationIndex: entryIndex, time: atTime, order: 0 }); // Giriş istasyonuna varış planla
     this.viz.ensureJob(jobId); // Görsel balon hazırla
     console.debug(`[Motor] İş ${jobId} oluşturuldu, zaman ${atTime.toFixed(2)}`); // Oluşturma logu
   }
@@ -1033,8 +2516,8 @@ class SimulationEngine { // Motor sınıfı
     }
   }
   handleSpawn(event) { // Spawn işlemi
-    if (this.options.targetCount && this.nextJobId > this.options.targetCount) return; // Hedef sınırı
-    this.spawnJob(event.time); // Yeni iş oluştur
+    if (this.options.targetCount && this.completedJobs.length >= this.options.targetCount) return; // Hedef sınırı
+    this.spawnJob(event.time, event.entryStationId); // Belirlenen giriş için yeni iş oluştur
     if (this.options.entryPolicy === 'interval') { // Sabit aralıkta
       const nextIndex = (event.index || 0) + 1; // Sonraki indeks
       if (!this.options.targetCount || nextIndex < this.options.targetCount) { // Hedef kontrolü
@@ -1051,6 +2534,11 @@ class SimulationEngine { // Motor sınıfı
     if (!job) return; // Güvenlik
     console.debug(`[Motor] İş ${job.id} ${rt.station.name} istasyonuna ${event.time.toFixed(2)} zamanında geldi`); // Varış logu
     job.stage = event.stationIndex; // İstasyon kaydı
+    job.currentStationId = rt.station.id; // Güncel istasyon kimliği
+    job.lastTargetId = rt.station.id; // Son hedefi güncelle
+    if (!Array.isArray(job.route)) job.route = []; // Rota dizisini hazırla
+    if (job.route[job.route.length - 1] !== rt.station.id) job.route.push(rt.station.id); // Tekrarsız ekle
+    job.routeId = job.route.join('→'); // Rota metnini güncelle
     const arrivalRecord = { jobId: job.id, arrival: event.time }; // Kuyruk kaydı
     rt.queue.enqueue(arrivalRecord); // Kuyruğa ekle
     this.updateQueue(rt, rt.queue.length, event.time); // Kuyruk artışı
@@ -1097,22 +2585,81 @@ class SimulationEngine { // Motor sınıfı
     const job = this.jobs.get(event.jobId); // İş nesnesi
     if (!job) return; // Güvenlik
     console.debug(`[Motor] İş ${event.jobId} ${rt.station.name} servisinden ${event.time.toFixed(2)} zamanında ayrıldı`); // Tamamlama logu
-    if (event.stationIndex === this.stations.length - 1) { // Son istasyon mu
-      job.exitTime = event.time; // Çıkış zamanı kaydet
-      this.completedJobs.push(job); // Tamamlanan listesine ekle
-      this.updateWip(this.wipCount - 1, event.time); // WIP azalt
+    const station = rt.station; // İlgili istasyon
+    const rawTargets = Array.isArray(station.outputs) ? station.outputs : []; // Tanımlı hedefler
+    const validTargets = rawTargets // Geçerli hedefleri çıkar
+      .map(targetId => ({ targetId, index: this.stationIndexById.get(targetId) })) // Kimlik ve indeks eşleştir
+      .filter(entry => entry.index !== undefined); // İndeksi olmayanları ele
+    const parentVizNode = this.viz && this.viz.jobs ? this.viz.jobs.get(job.id) : null; // Görsel pozisyon referansı
+    const spawnX = parentVizNode ? parentVizNode.x : 0; // Çocuk balon X
+    const spawnY = parentVizNode ? parentVizNode.y : 0; // Çocuk balon Y
+    const baseHistory = job.history.map(record => ({ ...record })); // Tarihçe kopyası
+    const baseRoute = Array.isArray(job.route) ? job.route.slice() : []; // Rota kopyası
+    const baseLineage = Array.isArray(job.lineage) ? job.lineage.slice() : []; // Soy kopyası
+    const sink = validTargets.length === 0; // Çıkış yok mu kontrolü
+    if (sink) { // Çıkışsız istasyon
+      const completed = { // Tamamlanan iş özeti
+        id: job.id, // Kimlik
+        parentId: job.parentId, // Üst iş
+        forkIndex: job.forkIndex, // Fork dalı
+        materialType: job.materialType, // Malzeme türü
+        attrs: { ...(job.attrs || {}) }, // Özellikler
+        lineage: baseLineage, // Soy ağacı
+        enterTime: job.enterTime, // Giriş zamanı
+        exitTime: event.time, // Çıkış zamanı
+        history: baseHistory, // Tarihçe
+        route: baseRoute, // Rota dizisi
+        routeId: job.routeId || baseRoute.join('→'), // Rota metni
+        exitStationId: station.id, // Çıkış istasyonu kimliği
+        exitStationName: station.name // Çıkış istasyonu adı
+      }; // Nesne sonu
+      this.completedJobs.push(completed); // Tamamlananlara ekle
+      this.updateWip(Math.max(0, this.wipCount - 1), event.time); // WIP azalt
       this.viz.tagJob(job.id, 'completed'); // Görsel tamamlandı
-      this.viz.markForRemoval(job.id); // Balonu zamanla kaldır
-      if (this.options.targetCount && this.completedJobs.length >= this.options.targetCount) { // Hedef tamam mı
-        this.requestStop(); // Durdurma iste
+      this.viz.markForRemoval(job.id); // Balonu kaldır
+      this.jobs.delete(job.id); // İş kaydını sil
+      if (this.options.targetCount && this.completedJobs.length >= this.options.targetCount) { // Hedefe ulaşıldı mı
+        this.requestStop(); // Simülasyonu durdur
       }
-    } else { // Ara istasyon
-      const nextIndex = event.stationIndex + 1; // Sonraki istasyon
-      this.schedule({ type: 'arrival', jobId: job.id, stationIndex: nextIndex, time: event.time, order: 0 }); // Varışı planla
+    } else { // Fork üreten istasyon
+      const newWip = Math.max(0, this.wipCount - 1 + validTargets.length); // Yeni WIP değeri
+      this.updateWip(newWip, event.time); // WIP güncelle
+      const stats = this.forkStats.get(station.id); // Fork istatistiği
+      if (stats) { // İstatistik varsa
+        stats.produced += validTargets.length; // Üretilen çocuk sayısını artır
+        stats.forkEvents += 1; // Fork olay sayısını artır
+      }
+      validTargets.forEach((target, forkIndex) => { // Her hedef için
+        const childId = this.nextJobId++; // Yeni iş kimliği
+        const childJob = { // Çocuk iş nesnesi
+          id: childId, // Kimlik
+          stage: target.index, // Hedef istasyon indeksi
+          enterTime: job.enterTime, // Sisteme giriş zamanı
+          exitTime: null, // Çıkış zamanı
+          history: baseHistory.map(record => ({ ...record })), // Tarihçe kopyası
+          parentId: job.id, // Ebeveyn kimliği
+          forkIndex, // Fork dal indeksi
+          materialType: job.materialType, // Malzeme türü
+          attrs: { ...(job.attrs || {}) }, // Özellikler
+          lineage: [...baseLineage, job.id], // Soy ağacı güncelle
+          route: baseRoute.slice(), // Rota kopyası
+          routeId: job.routeId || baseRoute.join('→'), // Rota metni
+          currentStationId: null, // Güncel istasyon
+          lastTargetId: target.targetId // Son hedef kimliği
+        }; // Nesne sonu
+        this.jobs.set(childId, childJob); // Haritaya ekle
+        this.viz.ensureJob(childId); // Balon oluştur
+        this.viz.moveNodeInstant(childId, spawnX, spawnY); // Pozisyonu ata
+        this.viz.tagJob(childId, 'waiting'); // Durumu beklemede yap
+        this.schedule({ type: 'arrival', jobId: childId, stationIndex: target.index, time: event.time, order: 0 }); // Varışı planla
+      });
+      this.viz.tagJob(job.id, 'completed'); // Ebeveyni kapat
+      this.viz.markForRemoval(job.id); // Balonu kaldır
+      this.jobs.delete(job.id); // Ebeveyn iş kaydını sil
     }
-    if (event.stationIndex === 0 && this.options.entryPolicy === 'trigger') { // İlk istasyon tetikleyici mi
-      if (!this.options.targetCount || this.nextJobId <= this.options.targetCount) { // Hedef kontrolü
-        this.schedule({ type: 'spawn', time: event.time, order: -1 }); // Yeni iş tetikleme
+    if (this.entryStations.includes(station.id) && this.options.entryPolicy === 'trigger') { // Giriş tetikleyicisi kontrolü
+      if (!this.options.targetCount || this.completedJobs.length < this.options.targetCount) { // Hedef kontrolü
+        this.schedule({ type: 'spawn', time: event.time, order: -1, entryStationId: station.id }); // Aynı giriş istasyonu için yeni iş planla
       }
     }
     this.tryStartService(rt, event.stationIndex, event.time); // Kuyruktan yeni iş al
@@ -1219,6 +2766,24 @@ class SimulationEngine { // Motor sınıfı
       .slice() // Kopya al
       .sort((a, b) => a.exitTime - b.exitTime) // Zaman sıralaması
       .map((job, index) => ({ time: job.exitTime, count: index + 1 })); // Kümülatif nokta
+    const forkSummary = this.stations.map(station => { // Fork özetini hazırla
+      const stats = this.forkStats.get(station.id) || { produced: 0, forkEvents: 0 }; // İstatistiği al
+      return { // Satır nesnesi
+        stationId: station.id, // Kimlik
+        stationName: station.name, // İsim
+        outDegree: Array.isArray(station.outputs) ? station.outputs.length : 0, // Çıkış sayısı
+        producedChildren: stats.produced || 0, // Üretilen çocuk sayısı
+        forkEvents: stats.forkEvents || 0 // Fork olayı sayısı
+      }; // Nesne sonu
+    });
+    const completedRows = this.completedJobs.map(job => ({ // Tamamlanan iş satırları
+      id: job.id, // Kimlik
+      parentId: job.parentId ?? null, // Üst iş
+      routeId: job.routeId || (Array.isArray(job.route) ? job.route.join('→') : ''), // Rota metni
+      exitStationId: job.exitStationId || '', // Çıkış istasyonu kimliği
+      exitStationName: job.exitStationName || '', // Çıkış istasyonu adı
+      exitTime: job.exitTime || 0 // Çıkış zamanı
+    }));
     return { // Rapor objesi
       totalCompleted, // Tamamlanan
       horizon, // Simülasyon süresi
@@ -1229,222 +2794,677 @@ class SimulationEngine { // Motor sınıfı
       stationRows, // İstasyon satırları
       bottleneckUtil, // Util darboğazı
       bottleneckService, // Servis darboğazı
-      completionSeries // Tamamlanma serisi
+      completionSeries, // Tamamlanma serisi
+      forkSummary, // Fork özeti
+      completedJobs: completedRows // Tamamlanan iş listesi
     };
   }
 }
 
 // Görselleştirme sınıfı //
+
 class Visualization { // Görsel katman
   constructor(svg) { // Kurucu
     this.svg = svg; // SVG referansı
     this.jobs = new Map(); // Baloncuk haritası
-    this.stationLayout = []; // İstasyon yerleşimi
+    this.stationLayout = []; // İstasyon yerleşimi listesi
+    this.layoutById = new Map(); // Kimlikten yerleşim erişimi
     this.metricGroup = null; // Metrik yazıları grubu
     this.speed = 1; // Animasyon hızı
-    this.zoom = 1; // Zoom ölçeği
+    this.zoom = 1; // Yakınlaştırma ölçeği
+    this.editing = false; // Düzenleme modu aktif mi
+    this.viewPadding = 200; // Görünüm tamponu
+    this.minViewWidth = 1200; // Minimum görünüm genişliği
+    this.minViewHeight = 800; // Minimum görünüm yüksekliği
+    this.viewCenter = { x: 0, y: 0 }; // Görünüm merkezi
+    this.viewExtent = { width: this.minViewWidth, height: this.minViewHeight }; // Görünüm boyutu
+    this.panOffset = { x: 0, y: 0 }; // Pan kayması
+    this.worldLimits = { minX: -1600, maxX: 1600, minY: -900, maxY: 900 }; // Dünya sınırları
+    this.hasCentered = false; // İlk merkezleme yapıldı mı
+    this.edgeElements = new Map(); // Kenar öğeleri haritası
+    this.nodeElements = new Map(); // Düğüm öğeleri haritası
+    this.handlers = { beginEdge: null, completeEdge: null, cancelEdge: null, removeEdge: null, moveNode: null }; // Olay geri çağrıları
+    this.dragState = null; // Sürükleme durumu
+    this.edgeDraft = null; // Aktif bağlantı taslağı
+    this.nodeWidth = 180; // Kutu genişliği
+    this.nodeHeight = 140; // Kutu yüksekliği
+    this.markerId = `edge-arrow-${Math.random().toString(36).slice(2)}`; // Benzersiz ok belirteci
     this.resizeObserver = new ResizeObserver(() => this.drawStations()); // Yeniden çizim dinleyicisi
-    this.resizeObserver.observe(svg.parentElement); // Paneli izle
-    this.frame = this.frame.bind(this); // Animasyon bağla
-    this.setZoom(this.zoom); // Başlangıç ölçeğini uygula
-    requestAnimationFrame(this.frame); // Döngüyü başlat
+    if (svg && svg.parentElement) this.resizeObserver.observe(svg.parentElement); // Paneli izle
+    this.frame = this.frame.bind(this); // Animasyon bağlama
+    this.updateViewBox(); // Başlangıç görünümünü ayarla
+    if (this.svg) { // SVG mevcutsa
+      this.svg.addEventListener('pointermove', event => this.handleDraftPointer(event), { passive: true }); // Taslak çizgiyi güncelle
+      this.svg.addEventListener('mouseleave', () => this.handleDraftExit()); // İmleç ayrıldığında taslağı koru
+      this.svg.addEventListener('click', event => { // Arka plana tıklama
+        if (!this.edgeDraft) return; // Taslak yoksa çık
+        const isSvgTarget = event.target === this.svg; // Hedef doğrudan SVG mi
+        const clickedDraft = event.target.classList && event.target.classList.contains('edge-draft'); // Taslak çizgi mi
+        if ((isSvgTarget || clickedDraft) && typeof this.handlers.cancelEdge === 'function') { // Arka plan veya taslaksa
+          this.handlers.cancelEdge('background'); // Taslağı iptal et
+        }
+      });
+    }
+    requestAnimationFrame(this.frame); // Animasyon döngüsünü başlat
+  }
+  setHandlers(handlers = {}) { // Geri çağrı atayıcı
+    this.handlers = { ...this.handlers, ...handlers }; // Yeni handlerları birleştir
+  }
+  handleDraftPointer(event) { // Taslak çizgiyi işaretçi ile güncelle
+    if (!this.edgeDraft) return; // Taslak yoksa çık
+    const point = this.toSvgPoint(event); // Koordinatı SVG sistemine çevir
+    this.updateEdgeDraft(point.x, point.y); // Taslak çizgiyi yeni noktaya taşı
+  }
+  handleDraftExit() { // İşaretçi SVG'den ayrıldığında çağrılır
+    if (!this.edgeDraft || !this.edgeDraft.lastPoint) return; // Taslak yoksa çık
+    this.updateEdgeDraft(this.edgeDraft.lastPoint.x, this.edgeDraft.lastPoint.y); // Son noktayı koru
+  }
+  beginEdgeDraft(sourceId, targetIds = []) { // Bağlantı taslağını başlat
+    const layout = this.layoutById.get(sourceId); // Kaynak yerleşimi al
+    if (!layout || !this.edgeLayer) return false; // Geçerli değilse çık
+    this.cancelEdgeDraft(); // Önceki taslağı temizle
+    const start = { x: layout.x + layout.width, y: layout.y + layout.height / 2 }; // Başlangıç noktası
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Taslak çizgi oluştur
+    path.classList.add('edge-draft'); // Stil sınıfı ekle
+    path.setAttribute('marker-end', `url(#${this.markerId})`); // Ok ucu ata
+    this.edgeLayer.appendChild(path); // Çizgiyi katmana ekle
+    const targets = Array.isArray(targetIds) ? targetIds.map(id => String(id)) : []; // Hedef kimliklerini hazırla
+    this.edgeDraft = { sourceId, start, path, targetIds: targets, lastPoint: { x: start.x + 120, y: start.y } }; // Taslak durumunu sakla
+    const sourceNode = this.nodeElements.get(sourceId); // Kaynak düğüm referansı
+    if (sourceNode) sourceNode.group.classList.add('drafting'); // Kaynağı vurgula
+    targets.forEach(id => { const node = this.nodeElements.get(id); if (node) node.group.classList.add('draft-target'); }); // Hedefleri vurgula
+    this.updateEdgeDraft(this.edgeDraft.lastPoint.x, this.edgeDraft.lastPoint.y); // İlk çizgiyi çiz
+    return true; // Başarılı
+  }
+  updateEdgeDraft(x, y) { // Taslak çizgiyi güncelle
+    if (!this.edgeDraft) return; // Taslak yoksa çık
+    const end = { x, y }; // Bitiş noktası hazırla
+    const dx = Math.max(60, Math.abs(end.x - this.edgeDraft.start.x)); // X farkını hesapla
+    const control1 = `${this.edgeDraft.start.x + dx * 0.35} ${this.edgeDraft.start.y - 60}`; // Birinci kontrol
+    const control2 = `${end.x - dx * 0.35} ${end.y + 60}`; // İkinci kontrol
+    this.edgeDraft.path.setAttribute('d', `M ${this.edgeDraft.start.x} ${this.edgeDraft.start.y} C ${control1}, ${control2}, ${end.x} ${end.y}`); // Yolu güncelle
+    this.edgeDraft.lastPoint = end; // Son noktayı sakla
+  }
+  completeEdgeDraft(targetId) { // Taslak çizgiyi hedefle tamamla
+    if (!this.edgeDraft) return; // Taslak yoksa çık
+    const targetLayout = this.layoutById.get(targetId); // Hedef yerleşimi al
+    if (targetLayout) { // Hedef bulunduysa
+      const anchor = { x: targetLayout.x, y: targetLayout.y + targetLayout.height / 2 }; // Hedef noktasını hesapla
+      this.updateEdgeDraft(anchor.x, anchor.y); // Çizgiyi hedefe taşı
+    }
+    this.cancelEdgeDraft(); // Taslağı temizle
+  }
+  cancelEdgeDraft() { // Taslak çizgiyi iptal et
+    if (!this.edgeDraft) return; // Taslak yoksa çık
+    const sourceNode = this.nodeElements.get(this.edgeDraft.sourceId); // Kaynak düğümü al
+    if (sourceNode) sourceNode.group.classList.remove('drafting'); // Kaynak vurgusunu kaldır
+    const targets = Array.isArray(this.edgeDraft.targetIds) ? this.edgeDraft.targetIds : []; // Hedefleri al
+    targets.forEach(id => { const node = this.nodeElements.get(id); if (node) node.group.classList.remove('draft-target'); }); // Hedef vurgularını kaldır
+    if (this.edgeDraft.path && this.edgeDraft.path.parentNode) this.edgeDraft.path.parentNode.removeChild(this.edgeDraft.path); // Çizgiyi DOM'dan kaldır
+    this.edgeDraft = null; // Durumu sıfırla
   }
   clearJobs() { // Baloncukları temizle
     this.jobs.forEach(node => node.circle.remove()); // Tüm daireleri kaldır
-    this.jobs.clear(); // Haritayı boşalt
+    this.jobs.clear(); // Haritayı sıfırla
   }
   ensureJob(jobId) { // Balon var mı kontrol et
     if (this.jobs.has(jobId)) return; // Varsa çık
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); // Yeni daire
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); // Daire oluştur
     circle.classList.add('job-bubble'); // Sınıf ekle
-    circle.setAttribute('r', 12); // Yarıçap
-    circle.setAttribute('cx', 0); // X
-    circle.setAttribute('cy', 0); // Y
+    circle.setAttribute('r', 12); // Yarıçap belirle
+    circle.setAttribute('cx', 0); // Başlangıç X
+    circle.setAttribute('cy', 0); // Başlangıç Y
     this.svg.appendChild(circle); // SVG'ye ekle
-    this.jobs.set(jobId, { circle, targetX: 0, targetY: 0, x: 0, y: 0, startX: 0, startY: 0, startTime: performance.now(), duration: MOVE_DURATION_MS, removeAt: null }); // Kaydet
+    this.jobs.set(jobId, { circle, targetX: 0, targetY: 0, x: 0, y: 0, startX: 0, startY: 0, startTime: performance.now(), duration: MOVE_DURATION_MS, removeAt: null, progress: 0 }); // Haritaya kaydet
   }
-  tagJob(jobId, state) { // Görsel durum etiketle
-    const node = this.jobs.get(jobId); // Balon al
-    if (!node) return; // Yoksa çık
-    node.circle.classList.remove('waiting', 'processing', 'completed'); // Sınıfları temizle
-    node.circle.classList.add(state); // Yeni sınıf ekle
+  tagJob(jobId, state) { // Balon durum etiketi
+    const node = this.jobs.get(jobId); // Balonu al
+    if (!node) return; // Bulunamadıysa çık
+    node.circle.classList.remove('waiting', 'processing', 'completed'); // Önceki sınıfları kaldır
+    node.circle.classList.add(state); // Yeni durumu ekle
   }
   markForRemoval(jobId) { // Balonu kaldırmaya hazırla
-    const node = this.jobs.get(jobId); // Balon al
-    if (!node) return; // Yoksa çık
-    node.removeAt = performance.now() + MOVE_DURATION_MS / this.speed; // Kaldırma zamanını ayarla
+    const node = this.jobs.get(jobId); // Balon referansı
+    if (!node) return; // Bulunamadıysa çık
+    node.removeAt = performance.now() + MOVE_DURATION_MS / this.speed; // Kaldırma zamanını ata
   }
-  removeJob(jobId) { // Balonu kaldır
-    const node = this.jobs.get(jobId); // Balon al
-    if (!node) return; // Yoksa çık
-    node.circle.remove(); // SVG'den sil
-    this.jobs.delete(jobId); // Haritadan çıkar
+  removeJob(jobId) { // Balonu kalıcı kaldır
+    const node = this.jobs.get(jobId); // Balon referansı
+    if (!node) return; // Bulunamadıysa çık
+    node.circle.remove(); // SVG'den kaldır
+    this.jobs.delete(jobId); // Haritadan sil
   }
-  setSpeed(speed) { // Hızı güncelle
-    this.speed = speed; // Hız ata
+  setSpeed(speed) { // Görsel hız ayarı
+    this.speed = speed; // Değeri sakla
   }
-  setZoom(scale) { // Zoom değerini güncelle
-    this.zoom = scale; // Ölçeği sakla
-    this.svg.style.transform = `scale(${scale})`; // CSS ölçeğini uygula
+  setZoom(scale) { // Yakınlaştırma ayarı
+    this.zoom = Math.max(0.5, Math.min(3, scale)); // Ölçeği sınırla
+    this.updateViewBox(); // ViewBox'ı güncelle
+  }
+  updateViewBox() { // ViewBox değerini yenile
+    if (!this.svg) return; // SVG yoksa çık
+    const width = this.viewExtent.width / this.zoom; // Ölçeklenmiş genişlik
+    const height = this.viewExtent.height / this.zoom; // Ölçeklenmiş yükseklik
+    const x = this.viewCenter.x - width / 2 + this.panOffset.x; // Sol üst X
+    const y = this.viewCenter.y - height / 2 + this.panOffset.y; // Sol üst Y
+    this.svg.setAttribute('viewBox', `${x} ${y} ${width} ${height}`); // ViewBox ata
+  }
+  setEditing(enabled) { // Düzenleme modunu ayarla
+    this.editing = !!enabled; // Bayrağı sakla
+    this.nodeElements.forEach(entry => { // Tüm düğümleri dolaş
+      if (!entry || !entry.group) return; // Geçersizse geç
+      entry.group.style.cursor = this.editing ? 'grab' : 'default'; // İmleci güncelle
+      entry.group.classList.toggle('editing-enabled', this.editing); // Sınıfı değiştir
+      if (entry.addGroup) { // Bağlantı düğmesi varsa
+        entry.addGroup.style.pointerEvents = this.editing ? 'all' : 'none'; // Etkileşimi ayarla
+        entry.addGroup.style.opacity = this.editing ? '1' : '0.35'; // Görünürlüğü düzenle
+        entry.addGroup.style.cursor = this.editing ? 'pointer' : 'not-allowed'; // İmleci değiştir
+      }
+    });
+    if (!this.editing) this.cancelEdgeDraft(); // Düzenleme kapatıldığında taslağı temizle
+  }
+  calculateBounds() { // Yerleşim sınırlarını hesapla
+    if (!this.stationLayout.length) { // İstasyon yoksa
+      return { minX: -400, maxX: 400, minY: -200, maxY: 200 }; // Varsayılan sınırlar
+    }
+    let minX = Infinity; // Minimum X
+    let minY = Infinity; // Minimum Y
+    let maxX = -Infinity; // Maksimum X
+    let maxY = -Infinity; // Maksimum Y
+    this.stationLayout.forEach(layout => { // Her istasyonu dolaş
+      minX = Math.min(minX, layout.x); // Minimum X güncelle
+      minY = Math.min(minY, layout.y); // Minimum Y güncelle
+      maxX = Math.max(maxX, layout.x + layout.width); // Maksimum X güncelle
+      maxY = Math.max(maxY, layout.y + layout.height); // Maksimum Y güncelle
+    });
+    return { // Tampon uygulanmış sınırlar
+      minX: minX - this.viewPadding,
+      maxX: maxX + this.viewPadding,
+      minY: minY - this.viewPadding,
+      maxY: maxY + this.viewPadding
+    };
+  }
+  centerViewOnBounds() { // Tüm yerleşimi merkeze al
+    const bounds = this.calculateBounds(); // Sınırları hesapla
+    this.bounds = bounds; // Kaydet
+    const width = Math.max(this.minViewWidth, bounds.maxX - bounds.minX); // Genişliği belirle
+    const height = Math.max(this.minViewHeight, bounds.maxY - bounds.minY); // Yüksekliği belirle
+    this.viewExtent = { width, height }; // Görünüm boyutunu ata
+    this.viewCenter = { // Merkezi hesapla
+      x: (bounds.minX + bounds.maxX) / 2,
+      y: (bounds.minY + bounds.maxY) / 2
+    };
+    this.panOffset = { x: 0, y: 0 }; // Pan kaymasını sıfırla
+    this.updateViewBox(); // ViewBox'ı güncelle
+  }
+  updateBounds() { // Sınırları yenile
+    this.bounds = this.calculateBounds(); // Sınırları hesapla
+    const width = this.bounds.maxX - this.bounds.minX; // Genişlik
+    const height = this.bounds.maxY - this.bounds.minY; // Yükseklik
+    this.viewExtent.width = Math.max(this.viewExtent.width, Math.max(this.minViewWidth, width)); // Genişlik sınırı
+    this.viewExtent.height = Math.max(this.viewExtent.height, Math.max(this.minViewHeight, height)); // Yükseklik sınırı
+    this.updateViewBox(); // ViewBox'ı güncelle
+  }
+  clampPosition(layout, x, y) { // Sınırlar içinde konumla
+    const minX = this.worldLimits.minX; // Minimum X
+    const maxX = this.worldLimits.maxX - layout.width; // Maksimum X
+    const minY = this.worldLimits.minY; // Minimum Y
+    const maxY = this.worldLimits.maxY - layout.height; // Maksimum Y
+    return { // Sınırlandırılmış koordinatlar
+      x: Math.max(minX, Math.min(maxX, x)),
+      y: Math.max(minY, Math.min(maxY, y))
+    };
+  }
+  rectsOverlap(a, b, padding = 0) { // Dikdörtgen çakışma testi
+    return !(a.x + a.width + padding <= b.x || b.x + b.width + padding <= a.x || a.y + a.height + padding <= b.y || b.y + b.height + padding <= a.y); // Çakışma kontrolü
+  }
+  resolveCollisions(layout) { // Çakışmaları gider
+    const padding = 32; // Minimum boşluk
+    for (let attempt = 0; attempt < 8; attempt++) { // Sınırlı iterasyon
+      let collided = false; // Çakışma bayrağı
+      for (const other of this.stationLayout) { // Diğer istasyonları dolaş
+        if (other === layout) continue; // Aynıysa geç
+        if (!this.rectsOverlap(layout, other, padding)) continue; // Çakışma yoksa geç
+        collided = true; // Çakışma var
+        const dx = (layout.x + layout.width / 2) - (other.x + other.width / 2); // Merkez farkı X
+        const dy = (layout.y + layout.height / 2) - (other.y + other.height / 2); // Merkez farkı Y
+        if (Math.abs(dx) >= Math.abs(dy)) { // X yönü baskınsa
+          layout.x += dx >= 0 ? padding : -padding; // Sağ/sola kaydır
+        } else { // Y yönü baskınsa
+          layout.y += dy >= 0 ? padding : -padding; // Yukarı/aşağı kaydır
+        }
+        const clamped = this.clampPosition(layout, layout.x, layout.y); // Sınırla
+        layout.x = clamped.x; // X ata
+        layout.y = clamped.y; // Y ata
+      }
+      if (!collided) break; // Çakışma kalmadıysa çık
+    }
+  }
+  translateJob(jobId, dx, dy) { // Tek baloncuğu kaydır
+    if (!dx && !dy) return; // Kaydırma yoksa çık
+    const node = this.jobs.get(jobId); // Balonu al
+    if (!node) return; // Bulunamadıysa çık
+    node.x += dx; // X güncelle
+    node.y += dy; // Y güncelle
+    node.startX += dx; // Başlangıç X kaydır
+    node.startY += dy; // Başlangıç Y kaydır
+    node.targetX += dx; // Hedef X kaydır
+    node.targetY += dy; // Hedef Y kaydır
+    node.circle.setAttribute('cx', node.x); // SVG X
+    node.circle.setAttribute('cy', node.y); // SVG Y
+  }
+  translateStationJobs(layout, dx, dy) { // İstasyona bağlı balonları kaydır
+    if (!dx && !dy) return; // Değişim yoksa çık
+    const queue = Array.isArray(layout.queue) ? layout.queue : []; // Kuyruk işleri
+    queue.forEach(item => this.translateJob(item.jobId, dx, dy)); // Kuyruktakileri kaydır
+    const servers = Array.isArray(layout.servers) ? layout.servers : []; // Servis işleri
+    servers.forEach(server => { if (server) this.translateJob(server.jobId, dx, dy); }); // Servistekileri kaydır
+  }
+  refreshJobAnchors(forceInstant = false) { // Baloncuk konumlarını yeniden hesapla
+    const assigned = new Set(); // Atanan iş kümesi
+    this.stationLayout.forEach((layout, stationIdx) => { // Her istasyonu dolaş
+      const queue = Array.isArray(layout.queue) ? layout.queue : []; // Kuyruk listesi
+      queue.forEach((entry, queueIdx) => { // Her kuyruk elemanı
+        const pos = this.queuePosition(stationIdx, queueIdx); // Hedef konum
+        this.ensureJob(entry.jobId); // Balonu hazırla
+        if (forceInstant) this.moveNodeInstant(entry.jobId, pos.x, pos.y); else this.moveNode(entry.jobId, pos.x, pos.y); // Konumu uygula
+        assigned.add(entry.jobId); // Atandı olarak işaretle
+      });
+      const servers = Array.isArray(layout.servers) ? layout.servers : []; // Sunucu listesi
+      servers.forEach((server, serverIdx) => { // Her sunucu
+        if (!server) return; // Boşsa geç
+        const pos = this.serverPosition(stationIdx, serverIdx, servers.length); // Konumu hesapla
+        this.ensureJob(server.jobId); // Balonu hazırla
+        if (forceInstant) this.moveNodeInstant(server.jobId, pos.x, pos.y); else this.moveNode(server.jobId, pos.x, pos.y); // Konumu uygula
+        assigned.add(server.jobId); // Atandı olarak işaretle
+      });
+    });
+    return assigned; // Atanan kümesini döndür
+  }
+  normalizeWorld() { // Transformları sıfırla
+    this.stationLayout.forEach(layout => this.updateNodeTransform(layout)); // Her düğümü tazele
+    this.updateEdges(); // Kenarları güncelle
+    this.refreshJobAnchors(true); // Baloncukları hizala
+    this.updateBounds(); // Görünümü güncelle
   }
   setStations(stations) { // İstasyon yerleşimini güncelle
-    this.stationLayout = stations.map((station, index) => ({ station, index })); // Yerleşim kaydı
-    this.drawStations(); // SVG'yi yeniden çiz
-  }
-  drawStations() { // İstasyon kutularını çiz
-    while (this.svg.firstChild) this.svg.removeChild(this.svg.firstChild); // Eski öğeleri temizle
-    const width = this.svg.clientWidth || this.svg.parentElement.clientWidth; // Genişlik
-    const height = this.svg.clientHeight || 360; // Yükseklik
-    const count = this.stationLayout.length; // İstasyon sayısı
-    const gap = 80; // Aralık
-    const stationWidth = Math.min(160, (width - gap * (count + 1)) / Math.max(1, count)); // Kutu genişliği
-    const startX = (width - (stationWidth * count + gap * (count - 1))) / 2; // Başlangıç X
-    const baseY = height / 2; // Orta Y
-    const stationsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Grup oluştur
-    const arrowsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Ok grubu
-    this.svg.appendChild(arrowsGroup); // Önce ok grubu
-    this.svg.appendChild(stationsGroup); // Sonra kutular
-    this.stationLayout.forEach((layout, idx) => { // Her istasyon için
-      const x = startX + idx * (stationWidth + gap); // X koordinatı
-      const y = baseY - 60; // Y koordinatı
-      layout.x = x; // Kaydet
-      layout.y = y; // Kaydet
-      layout.width = stationWidth; // Genişlik kaydı
-      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); // Dikdörtgen
-      rect.setAttribute('x', x); // X ayarı
-      rect.setAttribute('y', y); // Y ayarı
-      rect.setAttribute('width', stationWidth); // Genişlik
-      rect.setAttribute('height', 140); // Yükseklik
-      rect.setAttribute('rx', 22); // Köşe
-      rect.classList.add('station-shape'); // Sınıf ekle
-      stationsGroup.appendChild(rect); // SVG'ye ekle
-      layout.rect = rect; // Referansı sakla
-      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Etiket
-      label.classList.add('station-label'); // Sınıf
-      label.setAttribute('x', x + stationWidth / 2); // X
-      label.setAttribute('y', y + 24); // Y
-      label.setAttribute('text-anchor', 'middle'); // Ortala
-      label.textContent = this.stationLayout[idx].station.name || `S${idx + 1}`; // Metin
-      stationsGroup.appendChild(label); // SVG'ye ekle
-      if (idx < this.stationLayout.length - 1) { // Son değilse ok çiz
-        const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Ok
-        const startArrowX = x + stationWidth; // Başlangıç X
-        const startArrowY = y + 70; // Başlangıç Y
-        const endArrowX = startX + (idx + 1) * (stationWidth + gap); // Bitiş X
-        const endArrowY = startArrowY; // Bitiş Y
-        const mid = (startArrowX + endArrowX) / 2; // Orta nokta
-        arrow.setAttribute('d', `M ${startArrowX} ${startArrowY} Q ${mid} ${startArrowY - 40} ${endArrowX} ${endArrowY}`); // Eğri çiz
-        arrow.setAttribute('stroke', 'rgba(255,255,255,0.18)'); // Kenar rengi
-        arrow.setAttribute('fill', 'none'); // Dolgu yok
-        arrow.setAttribute('stroke-width', 4); // Kalınlık
-        const arrowHead = document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); // Ok başı
-        arrowHead.setAttribute('points', `${endArrowX - 10},${endArrowY - 6} ${endArrowX},${endArrowY} ${endArrowX - 10},${endArrowY + 6}`); // Noktalar
-        arrowHead.setAttribute('fill', 'rgba(255,255,255,0.18)'); // Dolgu
-        arrowsGroup.appendChild(arrow); // Ok ekle
-        arrowsGroup.appendChild(arrowHead); // Ok başı ekle
-      }
+    this.stationLayout = stations.map((station, index) => { // Tüm istasyonları dolaş
+      const hasValidX = station.position && Number.isFinite(station.position.x); // X koordinat kontrolü
+      const hasValidY = station.position && Number.isFinite(station.position.y); // Y koordinat kontrolü
+      const fallback = suggestStationPosition(index); // Varsayılan konum
+      const x = hasValidX ? station.position.x : fallback.x; // X koordinatını seç
+      const y = hasValidY ? station.position.y : fallback.y; // Y koordinatını seç
+      if (!station.position) station.position = { x, y }; // Eksikse konum nesnesi oluştur
+      station.position.x = x; // X değerini yaz
+      station.position.y = y; // Y değerini yaz
+      return { station, index, x, y, width: this.nodeWidth, height: this.nodeHeight }; // Yerleşim objesini döndür
     });
-    this.metricGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Metrik grubu
+    this.layoutById = new Map(this.stationLayout.map(item => [item.station.id, item])); // Kimlik haritasını güncelle
+    this.drawStations(); // SVG'yi yeniden çiz
+    if (!this.hasCentered) { // İlk yükleme
+      this.centerViewOnBounds(); // Görünümü ortala
+      this.hasCentered = true; // Bayrağı ata
+    } else {
+      this.updateBounds(); // Sınırları güncelle
+    }
+    this.setEditing(this.editing); // Düzenleme imlecini uygula
+  }
+  ensureMarkers() { // Ok işaretini oluştur
+    if (!this.svg) return; // SVG yoksa çık
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs'); // Defs oluştur
+    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker'); // Marker oluştur
+    marker.setAttribute('id', this.markerId); // Kimlik ata
+    marker.setAttribute('markerWidth', '12'); // Genişlik
+    marker.setAttribute('markerHeight', '12'); // Yükseklik
+    marker.setAttribute('refX', '10'); // Referans X
+    marker.setAttribute('refY', '6'); // Referans Y
+    marker.setAttribute('orient', 'auto'); // Yönlendirme
+    marker.setAttribute('markerUnits', 'userSpaceOnUse'); // Ölçek birimi
+    const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Ok şekli
+    arrow.setAttribute('d', 'M 0 0 L 12 6 L 0 12 Z'); // Üçgen çiz
+    arrow.setAttribute('fill', 'rgba(100,210,255,0.7)'); // Dolgu rengi
+    marker.appendChild(arrow); // Oku markere ekle
+    defs.appendChild(marker); // Markeri defs içine ekle
+    this.svg.appendChild(defs); // Defs'i SVG'ye ekle
+  }
+  drawStations() { // İstasyon düğümlerini çiz
+    this.cancelEdgeDraft(); // Mevcut bağlantı taslağını temizle
+    while (this.svg.firstChild) this.svg.removeChild(this.svg.firstChild); // Tüm çocukları temizle
+    this.ensureMarkers(); // Ok markerını ekle
+    this.edgeLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Kenar katmanı oluştur
+    this.edgeLayer.classList.add('edge-layer'); // Sınıf ata
+    this.svg.appendChild(this.edgeLayer); // SVG'ye ekle
+    this.nodeLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Düğüm katmanı oluştur
+    this.nodeLayer.classList.add('node-layer'); // Sınıf ata
+    this.svg.appendChild(this.nodeLayer); // SVG'ye ekle
+    this.metricGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Metrik katmanı oluştur
+    this.metricGroup.classList.add('metric-layer'); // Sınıf ata
     this.svg.appendChild(this.metricGroup); // SVG'ye ekle
+    this.nodeElements.clear(); // Düğüm referanslarını temizle
+    this.stationLayout.forEach(layout => this.buildNodeGroup(layout)); // Her düğümü oluştur
+    this.drawEdges(); // Kenarları çiz
     this.jobs.forEach(node => this.svg.appendChild(node.circle)); // Baloncukları üste taşı
   }
-  applyLayout(layout, timeCursor = 0) { // Yerleşim verisini uygula
-    this.jobs.forEach((node, jobId) => { // Her iş için
-      let target = null; // Hedef koordinat
-      layout.forEach((item, idx) => { // İstasyonları dolaş
-        const queueIndex = item.queue.findIndex(entry => entry.jobId === jobId); // Kuyrukta mı
-        if (queueIndex !== -1) { // Kuyrukta ise
-          target = this.queuePosition(idx, queueIndex); // Hedef koordinat
-        }
-        const serverIndex = item.servers.findIndex(server => server && server.jobId === jobId); // Sunucuda mı
-        if (serverIndex !== -1) { // Sunucuda ise
-          target = this.serverPosition(idx, serverIndex, item.servers.length); // Hedef koordinat
-        }
-      });
-      if (!target) { // Hedef yoksa
-        const lastLayout = this.stationLayout[this.stationLayout.length - 1]; // Son istasyon
-        target = { x: lastLayout ? lastLayout.x + lastLayout.width + 60 : 40, y: 40 }; // Çıkış bölgesi
+  buildNodeGroup(layout) { // Tek düğümü oluştur
+    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Grup oluştur
+    group.classList.add('station-node'); // Sınıf ekle
+    group.dataset.id = layout.station.id; // Veri kimliği ata
+    this.nodeLayer.appendChild(group); // Katmana ekle
+    group.style.touchAction = 'none'; // Dokunma kaydırmasını engelle
+    group.style.pointerEvents = 'all'; // Etkileşime izin ver
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); // Kutu oluştur
+    rect.setAttribute('x', 0); // X konumu
+    rect.setAttribute('y', 0); // Y konumu
+    rect.setAttribute('width', layout.width); // Genişlik ata
+    rect.setAttribute('height', layout.height); // Yükseklik ata
+    rect.setAttribute('rx', 22); // Köşe yumuşatma
+    rect.classList.add('station-shape'); // Sınıf ekle
+    group.appendChild(rect); // Gruba ekle
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Etiket oluştur
+    label.classList.add('station-label'); // Sınıf ekle
+    label.setAttribute('x', layout.width / 2); // Merkez X
+    label.setAttribute('y', 26); // Y konumu
+    label.setAttribute('text-anchor', 'middle'); // Ortala
+    label.textContent = layout.station.name || layout.station.id; // Metin ata
+    group.appendChild(label); // Gruba ekle
+    const addGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Bağlantı ekleme grubu
+    addGroup.classList.add('node-connector-add'); // Sınıf ekle
+    addGroup.style.pointerEvents = 'all'; // Etkileşimi aç
+    addGroup.style.cursor = 'pointer'; // İmleç tipi
+    const addCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); // Çember oluştur
+    addCircle.setAttribute('cx', layout.width - 14); // Merkez X
+    addCircle.setAttribute('cy', layout.height / 2); // Merkez Y
+    addCircle.setAttribute('r', 12); // Yarıçap
+    addCircle.classList.add('connector-circle'); // Stil sınıfı
+    addGroup.appendChild(addCircle); // Gruba ekle
+    const addHoriz = document.createElementNS('http://www.w3.org/2000/svg', 'line'); // Yatay çizgi
+    addHoriz.setAttribute('x1', layout.width - 20); // Başlangıç X
+    addHoriz.setAttribute('x2', layout.width - 8); // Bitiş X
+    addHoriz.setAttribute('y1', layout.height / 2); // Başlangıç Y
+    addHoriz.setAttribute('y2', layout.height / 2); // Bitiş Y
+    addHoriz.classList.add('connector-plus'); // Stil sınıfı
+    addGroup.appendChild(addHoriz); // Gruba ekle
+    const addVert = document.createElementNS('http://www.w3.org/2000/svg', 'line'); // Dikey çizgi
+    addVert.setAttribute('x1', layout.width - 14); // Başlangıç X
+    addVert.setAttribute('x2', layout.width - 14); // Bitiş X
+    addVert.setAttribute('y1', layout.height / 2 - 6); // Başlangıç Y
+    addVert.setAttribute('y2', layout.height / 2 + 6); // Bitiş Y
+    addVert.classList.add('connector-plus'); // Stil sınıfı
+    addGroup.appendChild(addVert); // Gruba ekle
+    group.appendChild(addGroup); // Gruba ekle
+    addGroup.addEventListener('click', event => { // Tıklama dinleyicisi
+      event.stopPropagation(); // Kabarcığı durdur
+      if (typeof this.handlers.beginEdge === 'function') { // Handler var mı
+        this.handlers.beginEdge(layout.station.id); // Taslak oluşturmayı başlat
       }
-      this.moveNode(jobId, target.x, target.y); // Hareket uygula
     });
+    const forkIcon = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Fork simgesi
+    forkIcon.setAttribute('d', 'M 0 0 L 12 -10 M 0 0 L -12 -10 M 0 0 L 0 12'); // Y şekli
+    forkIcon.setAttribute('transform', `translate(${layout.width - 36}, ${layout.height / 2 - 4})`); // Konumlandır
+    forkIcon.classList.add('fork-indicator'); // Stil sınıfı
+    group.appendChild(forkIcon); // Gruba ekle
+    layout.rect = rect; // Yerleşim referansı
+    layout.group = group; // Grup referansı
+    layout.forkIcon = forkIcon; // Fork simgesi referansı
+    this.nodeElements.set(layout.station.id, { group, addGroup, forkIcon, rect }); // Referansları sakla
+    this.updateNodeTransform(layout); // Konumu uygula
+    this.bindDrag(group, layout); // Sürüklemeyi bağla
+    group.addEventListener('click', event => { // Düğüm tıklaması
+      if (!this.edgeDraft) return; // Taslak yoksa çık
+      if (this.edgeDraft.sourceId === layout.station.id) return; // Kaynağa tıklamayı yoksay
+      event.stopPropagation(); // Kabarcığı durdur
+      if (typeof this.handlers.completeEdge === 'function') { // Handler var mı
+        this.handlers.completeEdge(this.edgeDraft.sourceId, layout.station.id); // Taslağı tamamla
+      }
+    });
+  }
+  bindDrag(group, layout) { // Sürükleme olaylarını bağla
+    group.addEventListener('pointerdown', event => { // Başlangıç olayı
+      if (!this.editing) return; // Düzenleme modunda değilse çık
+      if (event.button !== 0) return; // Sol tuş değilse çık
+      event.preventDefault(); // Varsayılanı engelle
+      const point = this.toSvgPoint(event); // SVG koordinatına çevir
+      const offsetX = point.x - layout.x; // X offsetini hesapla
+      const offsetY = point.y - layout.y; // Y offsetini hesapla
+      this.dragState = { layout, offsetX, offsetY, pointerId: event.pointerId }; // Durumu sakla
+      group.setPointerCapture(event.pointerId); // İşaretçiyi yakala
+    });
+    group.addEventListener('pointermove', event => { // Hareket olayı
+      if (!this.dragState || this.dragState.pointerId !== event.pointerId) return; // Geçerli sürükleme yoksa çık
+      const point = this.toSvgPoint(event); // Koordinatı hesapla
+      const proposedX = point.x - this.dragState.offsetX; // Önerilen X
+      const proposedY = point.y - this.dragState.offsetY; // Önerilen Y
+      const clamped = this.clampPosition(this.dragState.layout, proposedX, proposedY); // Sınırla
+      const dx = clamped.x - this.dragState.layout.x; // Delta X
+      const dy = clamped.y - this.dragState.layout.y; // Delta Y
+      if (!dx && !dy) return; // Hareket yoksa çık
+      this.dragState.layout.x = clamped.x; // X'i güncelle
+      this.dragState.layout.y = clamped.y; // Y'yi güncelle
+      this.updateNodeTransform(this.dragState.layout); // Görseli güncelle
+      this.translateStationJobs(this.dragState.layout, dx, dy); // Baloncukları kaydır
+      this.updateEdges(); // Kenarları tazele
+      if (typeof this.handlers.moveNode === 'function') { // Handler varsa
+        this.handlers.moveNode(this.dragState.layout.station.id, this.dragState.layout.x, this.dragState.layout.y, { live: true }); // Canlı güncelle
+      }
+    });
+    const finish = event => { // Sürükleme bitiş işlemi
+      if (!this.dragState || (event.pointerId !== undefined && this.dragState.pointerId !== event.pointerId)) return; // Geçerli değilse çık
+      const state = this.dragState; // Durumu al
+      this.dragState = null; // Sıfırla
+      if (event.pointerId !== undefined) group.releasePointerCapture(event.pointerId); // Yakalamayı bırak
+      const before = { x: state.layout.x, y: state.layout.y }; // Önceki konum
+      this.resolveCollisions(state.layout); // Çakışmaları düzelt
+      const fixDx = state.layout.x - before.x; // Düzeltme X
+      const fixDy = state.layout.y - before.y; // Düzeltme Y
+      if (fixDx || fixDy) { // Ek kaydırma olduysa
+        this.updateNodeTransform(state.layout); // Transformu güncelle
+        this.translateStationJobs(state.layout, fixDx, fixDy); // Baloncukları taşı
+      }
+      this.updateEdges(); // Kenarları yenile
+      this.refreshJobAnchors(true); // Baloncukları hizala
+      this.updateBounds(); // Görünüm sınırlarını güncelle
+      if (typeof this.handlers.moveNode === 'function') { // Handler varsa
+        this.handlers.moveNode(state.layout.station.id, state.layout.x, state.layout.y, { live: false }); // Kalıcı güncelle
+      }
+    }; // finish sonu
+    group.addEventListener('pointerup', finish); // Bitiş olayı
+    group.addEventListener('pointercancel', finish); // İptal olayı
+    group.addEventListener('pointerleave', event => { // Alanı terk ettiğinde
+      if (!this.dragState) return; // Sürükleme yoksa çık
+      if (event.buttons === 0) finish(event); // Tuş bırakıldıysa bitir
+    });
+  }
+  toSvgPoint(event) { // Ekran koordinatını SVG koordinatına çevir
+    const point = this.svg.createSVGPoint(); // Nokta oluştur
+    point.x = event.clientX; // X değerini ata
+    point.y = event.clientY; // Y değerini ata
+    const matrix = this.svg.getScreenCTM(); // Dönüşüm matrisini al
+    return matrix ? point.matrixTransform(matrix.inverse()) : { x: point.x, y: point.y }; // Matrisi uygula
+  }
+  toScreenPoint(x, y) { // SVG koordinatını ekran koordinatına çevir
+    const point = this.svg.createSVGPoint(); // Nokta oluştur
+    point.x = x; // X değeri
+    point.y = y; // Y değeri
+    const matrix = this.svg.getScreenCTM(); // Matris al
+    const transformed = matrix ? point.matrixTransform(matrix) : point; // Dönüştür
+    return { x: transformed.x, y: transformed.y }; // Sonucu döndür
+  }
+  updateNodeTransform(layout) { // Düğüm pozisyonunu uygula
+    const node = this.nodeElements.get(layout.station.id); // Düğüm referansı
+    if (node) node.group.setAttribute('transform', `translate(${layout.x}, ${layout.y})`); // SVG transformunu güncelle
+    if (!layout.station.position) layout.station.position = { x: layout.x, y: layout.y }; // Konum nesnesini hazırla
+    layout.station.position.x = layout.x; // X değerini yaz
+    layout.station.position.y = layout.y; // Y değerini yaz
+  }
+  drawEdges() { // Kenarları çiz
+    while (this.edgeLayer.firstChild) this.edgeLayer.removeChild(this.edgeLayer.firstChild); // Mevcut kenarları temizle
+    this.edgeElements.clear(); // Kenar referanslarını temizle
+    this.stationLayout.forEach(layout => { // Her istasyonu dolaş
+      const outputs = Array.isArray(layout.station.outputs) ? layout.station.outputs : []; // Çıkış listesi
+      outputs.forEach((targetId, index) => { // Her bağlantı için
+        const targetLayout = this.layoutById.get(targetId); // Hedef yerleşimi al
+        if (!targetLayout) return; // Yoksa geç
+        const group = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Kenar grubu oluştur
+        group.classList.add('edge-group'); // Sınıf ekle
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); // Kenar yolu
+        path.classList.add('edge-path'); // Sınıf ekle
+        path.setAttribute('fill', 'none'); // Dolgu yok
+        path.setAttribute('stroke', this.edgeStrokeFor(layout.station.id, index)); // Renk ata
+        path.setAttribute('stroke-width', '3'); // Kalınlık ata
+        path.setAttribute('marker-end', `url(#${this.markerId})`); // Ok ucu ata
+        group.appendChild(path); // Gruba ekle
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Etiket oluştur
+        label.classList.add('edge-label'); // Sınıf ekle
+        label.setAttribute('text-anchor', 'middle'); // Ortala
+        label.textContent = `${layout.station.name || layout.station.id}→${targetLayout.station.name || targetLayout.station.id}`; // Metin ata
+        group.appendChild(label); // Gruba ekle
+        const remove = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Silme butonu
+        remove.classList.add('edge-remove'); // Sınıf ekle
+        remove.textContent = '×'; // Metin ata
+        remove.addEventListener('click', event => { // Tıklama dinleyicisi
+          event.stopPropagation(); // Kabarcığı durdur
+          if (typeof this.handlers.removeEdge === 'function') { // Handler varsa
+            this.handlers.removeEdge(layout.station.id, targetId); // Handler çağır
+          }
+        });
+        group.appendChild(remove); // Gruba ekle
+        this.edgeLayer.appendChild(group); // Katmana ekle
+        this.edgeElements.set(`${layout.station.id}->${targetId}`, { path, label, remove, sourceId: layout.station.id, targetId }); // Haritaya kaydet
+      });
+    });
+    this.updateEdges(); // Konumları hesapla
+    this.refreshForkIndicators(); // Fork simgelerini güncelle
+  }
+  edgeStrokeFor(sourceId, index) { // Kenar rengi üret
+    const seed = Array.from(sourceId).reduce((sum, char) => sum + char.charCodeAt(0), 0) + index * 53; // Çekirdek hesapla
+    const hue = seed % 360; // Hue değeri
+    return `hsla(${hue}, 68%, 58%, 0.85)`; // HSL renk döndür
+  }
+  updateEdges() { // Kenar konumlarını güncelle
+    this.edgeElements.forEach(edge => { // Her kenar için
+      const source = this.layoutById.get(edge.sourceId); // Kaynak yerleşim
+      const target = this.layoutById.get(edge.targetId); // Hedef yerleşim
+      if (!source || !target) return; // Eksikse çık
+      const start = { x: source.x + source.width, y: source.y + source.height / 2 }; // Başlangıç noktası
+      const end = { x: target.x, y: target.y + target.height / 2 }; // Bitiş noktası
+      const deltaX = Math.max(60, Math.abs(end.x - start.x)); // X farkı
+      const controlOffset = deltaX * 0.35; // Kontrol offseti
+      const control1 = `${start.x + controlOffset} ${start.y - 60}`; // İlk kontrol
+      const control2 = `${end.x - controlOffset} ${end.y + 60}`; // İkinci kontrol
+      edge.path.setAttribute('d', `M ${start.x} ${start.y} C ${control1}, ${control2}, ${end.x} ${end.y}`); // Yolu yaz
+      const midX = (start.x + end.x) / 2; // Orta X
+      const midY = (start.y + end.y) / 2 - 24; // Orta Y
+      edge.label.setAttribute('x', midX); // Etiket X
+      edge.label.setAttribute('y', midY); // Etiket Y
+      edge.remove.setAttribute('x', midX); // Silme X
+      edge.remove.setAttribute('y', midY - 14); // Silme Y
+    });
+  }
+  refreshForkIndicators() { // Fork simgelerini güncelle
+    this.stationLayout.forEach(layout => { // Her istasyonu dolaş
+      const outputs = Array.isArray(layout.station.outputs) ? layout.station.outputs.length : 0; // Çıkış sayısını al
+      const node = this.nodeElements.get(layout.station.id); // Düğüm referansı
+      if (!node) return; // Yoksa geç
+      if (outputs > 1) { // Birden fazla çıkış varsa
+        node.forkIcon.style.display = 'block'; // Simgesini göster
+        node.group.classList.add('fork-node'); // Stil sınıfı ekle
+      } else {
+        node.forkIcon.style.display = 'none'; // Simgesini gizle
+        node.group.classList.remove('fork-node'); // Stil sınıfını kaldır
+      }
+    });
+  }
+  applyLayout(layout, timeCursor = 0) { // Simülasyon yerleşimini uygula
+    layout.forEach((item, idx) => { // Her istasyon için
+      const nodeLayout = this.stationLayout[idx]; // Yerleşimi al
+      if (!nodeLayout) return; // Bulunamazsa geç
+      nodeLayout.queue = item.queue; // Kuyruk verisini sakla
+      nodeLayout.servers = item.servers; // Sunucu verisini sakla
+    });
+    this.updateEdges(); // Kenarları güncelle
+    this.refreshJobAnchors(); // Baloncukları yeni geometriye taşı
     this.renderMetrics(layout, timeCursor); // Metrikleri çiz
+    this.jobs.forEach(node => this.svg.appendChild(node.circle)); // Baloncukları üstte tut
   }
-  queuePosition(stationIdx, queueIdx) { // Kuyruk pozisyonu hesapla
-    const layout = this.stationLayout[stationIdx]; // İstasyon yerleşimi
+  queuePosition(stationIdx, queueIdx) { // Kuyruktaki balon konumu
+    const layout = this.stationLayout[stationIdx]; // Yerleşimi al
     const x = layout.x + layout.width / 2; // Merkez X
-    const y = layout.y - 20 - queueIdx * 28; // Yukarı doğru istif
-    return { x, y }; // Koordinat döndür
+    const y = layout.y - 26 - queueIdx * 28; // Üstte sıralı pozisyon
+    return { x, y }; // Koordinatı döndür
   }
-  serverPosition(stationIdx, serverIdx, totalServers) { // Sunucu pozisyonu hesapla
-    const layout = this.stationLayout[stationIdx]; // İstasyon yerleşimi
-    const spacing = layout.width / (totalServers + 1); // Aralık
-    const x = layout.x + spacing * (serverIdx + 1); // X koordinatı
-    const y = layout.y + 70; // Y koordinatı
-    return { x, y }; // Koordinat döndür
+  serverPosition(stationIdx, serverIdx, totalServers) { // Servis içi balon konumu
+    const layout = this.stationLayout[stationIdx]; // Yerleşimi al
+    const spacing = layout.width / Math.max(1, totalServers + 1); // Aralık hesapla
+    const x = layout.x + spacing * (serverIdx + 1); // X pozisyonu
+    const y = layout.y + layout.height / 2 + 30; // Y pozisyonu
+    return { x, y }; // Koordinatı döndür
   }
-  moveNode(jobId, targetX, targetY) { // Balonu hedefe taşı
-    const node = this.jobs.get(jobId); // Balon al
-    if (!node) return; // Yoksa çık
+  moveNode(jobId, x, y) { // Balonu hareket ettir
+    const node = this.jobs.get(jobId); // Balonu al
+    if (!node) return; // Bulunamadıysa çık
     node.startX = node.x; // Başlangıç X
     node.startY = node.y; // Başlangıç Y
-    node.targetX = targetX; // Hedef X
-    node.targetY = targetY; // Hedef Y
-    node.startTime = performance.now(); // Başlangıç zamanı
-    node.duration = MOVE_DURATION_MS / this.speed; // Süre hızla ölçeklenir
-    node.removeAt = null; // Kaldırma zamanını temizle
+    node.targetX = x; // Hedef X
+    node.targetY = y; // Hedef Y
+    node.startTime = performance.now(); // Animasyon başlangıcı
+    node.duration = MOVE_DURATION_MS / this.speed; // Süre hesapla
+  }
+  moveNodeInstant(jobId, x, y) { // Balonu anında taşı (iç kullanım için)
+    const node = this.jobs.get(jobId); // Balonu al
+    if (!node) return; // Bulunamadıysa çık
+    node.x = x; // X ata
+    node.y = y; // Y ata
+    node.circle.setAttribute('cx', x); // SVG X
+    node.circle.setAttribute('cy', y); // SVG Y
   }
   renderMetrics(layout, timeCursor) { // Metrikleri çiz
-    if (!this.metricGroup) return; // Grup yoksa çık
-    while (this.metricGroup.firstChild) this.metricGroup.removeChild(this.metricGroup.firstChild); // Eski metrikleri temizle
+    while (this.metricGroup.firstChild) this.metricGroup.removeChild(this.metricGroup.firstChild); // Önceki metinleri temizle
     layout.forEach((item, idx) => { // Her istasyon için
-      const layoutInfo = this.stationLayout[idx]; // Yerleşim bilgisi
-      const queueText = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Kuyruk metni
-      queueText.classList.add('metric-tag'); // Sınıf ekle
-      queueText.setAttribute('x', layoutInfo.x + layoutInfo.width / 2); // X
-      queueText.setAttribute('y', layoutInfo.y + 110); // Y
+      const layoutInfo = this.stationLayout[idx]; // Yerleşimi al
+      if (!layoutInfo) return; // Yoksa geç
+      const nodeRefs = this.nodeElements.get(layoutInfo.station.id); // Düğüm referansı
+      if (nodeRefs) nodeRefs.group.classList.remove('bottleneck'); // Önceki vurguyu temizle
+      const queueText = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Kuyruk etiketi
+      queueText.classList.add('metric-tag'); // Stil sınıfı
+      queueText.setAttribute('x', layoutInfo.x + layoutInfo.width / 2); // X değeri
+      queueText.setAttribute('y', layoutInfo.y + layoutInfo.height + 18); // Y değeri
       queueText.setAttribute('text-anchor', 'middle'); // Ortala
-      const utilPercent = item.metrics.avgUtil * 100; // Ortalama util hesapla
-      queueText.textContent = `Kuyruk: ${item.metrics.queueLength} · Ort:${item.metrics.avgQueue.toFixed(1)}`; // Metin
-      const danger = item.metrics.avgQueue > 1.5 || item.metrics.avgUtil > 0.85; // Tehlike eşiği
-      if (danger) { // Kuyruk veya util yüksekse
-        queueText.classList.add('danger'); // Kuyruk uyarı sınıfı
-        if (layoutInfo.rect) layoutInfo.rect.classList.add('bottleneck'); // Kutuya vurgu
-      } else if (layoutInfo.rect) {
-        layoutInfo.rect.classList.remove('bottleneck'); // Vurguyu kaldır
-      }
+      queueText.textContent = `Kuyruk: ${item.metrics.queueLength} · Ort:${item.metrics.avgQueue.toFixed(1)}`; // Metni yaz
+      const danger = item.metrics.avgQueue > 1.5 || item.metrics.avgUtil > 0.85; // Tehlike durumu
+      if (danger) queueText.classList.add('danger'); // Sınıf ekle
       this.metricGroup.appendChild(queueText); // SVG'ye ekle
-      const serviceText = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Servis metni
-      serviceText.classList.add('metric-tag'); // Sınıf ekle
-      serviceText.setAttribute('x', layoutInfo.x + layoutInfo.width / 2); // X
-      serviceText.setAttribute('y', layoutInfo.y + 126); // Y
+      const serviceText = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Servis etiketi
+      serviceText.classList.add('metric-tag'); // Stil sınıfı
+      serviceText.setAttribute('x', layoutInfo.x + layoutInfo.width / 2); // X değeri
+      serviceText.setAttribute('y', layoutInfo.y + layoutInfo.height + 34); // Y değeri
       serviceText.setAttribute('text-anchor', 'middle'); // Ortala
       const activeServers = item.servers.filter(server => !!server); // Aktif sunucular
       if (activeServers.length) { // Serviste iş varsa
         const avgProgress = activeServers.reduce((sum, server) => sum + server.progress, 0) / activeServers.length; // Ortalama ilerleme
         const maxRemaining = Math.max(...activeServers.map(server => server.remaining)); // Maks kalan süre
-        serviceText.textContent = `Servis: ${item.metrics.busyCount}/${item.metrics.capacity} · %${(avgProgress * 100).toFixed(0)} · kalan ${maxRemaining.toFixed(1)}sn`; // Servis metni
+        serviceText.textContent = `Servis: ${item.metrics.busyCount}/${item.metrics.capacity} · %${(avgProgress * 100).toFixed(0)} · kalan ${maxRemaining.toFixed(1)}sn`; // Metni yaz
       } else {
-        serviceText.textContent = 'Servis: boş'; // Servis yok metni
+        serviceText.textContent = 'Servis: boş'; // Servis yoksa metin
       }
-      if (danger) serviceText.classList.add('danger'); // Servis uyarısı
-      this.metricGroup.appendChild(serviceText); // Servis metnini ekle
+      if (danger) serviceText.classList.add('danger'); // Tehlike sınıfı
+      this.metricGroup.appendChild(serviceText); // SVG'ye ekle
+      if (danger && nodeRefs) nodeRefs.group.classList.add('bottleneck'); // Düğümü vurgula
     });
   }
-  frame(timestamp) { // Animasyon döngüsü
-    const removal = []; // Silinecekler listesi
-    this.jobs.forEach((node, jobId) => { // Her balon için
-      const progress = Math.min(1, (timestamp - node.startTime) / Math.max(1, node.duration)); // İlerleme
-      const eased = progress < 1 ? (1 - Math.pow(1 - progress, 3)) : 1; // Easing hesabı
-      node.x = node.startX + (node.targetX - node.startX) * eased; // X interpolasyonu
-      node.y = node.startY + (node.targetY - node.startY) * eased; // Y interpolasyonu
+  frame(timestamp) { // Animasyon karesi
+    const removal = []; // Kaldırılacak balonlar listesi
+    this.jobs.forEach((node, jobId) => { // Her balonu dolaş
+      const progress = Math.min(1, (timestamp - node.startTime) / Math.max(1, node.duration)); // İlerleme yüzdesi
+      const eased = progress < 1 ? (1 - Math.pow(1 - progress, 3)) : 1; // Ease-out küp
+      node.progress = progress; // Ham ilerleme oranı
+      node.x = node.startX + (node.targetX - node.startX) * eased; // X hesapla
+      node.y = node.startY + (node.targetY - node.startY) * eased; // Y hesapla
       node.circle.setAttribute('cx', node.x); // SVG X güncelle
       node.circle.setAttribute('cy', node.y); // SVG Y güncelle
-      if (node.removeAt && timestamp >= node.removeAt) { // Kaldırma zamanı mı
-        removal.push(jobId); // Listeye ekle
-      }
+      if (node.removeAt && timestamp >= node.removeAt) removal.push(jobId); // Silme zamanı geldi mi
     });
-    removal.forEach(jobId => this.removeJob(jobId)); // Balonları sil
-    requestAnimationFrame(this.frame); // Sonraki kare
+    removal.forEach(jobId => this.removeJob(jobId)); // Balonları kaldır
+    requestAnimationFrame(this.frame); // Sonraki kareyi iste
   }
 }
 
@@ -1455,8 +3475,16 @@ const addStationBtn = document.getElementById('addStationBtn'); // İstasyon ekl
 const startBtn = document.getElementById('startBtn'); // Başlat butonu
 const stopBtn = document.getElementById('stopBtn'); // Durdur butonu
 const resetBtn = document.getElementById('resetBtn'); // Sıfırla butonu
+const clearBtn = document.getElementById('clearBtn'); // Temizleme butonu
+const viewModeBtn = document.getElementById('viewModeBtn'); // Görüntüleme modu butonu
+const editModeBtn = document.getElementById('editModeBtn'); // Düzenleme modu butonu
 const sampleBtn = document.getElementById('sampleSetupBtn'); // Örnek kurulum butonu
 const analysisBtn = document.getElementById('analysisBtn'); // Analiz butonu
+const saveScenarioBtn = document.getElementById('saveScenarioBtn'); // Senaryo kaydet butonu
+const loadScenarioBtn = document.getElementById('loadScenarioBtn'); // Senaryo yükle butonu
+const newTabToolbarBtn = document.getElementById('newTabToolbarBtn'); // Yeni sekme butonu (araç çubuğu)
+const newTabBtn = document.getElementById('newTabBtn'); // Sekme çubuğu yeni sekme butonu
+const tabBarEl = document.getElementById('tabBar'); // Sekme çubuğu kapsayıcı
 const speedSlider = document.getElementById('speedSlider'); // Hız slider
 const speedValue = document.getElementById('speedValue'); // Hız değeri
 const targetInput = document.getElementById('targetInput'); // Hedef girişi
@@ -1470,17 +3498,32 @@ const zoomValueEl = document.getElementById('zoomValue'); // Zoom metni
 const visualPanel = document.getElementById('visualPanel'); // Görsel panel kapsayıcı
 const fullscreenBtn = document.getElementById('fullscreenBtn'); // Tam ekran butonu
 const fullscreenLabel = fullscreenBtn ? fullscreenBtn.querySelector('span') : null; // Tam ekran etiket metni
+const languageBtn = document.getElementById('languageBtn'); // Dil butonu
+const languageMenu = document.getElementById('languageMenu'); // Dil menüsü
+const otherMenuBtn = document.getElementById('otherMenuBtn'); // Diğer menü butonu
+const otherMenu = document.getElementById('otherMenu'); // Diğer menü paneli
+const saveLayoutBtn = document.getElementById('saveLayoutBtn'); // Yerleşim kaydet butonu
+const centerLayoutBtn = document.getElementById('centerLayoutBtn'); // Merkeze toplama butonu
+const resetLayoutBtn = document.getElementById('resetLayoutBtn'); // Yerleşimi sıfırlama butonu
+const normalizeLayoutBtn = document.getElementById('normalizeLayoutBtn'); // Düzeni onarma butonu
+const refreshBubblesBtn = document.getElementById('refreshBubblesBtn'); // Baloncuk yenileme butonu
 const resultsBtn = document.getElementById('resultsBtn'); // Sonuç açma butonu
 const reportModal = document.getElementById('reportModal'); // Rapor modalı
 const closeReportBtn = document.getElementById('closeReportBtn'); // Modal kapatma butonu
 const downloadCsvBtn = document.getElementById('downloadCsvBtn'); // CSV butonu
 const downloadPdfBtn = document.getElementById('downloadPdfBtn'); // PDF butonu
+const restoreModal = document.getElementById('restoreModal'); // Kurtarma modalı
+const restoreYesBtn = document.getElementById('restoreYesBtn'); // Kurtarma evet butonu
+const restoreNoBtn = document.getElementById('restoreNoBtn'); // Kurtarma hayır butonu
+const restoreNeverBtn = document.getElementById('restoreNeverBtn'); // Kurtarma hiç sorma butonu
 const cardCycleEl = document.getElementById('cardCycle'); // Cycle kartı metni
 const cardCompletedEl = document.getElementById('cardCompleted'); // Tamamlanan kart metni
 const cardThroughputEl = document.getElementById('cardThroughput'); // Throughput kart metni
 const cardWipEl = document.getElementById('cardWip'); // WIP kart metni
 const stationPerformanceBody = document.getElementById('stationPerformanceBody'); // İstasyon tablo gövdesi
 const bottleneckTableBody = document.getElementById('bottleneckTableBody'); // Darboğaz tablo gövdesi
+const forkSummaryBody = document.getElementById('forkSummaryBody'); // Fork tablosu gövdesi
+const jobLineageBody = document.getElementById('jobLineageBody'); // İş rotası tablo gövdesi
 const queueChartCanvas = document.getElementById('queueChart'); // Kuyruk grafiği canvası
 const throughputChartCanvas = document.getElementById('throughputChart'); // Throughput grafiği canvası
 const dashboardAnalysisText = document.getElementById('dashboardAnalysisText'); // Dashboard analiz metni
@@ -1500,7 +3543,205 @@ updateFullscreenLabel(); // Başlangıçta tam ekran etiketi hizala
 const viz = new Visualization(document.getElementById('lineSvg')); // Görselleştirme örneği
 const stationRuntimeRefs = new Map(); // Canlı metrik referans haritası
 
+let graphToastEl = null; // Grafik bildirim etiketi
+let graphToastTimer = 0; // Bildirim zamanlayıcısı
+let openDropdownMenu = null; // Açık menü referansı
+let dropdownOutsideHandler = null; // Menü dışı tıklama dinleyicisi
+let draggingTabId = null; // Sürüklenen sekme kimliği
+let edgeDraftKeyHandler = null; // Taslak klavye dinleyicisi
+let pendingRestoreSnapshot = null; // Kurtarma modalı için bekleyen veri
+
+function showGraphToast(message, tone = 'info') { // Görsel panelde uyarı göster
+  if (!visualPanel) return; // Panel yoksa çık
+  if (!graphToastEl) { // İlk oluşturma
+    graphToastEl = document.createElement('div'); // Bildirim kutusu
+    graphToastEl.className = 'graph-toast'; // Stil sınıfı
+    visualPanel.appendChild(graphToastEl); // Panele ekle
+  }
+  graphToastEl.textContent = message; // Mesajı yaz
+  graphToastEl.className = `graph-toast ${tone}`; // Ton sınıfını ata
+  graphToastEl.style.opacity = '1'; // Görünür yap
+  clearTimeout(graphToastTimer); // Önceki zamanlayıcıyı temizle
+  graphToastTimer = window.setTimeout(() => { // Yeni zamanlayıcı
+    if (graphToastEl) graphToastEl.style.opacity = '0'; // Yumuşak kaybolma
+  }, 3200); // Süre
+}
+
+function cancelConnectionDraft(reason = 'manual') { // Bağlantı taslağını iptal et
+  const hadDraft = !!appState.edgeDraft; // Taslak var mı
+  if (viz) viz.cancelEdgeDraft(); // Görsel taslağı sil
+  if (edgeDraftKeyHandler) { // Klavye dinleyicisi varsa
+    document.removeEventListener('keydown', edgeDraftKeyHandler, true); // Dinleyiciyi kaldır
+    edgeDraftKeyHandler = null; // Referansı sıfırla
+  }
+  appState.edgeDraft = null; // Uygulama durumunu temizle
+  if (hadDraft && (reason === 'manual' || reason === 'background')) { // Kullanıcı kaynaklı iptal ise
+    showGraphToast(t('toast.edgeCancelled'), 'info'); // Bildirim göster
+  }
+}
+
+function beginConnectionDraft(sourceId) { // Yeni bağlantı taslağı başlat
+  if (appState.running) { // Simülasyon çalışıyorsa
+    showGraphToast(t('toast.runningLock'), 'warning'); // Uyarı göster
+    return false; // Başarısız
+  }
+  if (appState.mode !== 'edit') return false; // Düzenleme modunda değilse çık
+  const source = appState.stations.find(station => station.id === sourceId); // Kaynak istasyonu bul
+  if (!source) return false; // Bulunamadıysa çık
+  const targets = listPotentialTargets(sourceId); // Uygun hedefleri listele
+  if (!targets.length) { // Hedef yoksa
+    showGraphToast(t('toast.noTargets'), 'info'); // Bilgi ver
+    return false; // Başarısız
+  }
+  cancelConnectionDraft('replace'); // Var olan taslağı sessizce sil
+  const targetIds = targets.map(target => target.id); // Hedef kimliklerini hazırla
+  appState.edgeDraft = { sourceId, sourceName: source.name || source.id, targets: targetIds }; // Taslak durumunu kaydet
+  const began = viz ? viz.beginEdgeDraft(sourceId, targetIds) : false; // Görsel taslağı oluştur
+  if (!began) { // Başlatılamadıysa
+    appState.edgeDraft = null; // Durumu temizle
+    return false; // Başarısız
+  }
+  if (!edgeDraftKeyHandler) { // Klavye dinleyicisi yoksa
+    edgeDraftKeyHandler = event => { // Dinleyiciyi tanımla
+      if (event.key === 'Escape') { // Escape tuşu
+        event.preventDefault(); // Varsayılanı engelle
+        cancelConnectionDraft('manual'); // Taslağı kapat
+      }
+    }; // Dinleyici sonu
+    document.addEventListener('keydown', edgeDraftKeyHandler, true); // Dinleyiciyi bağla
+  }
+  showGraphToast(t('toast.edgePrompt', { source: source.name || source.id }), 'info'); // Kullanıcıyı yönlendir
+  return true; // Başarılı
+}
+
+function completeConnectionDraft(sourceId, targetId) { // Taslak bağlantıyı tamamla
+  const draft = appState.edgeDraft; // Taslak durumunu al
+  if (!draft || draft.sourceId !== sourceId) return; // Geçerli taslak yoksa çık
+  const source = appState.stations.find(station => station.id === sourceId); // Kaynak istasyonu bul
+  const target = appState.stations.find(station => station.id === targetId); // Hedef istasyonu bul
+  const success = addConnection(sourceId, targetId, { silent: true }); // Bağlantıyı ekle
+  if (!success) return; // Başarısızsa çık
+  cancelConnectionDraft('complete'); // Taslağı temizle
+  renderGraph(appState.stations); // Grafiği yenile
+  const sourceName = source ? (source.name || source.id) : sourceId; // Kaynak adı
+  const targetName = target ? (target.name || targetId) : targetId; // Hedef adı
+  showGraphToast(t('toast.edgeAdded', { source: sourceName, target: targetName }), 'success'); // Başarı mesajı
+}
+
+function normalizeStationTopology(stations) { // İstasyon topolojisini normalize et
+  stations.forEach((station, index) => { // Her istasyonu dolaş
+    if (!Array.isArray(station.outputs)) station.outputs = []; // Çıkış listesi oluştur
+    station.outputs = station.outputs.map(target => String(target)).filter((target, idx, arr) => arr.indexOf(target) === idx); // Benzersiz ve string hale getir
+    if (!station.position || !Number.isFinite(station.position.x) || !Number.isFinite(station.position.y)) { // Konum yoksa
+      const fallback = suggestStationPosition(index); // Varsayılan konumu al
+      station.position = { x: fallback.x, y: fallback.y }; // Konumu ata
+    }
+  });
+}
+
+function listPotentialTargets(sourceId) { // Uygun hedef istasyonları listele
+  const source = appState.stations.find(station => station.id === sourceId); // Kaynak istasyonu bul
+  if (!source) return []; // Yoksa boş
+  const existing = new Set(Array.isArray(source.outputs) ? source.outputs : []); // Mevcut bağlantılar
+  return appState.stations.filter(target => { // İstasyonları filtrele
+    if (target.id === sourceId) return false; // Kendine bağlantıyı engelle
+    if (existing.has(target.id)) return false; // Mükerrer bağlantıyı engelle
+    return !wouldCreateCycle(sourceId, target.id); // Döngüyü engelle
+  });
+}
+
+function wouldCreateCycle(sourceId, targetId) { // Döngü kontrolü
+  if (sourceId === targetId) return true; // Aynı düğüm döngü
+  const adjacency = new Map(); // Komşuluk haritası
+  appState.stations.forEach(station => { // Tüm istasyonları dolaş
+    const outputs = Array.isArray(station.outputs) ? station.outputs.map(out => String(out)) : []; // Çıkış listesi
+    adjacency.set(station.id, new Set(outputs)); // Komşuları kaydet
+  });
+  if (!adjacency.has(sourceId)) adjacency.set(sourceId, new Set()); // Kaynak yoksa oluştur
+  adjacency.get(sourceId).add(String(targetId)); // Yeni bağlantıyı ekle
+  const visited = new Set(); // Ziyaret edilenler
+  const stack = [String(targetId)]; // DFS yığını
+  while (stack.length) { // DFS döngüsü
+    const node = stack.pop(); // Bir düğüm çek
+    if (node === sourceId) return true; // Kaynağa ulaşıldıysa döngü var
+    if (visited.has(node)) continue; // Ziyaret edildiyse geç
+    visited.add(node); // Ziyaret işaretle
+    const neighbors = adjacency.get(node); // Komşuları al
+    if (neighbors) neighbors.forEach(child => stack.push(child)); // Komşuları yığına ekle
+  }
+  return false; // Döngü yok
+}
+
+function addConnection(sourceId, targetId, options = {}) { // Bağlantı ekle
+  const { silent = false } = options; // Sessiz mod parametresi
+  if (appState.running) { // Simülasyon çalışıyorsa
+    if (!silent) showGraphToast(t('toast.runningLock'), 'warning'); // Uyarı göster
+    return false; // Başarısız
+  }
+  const source = appState.stations.find(station => station.id === sourceId); // Kaynak bul
+  const target = appState.stations.find(station => station.id === targetId); // Hedef bul
+  if (!source || !target) return false; // Geçersizse çık
+  if (!Array.isArray(source.outputs)) source.outputs = []; // Çıkış listesini hazırla
+  if (source.outputs.includes(targetId)) { // Mükerrer bağlantı
+    if (!silent) showGraphToast(t('toast.edgeExists'), 'info'); // Bilgi ver
+    return false; // Başarısız
+  }
+  if (wouldCreateCycle(sourceId, targetId)) { // Döngü kontrolü
+    if (!silent) showGraphToast(t('toast.edgeCycle'), 'error'); // Hata bildir
+    return false; // Başarısız
+  }
+  source.outputs.push(targetId); // Bağlantıyı ekle
+  saveState(appState); // Durumu kaydet
+  if (!silent) { // Sessiz değilse
+    showGraphToast(t('toast.edgeAdded', { source: source.name || source.id, target: target.name || target.id }), 'success'); // Başarı bildirimi
+    renderGraph(appState.stations); // Grafiği yenile
+  }
+  return true; // Başarılı
+}
+
+function removeConnection(sourceId, targetId, options = {}) { // Bağlantı sil
+  const { silent = false } = options; // Sessiz mod parametresi
+  if (appState.running) { // Simülasyon çalışıyorsa
+    if (!silent) showGraphToast(t('toast.runningLock'), 'warning'); // Uyarı göster
+    return false; // Başarısız
+  }
+  const source = appState.stations.find(station => station.id === sourceId); // Kaynağı bul
+  if (!source || !Array.isArray(source.outputs)) return false; // Geçersizse çık
+  const before = source.outputs.length; // Önceki uzunluk
+  source.outputs = source.outputs.filter(output => output !== targetId); // Bağlantıyı çıkar
+  if (source.outputs.length === before) { // Değişiklik yoksa
+    if (!silent) showGraphToast(t('toast.edgeMissing'), 'info'); // Bilgi ver
+    return false; // Başarısız
+  }
+  saveState(appState); // Durumu kaydet
+  if (!silent) { // Sessiz değilse
+    const target = appState.stations.find(station => station.id === targetId); // Hedefi bul
+    const targetName = target ? (target.name || target.id) : targetId; // Hedef adı
+    showGraphToast(t('toast.edgeRemoved', { source: source.name || source.id, target: targetName }), 'info'); // Bilgi ver
+    renderGraph(appState.stations); // Grafiği yenile
+  }
+  return true; // Başarılı
+}
+
+function handleNodeMove(stationId, x, y, meta = {}) { // Düğüm taşıma geri çağrısı
+  const station = appState.stations.find(item => item.id === stationId); // İstasyonu bul
+  if (!station) return; // Yoksa çık
+  if (!station.position) station.position = { x: 0, y: 0 }; // Konum nesnesi oluştur
+  station.position.x = Math.round(x); // X değerini yuvarlayıp yaz
+  station.position.y = Math.round(y); // Y değerini yuvarlayıp yaz
+  if (!meta || meta.live) return; // Canlı güncellemede kaydetme
+  saveState(appState); // Sürükleme bittiğinde kaydet
+}
+
 function renderGraph(stations) { // Akış grafiğini çiz
+  normalizeStationTopology(stations); // İstasyonları normalize et
+  const editingEnabled = !appState.running && appState.mode === 'edit'; // Düzenleme aktif mi
+  if (!editingEnabled) cancelConnectionDraft('mode-change'); // Düzenleme kapalıysa taslağı temizle
+  const handlerConfig = editingEnabled // Çalışma durumuna göre handler seç
+    ? { beginEdge: beginConnectionDraft, completeEdge: completeConnectionDraft, cancelEdge: cancelConnectionDraft, removeEdge: removeConnection, moveNode: handleNodeMove } // Tam düzenleme
+    : { beginEdge: null, completeEdge: null, cancelEdge: null, removeEdge: null, moveNode: null }; // Etkileşimi kapat
+  viz.setHandlers(handlerConfig); // Handlerları ata
+  viz.setEditing(editingEnabled); // Sürükleme izinlerini ayarla
   viz.setStations(stations); // Görselleştirme modelini güncelle
 }
 
@@ -1528,8 +3769,33 @@ function cloneStationsForRun() { // Simülasyon için istasyon kopyala
     const clone = new Station(source.id, source.name); // Yeni istasyon oluştur
     clone.parallelServers = source.parallelServers; // Paralel sunucuları aktar
     clone.tasks = source.tasks.map(task => new Task(task.name, task.operators, task.durationSec)); // Görevleri kopyala
+    clone.outputs = Array.isArray(source.outputs) ? source.outputs.slice() : []; // Çıkış bağlantılarını kopyala
+    clone.position = source.position ? { x: source.position.x, y: source.position.y } : { x: 0, y: 0 }; // Yerleşimi kopyala
     return clone; // Sonucu döndür
   });
+}
+
+function computeDefaultGridPosition(index, total) { // Varsayılan merkezli ızgara pozisyonu
+  const baseCols = 4; // Maks kolon
+  const gapX = 240; // Yatay boşluk
+  const gapY = 180; // Dikey boşluk
+  const row = Math.floor(index / baseCols); // Satır
+  const col = index % baseCols; // Kolon
+  const totalRows = Math.max(1, Math.ceil(total / baseCols)); // Toplam satır
+  const isLastRow = row === totalRows - 1; // Son satır mı
+  const itemsInRow = isLastRow ? Math.max(1, total - row * baseCols) : Math.min(baseCols, total); // Satırdaki eleman sayısı
+  const rowWidth = (itemsInRow - 1) * gapX; // Satır genişliği
+  const clampedCol = Math.min(col, itemsInRow - 1); // Son satır için kolon sınırı
+  const offsetX = itemsInRow === 1 ? 0 : clampedCol * gapX; // X offseti
+  const originX = -rowWidth / 2; // Satır başlangıç X
+  const totalHeight = (totalRows - 1) * gapY; // Toplam yükseklik
+  const originY = -totalHeight / 2; // Başlangıç Y
+  return { x: originX + offsetX, y: originY + row * gapY }; // Hesaplanan koordinat
+}
+
+function suggestStationPosition(index, total = null) { // Yeni istasyon için varsayılan koordinat üret
+  const safeTotal = Number.isFinite(total) && total > 0 ? total : Math.max(index + 1, appState?.stations?.length || 1); // Güvenli toplam
+  return computeDefaultGridPosition(index, safeTotal); // Konumu döndür
 }
 
 function addStation(name = null) { // İstasyon ekleme fonksiyonu
@@ -1539,6 +3805,9 @@ function addStation(name = null) { // İstasyon ekleme fonksiyonu
   const station = new Station(stationId, stationName); // Yeni istasyon nesnesi
   station.parallelServers = 1; // Varsayılan kapasite
   station.tasks = []; // Görevleri boş başlat
+  station.outputs = []; // Çıkış bağlantılarını sıfırla
+  const gridIndex = appState.stations.length; // Izgara indeksi
+  station.position = suggestStationPosition(gridIndex, gridIndex + 1); // Varsayılan konumu ata
   appState.stations.push(station); // Listeye ekle
   if (!renderingPaused) { // Yeniden çizim açıksa
     renderStations(); // Kart listesini güncelle
@@ -1549,6 +3818,19 @@ function addStation(name = null) { // İstasyon ekleme fonksiyonu
   return station; // Yeni istasyonu döndür
 }
 
+function resetLayoutToDefault() { // Yerleşimi varsayılana döndür
+  if (!appState.stations.length) { showGraphToast('Varsayılan yerleşim için istasyon bulunamadı.', 'info'); return; } // Boşsa uyar
+  const total = appState.stations.length; // Toplam istasyon sayısı
+  appState.stations.forEach((station, index) => { // Her istasyonu dolaş
+    const pos = suggestStationPosition(index, total); // Varsayılan konumu al
+    station.position = { x: pos.x, y: pos.y }; // Konumu ata
+  });
+  renderGraph(appState.stations); // Grafiği güncelle
+  if (viz) viz.centerViewOnBounds(); // Görünümü ortala
+  saveState(appState); // Durumu kaydet
+  showGraphToast('Yerleşim varsayılan ızgaraya sıfırlandı.', 'success'); // Kullanıcıyı bilgilendir
+}
+
 function onAddStationClick(event) { // İstasyon ekle buton tıklaması
   event?.preventDefault?.(); // Varsayılanı engelle
   event?.stopPropagation?.(); // Kabarcık yayılmasını durdur
@@ -1557,6 +3839,9 @@ function onAddStationClick(event) { // İstasyon ekle buton tıklaması
 
 function removeStation(id) { // İstasyon silme fonksiyonu
   appState.stations = appState.stations.filter(station => station.id !== id); // Filtrele
+  appState.stations.forEach(station => { // Kalan istasyonları dolaş
+    station.outputs = station.outputs.filter(targetId => targetId !== id); // Silinen istasyona giden bağlantıları temizle
+  });
   renderStations(); // Yeniden çiz
   renderGraph(appState.stations); // Akışı güncelle
   saveState(appState); // Durumu kaydet
@@ -1773,9 +4058,7 @@ function applyLiveStationSnapshot(snapshot) { // Canlı metrikleri karta yaz
       refs.card.classList.remove('bottleneck'); // Vurguyu kaldır
     }
   });
-  if (completedCounterEl) { // Sayaç mevcutsa
-    completedCounterEl.textContent = `Tamamlanan: ${snapshot.completedCount}`; // Sayaç güncelle
-  }
+  updateCompletedCounter(snapshot.completedCount ?? 0); // Sayaç güncelle
 }
 
 let dragSourceId = null; // Sürüklenen istasyon kimliği
@@ -1868,7 +4151,12 @@ function validateSetup() { // Kurulum doğrulama
 }
 
 function startSimulation() { // Simülasyonu başlat
+  if (appState.pausedForEdit && appState.simulation) { // Düzenlemeden dönerken
+    setMode('view'); // Görüntüleme moduna geçip devam et
+    return; // Yeni motor kurma
+  }
   if (!validateSetup()) return; // Geçersizse çık
+  if (appState.mode !== 'view') setMode('view'); // Çalışma öncesi görüntüle moduna dön
   const options = { // Seçenekler
     entryPolicy: appState.entryPolicy, // Giriş politikası
     entryInterval: appState.entryInterval, // Giriş aralığı
@@ -1878,11 +4166,12 @@ function startSimulation() { // Simülasyonu başlat
   appState.simulation.onLiveUpdate = snapshot => applyLiveStationSnapshot(snapshot); // Canlı güncelleme bağla
   appState.simulation.start(); // Başlat
   appState.running = true; // Durum güncelle
+  appState.pausedForEdit = false; // Düzenleme duraklamasını temizle
   appState.lastUpdate = performance.now(); // Zaman kaydı
   appState.lastMetricRefresh = appState.lastUpdate; // Metrik zamanını sıfırla
   appState.visualCursor = appState.simulation.currentTime; // Görsel zamanı hizala
   appState.simulation.updateLayoutTargets(appState.visualCursor); // İlk snapshot
-  if (completedCounterEl) completedCounterEl.textContent = 'Tamamlanan: 0'; // Sayaç sıfırla
+  updateCompletedCounter(0); // Sayaç sıfırla
   toggleEditing(false); // UI kilitle
   startBtn.disabled = true; // Başlat kilit
   stopBtn.disabled = false; // Durdur aç
@@ -1895,6 +4184,7 @@ function stopSimulation(showReport = true) { // Simülasyonu durdur
   appState.visualCursor = appState.simulation.currentTime; // Görsel zamanı güncelle
   appState.simulation.updateLayoutTargets(appState.visualCursor); // Son durumu aktar
   appState.running = false; // Durum güncelle
+  appState.pausedForEdit = false; // Düzenleme bayrağını temizle
   toggleEditing(true); // UI aç
   startBtn.disabled = false; // Başlat aç
   stopBtn.disabled = true; // Durdur kilit
@@ -1907,6 +4197,7 @@ function resetSimulation() { // Simülasyonu sıfırla
   appState.running = false; // Durum
   startBtn.disabled = false; // Başlat aç
   stopBtn.disabled = true; // Durdur kilit
+  appState.pausedForEdit = false; // Düzenleme duraklamasını sıfırla
   toggleEditing(true); // UI aç
   if (appState.simulation) { // Motor varsa
     appState.simulation.reset(); // Sıfırla
@@ -1914,7 +4205,7 @@ function resetSimulation() { // Simülasyonu sıfırla
   appState.lastMetricRefresh = 0; // Metrik zamanını sıfırla
   appState.visualCursor = 0; // Görsel zamanı sıfırla
   viz.clearJobs(); // Balonları temizle
-  if (completedCounterEl) completedCounterEl.textContent = 'Tamamlanan: 0'; // Sayaç sıfırla
+  updateCompletedCounter(0); // Sayaç sıfırla
   stationRuntimeRefs.forEach((refs, stationId) => { // Her kart için
     const station = appState.stations.find(st => st.id === stationId); // İstasyonu bul
     const capacity = station ? station.parallelServers : 0; // Kapasite al
@@ -1924,6 +4215,50 @@ function resetSimulation() { // Simülasyonu sıfırla
     refs.service.textContent = `Servis: 0/${capacity}`; // Servisi sıfırla
     refs.remaining.textContent = 'Kalan: -'; // Kalan süreyi sıfırla
   });
+}
+
+function pauseSimulationForEdit() { // Düzenleme için simülasyonu duraklat
+  if (!appState.simulation || !appState.simulation.running) return false; // Çalışmıyorsa çık
+  appState.simulation.stop(); // Motoru duraklat
+  appState.pausedForEdit = true; // Duraklat bayrağı
+  appState.running = false; // UI durumu
+  stopBtn.disabled = true; // Durdur butonunu kilitle
+  startBtn.disabled = false; // Başlat butonunu aç
+  toggleEditing(true); // Kontrolleri aç
+  showGraphToast('Simülasyon düzenleme için duraklatıldı.', 'warning'); // Kullanıcıyı bilgilendir
+  return true; // Başarılı
+}
+
+function resumeSimulationAfterEdit() { // Düzenleme sonrasında devam ettir
+  if (!appState.simulation || !appState.pausedForEdit) return false; // Duraklatılmamışsa çık
+  appState.simulation.running = true; // Motoru yeniden çalıştır
+  appState.running = true; // UI durumunu güncelle
+  appState.pausedForEdit = false; // Bayrağı temizle
+  appState.lastUpdate = performance.now(); // Zaman damgasını yenile
+  appState.lastMetricRefresh = 0; // Metrik yenilemeyi sıfırla
+  startBtn.disabled = true; // Başlat butonunu kilitle
+  stopBtn.disabled = false; // Durdur butonunu aç
+  toggleEditing(false); // Kontrolleri kilitle
+  runLoop(); // Döngüyü yeniden başlat
+  showGraphToast('Simülasyon kaldığı yerden devam ediyor.', 'success'); // Bilgilendir
+  return true; // Başarılı
+}
+
+function setMode(mode) { // Görünüm/düzenleme modunu değiştir
+  if (mode !== 'view' && mode !== 'edit') return; // Geçersiz modları yoksay
+  if (appState.mode === mode) return; // Zaten bu moddaysa çık
+  if (mode === 'edit') { // Düzenleme moduna geçerken
+    pauseSimulationForEdit(); // Simülasyonu duraklat
+  } else if (mode === 'view') { // Görüntüleme moduna dönerken
+    resumeSimulationAfterEdit(); // Gerekirse devam ettir
+  }
+  appState.mode = mode; // Modu güncelle
+  document.body.dataset.editMode = appState.mode; // Body veri niteliğini güncelle
+  if (viz) viz.setEditing(appState.mode === 'edit' && !appState.running); // Görsel düzenlemeyi ayarla
+  syncControlsFromState(); // Kontrolleri yenile
+  renderGraph(appState.stations); // Grafiği modla uyumlu çiz
+  saveState(appState); // Durumu sakla
+  console.info('Mod güncellendi:', appState.mode); // Konsol kaydı
 }
 
 function toggleEditing(enabled) { // UI düzenleme durumunu ayarla
@@ -1939,6 +4274,7 @@ function toggleEditing(enabled) { // UI düzenleme durumunu ayarla
   entryPolicySelect.disabled = !enabled; // Giriş seçimini kilitle
   entryIntervalInput.disabled = !enabled || appState.entryPolicy !== 'interval'; // Aralık girişi
   targetInput.disabled = !enabled; // Hedef girişi
+  if (saveLayoutBtn) saveLayoutBtn.disabled = !enabled; // Yerleşim kaydet düğmesi
 }
 
 function runLoop() { // Simülasyon döngüsü
@@ -2142,6 +4478,43 @@ function openReportModal() { // Rapor modalını aç
       bottleneckTableBody.appendChild(tr); // Tabloya ekle
     });
   }
+  if (forkSummaryBody) { // Fork tablosunu doldur
+    forkSummaryBody.innerHTML = ''; // Temizle
+    if (!report.forkSummary.length) { // Veri yoksa
+      const tr = document.createElement('tr'); // Satır oluştur
+      tr.innerHTML = '<td colspan="4">Veri yok</td>'; // Mesaj
+      forkSummaryBody.appendChild(tr); // Tabloya ekle
+    } else {
+      report.forkSummary.forEach(row => { // Her istasyon için
+        const tr = document.createElement('tr'); // Satır oluştur
+        tr.innerHTML = `<td>${row.stationName}</td><td>${row.outDegree}</td><td>${row.producedChildren}</td><td>${row.forkEvents}</td>`; // Hücreler
+        forkSummaryBody.appendChild(tr); // Tabloya ekle
+      });
+    }
+  }
+  if (jobLineageBody) { // İş rotası tablosunu doldur
+    jobLineageBody.innerHTML = ''; // Temizle
+    if (!report.completedJobs.length) { // Veri yoksa
+      const tr = document.createElement('tr'); // Satır
+      tr.innerHTML = '<td colspan="5">Henüz tamamlanan iş bulunmuyor.</td>'; // Mesaj
+      jobLineageBody.appendChild(tr); // Tabloya ekle
+    } else {
+      const recent = report.completedJobs.slice(-25); // Son 25 işi al
+      recent.forEach(job => { // Her iş için
+        const tr = document.createElement('tr'); // Satır oluştur
+        const parentText = job.parentId !== null && job.parentId !== undefined ? job.parentId : '-'; // Üst iş metni
+        const routeText = job.routeId || '-'; // Rota metni
+        const exitName = job.exitStationName || job.exitStationId || '-'; // Çıkış adı
+        tr.innerHTML = `<td>${job.id}</td><td>${parentText}</td><td>${routeText}</td><td>${exitName}</td><td>${job.exitTime.toFixed(2)}</td>`; // Hücreler
+        jobLineageBody.appendChild(tr); // Tabloya ekle
+      });
+      if (report.completedJobs.length > recent.length) { // Daha fazla kayıt varsa
+        const noteRow = document.createElement('tr'); // Bilgi satırı
+        noteRow.innerHTML = `<td colspan="5">Toplam ${report.completedJobs.length} işten son ${recent.length} tanesi gösteriliyor.</td>`; // Mesaj
+        jobLineageBody.appendChild(noteRow); // Tabloya ekle
+      }
+    }
+  }
   latestReport = report; // Raporu hafızada sakla
   const taktTime = appState.taktTime && appState.taktTime > 0 ? appState.taktTime : null; // Takt değeri
   const narrative = createAnalysisNarrative(collectStationSummaries(report), report, taktTime); // Anlatıyı hazırla
@@ -2179,19 +4552,68 @@ function closeReport() { // Rapor modalını kapat
   }
 }
 
+function csvEscape(value) { // CSV alanını güvenle biçimlendir
+  if (value === null || value === undefined) return ''; // Boş değerleri boş string yap
+  const text = String(value); // Değeri metne çevir
+  const escaped = text.replace(/"/g, '""'); // Çift tırnakları kaçır
+  return /[",\n\r]/.test(text) ? `"${escaped}"` : escaped; // Virgül veya satır sonu varsa tırnakla
+}
+function formatRouteForCsv(job) { // CSV için rota metnini hazırla
+  if (!job) return '-'; // Geçersiz iş için tire döndür
+  const rawRoute = typeof job.routeId === 'string' && job.routeId.length ? job.routeId : Array.isArray(job.route) ? job.route.join('→') : ''; // Kaynak rota metnini belirle
+  if (!rawRoute) return '-'; // Rota yoksa tire dön
+  const sanitized = rawRoute.replace(/,/g, '→'); // Virgülleri ok yönüne dönüştür
+  return sanitized || '-'; // Sonucu döndür
+}
 function downloadCsv(report) { // CSV indirme fonksiyonu
   const lines = []; // Satır listesi
-  lines.push('Kategori,Değer'); // Başlık satırı
-  lines.push(`Tamamlanan,${report.totalCompleted}`); // Tamamlanan ürün
-  lines.push(`Süre(sn),${report.horizon.toFixed(2)}`); // Simülasyon süresi
-  lines.push(`Cycle(sn),${report.avgCycle.toFixed(2)}`); // Cycle time
-  lines.push(`Throughput(sn),${report.throughputPerSec.toFixed(3)}`); // Ürün/sn
-  lines.push(`Throughput(dk),${report.throughputPerMin.toFixed(3)}`); // Ürün/dk
-  lines.push(`Ortalama WIP,${report.avgWip.toFixed(2)}`); // Ortalama WIP
+  lines.push([ 'Kategori', 'Değer' ].map(csvEscape).join(',')); // Başlık satırı
+  lines.push([ 'Tamamlanan', report.totalCompleted ].map(csvEscape).join(',')); // Tamamlanan ürün
+  lines.push([ 'Süre(sn)', report.horizon.toFixed(2) ].map(csvEscape).join(',')); // Simülasyon süresi
+  lines.push([ 'Cycle(sn)', report.avgCycle.toFixed(2) ].map(csvEscape).join(',')); // Cycle time
+  lines.push([ 'Throughput(sn)', report.throughputPerSec.toFixed(3) ].map(csvEscape).join(',')); // Ürün/sn
+  lines.push([ 'Throughput(dk)', report.throughputPerMin.toFixed(3) ].map(csvEscape).join(',')); // Ürün/dk
+  lines.push([ 'Ortalama WIP', report.avgWip.toFixed(2) ].map(csvEscape).join(',')); // Ortalama WIP
   lines.push(''); // Boş satır
   lines.push('İstasyon,Operatör,Paralel,Servis Süresi(sn),Tamamlanan İş,Teorik Kapasite(ürün/sn),Utilizasyon(%),Ortalama Kuyruk,Ortalama Bekleme(sn)'); // Tablo başlığı
   report.stationRows.forEach(row => { // Her istasyon için
-    lines.push(`${row.stationName},${row.parallelServers},${row.parallelServers},${row.serviceTime.toFixed(2)},${row.serviceCount},${row.capacityPerSec.toFixed(3)},${(row.utilization * 100).toFixed(1)},${row.avgQueue.toFixed(2)},${row.avgWait.toFixed(2)}`); // Satırı ekle
+    lines.push([
+      row.stationName, // İstasyon adı
+      row.parallelServers, // Operatör sayısı
+      row.parallelServers, // Paralel sunucu sayısı
+      row.serviceTime.toFixed(2), // Servis süresi
+      row.serviceCount, // Tamamlanan iş
+      row.capacityPerSec.toFixed(3), // Teorik kapasite
+      (row.utilization * 100).toFixed(1), // Utilizasyon
+      row.avgQueue.toFixed(2), // Ortalama kuyruk
+      row.avgWait.toFixed(2) // Ortalama bekleme
+    ].map(csvEscape).join(',')); // Satırı ekle
+  });
+  lines.push(''); // Boş satır
+  lines.push('Fork Çıkışları'); // Başlık
+  lines.push('İstasyon,Çıkış Sayısı,Üretilen Çocuk,Fork Olayı'); // Fork başlığı
+  report.forkSummary.forEach(row => { // Her fork satırı için
+    lines.push([
+      row.stationName, // İstasyon adı
+      row.outDegree, // Çıkış sayısı
+      row.producedChildren, // Üretilen çocuk adedi
+      row.forkEvents // Fork olay sayısı
+    ].map(csvEscape).join(',')); // Satırı ekle
+  });
+  lines.push(''); // Boş satır
+  lines.push('Tamamlanan İşler'); // İş başlığı
+  lines.push('İş Kimliği,Üst İş,Rota,Çıkış İstasyonu,Çıkış Zamanı(sn)'); // İş tablo başlığı
+  report.completedJobs.forEach(job => { // Her iş için
+    const parentText = job.parentId !== null && job.parentId !== undefined ? job.parentId : '-'; // Üst iş metni
+    const routeText = formatRouteForCsv(job); // Rota metni
+    const exitName = job.exitStationName || job.exitStationId || '-'; // Çıkış adı
+    lines.push([
+      job.id, // İş kimliği
+      parentText, // Üst iş
+      routeText, // Rota metni
+      exitName, // Çıkış istasyonu
+      job.exitTime.toFixed(2) // Çıkış zamanı
+    ].map(csvEscape).join(',')); // Satırı ekle
   });
   const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' }); // Blob oluştur
   const url = URL.createObjectURL(blob); // URL üret
@@ -2358,6 +4780,12 @@ function loadSample() { // Örnek kurulum yükle
   s2.tasks = [new Task('Kaynak', 1, 30)]; // Görev
   const s3 = new Station(`station-${appState.nextStationId++}`, 'S3'); // İstasyon3
   s3.tasks = [new Task('Boyama', 1, 40)]; // Görev
+  s1.outputs = [s2.id]; // Çıkış bağlantısı tanımla
+  s2.outputs = [s3.id]; // Zinciri devam ettir
+  s3.outputs = []; // Son istasyon
+  s1.position = suggestStationPosition(0, 3); // Varsayılan konum
+  s2.position = suggestStationPosition(1, 3); // Varsayılan konum
+  s3.position = suggestStationPosition(2, 3); // Varsayılan konum
   appState.stations.push(s1, s2, s3); // Listeye ekle
   appState.entryPolicy = 'trigger'; // Tetikleme politikası
   appState.targetCount = 20; // Hedef 20
@@ -2378,15 +4806,32 @@ function syncControlsFromState() { // Kontrolleri duruma göre hizala
   speedValue.textContent = `${display}×`; // Hız etiketi
   if (taktInput) taktInput.value = appState.taktTime ?? ''; // Takt alanı
   updateZoomDisplay(); // Zoom göstergesini yenile
+  document.body.dataset.editMode = appState.mode; // Mod niteliğini güncelle
+  if (viewModeBtn) { // Görüntüle butonu durumunu ayarla
+    viewModeBtn.dataset.active = appState.mode === 'view' ? 'true' : 'false'; // Aktif veri niteliği
+    viewModeBtn.disabled = appState.mode === 'view'; // Aktifken kilitle
+  }
+  if (editModeBtn) { // Düzenle butonu durumunu ayarla
+    editModeBtn.dataset.active = appState.mode === 'edit' ? 'true' : 'false'; // Aktif veri niteliği
+    editModeBtn.disabled = appState.mode === 'edit'; // Aktifken kilitle
+  }
 }
 
-function restoreFromSnapshot(snapshot) { // Yerel depolamadan gelen durumu uygula
+function restoreFromSnapshot(snapshot, options = {}) { // Yerel depolamadan gelen durumu uygula
+  const { persist = true, applyLanguage = true } = options; // Seçenekleri al
   if (!snapshot || typeof snapshot !== 'object') { // Veri yoksa
     renderStations(); // Varsayılan çiz
     renderGraph(appState.stations); // Akışı güncelle
     syncControlsFromState(); // Kontrolleri hizala
     return; // Çık
   }
+  if (applyLanguage && snapshot.language && snapshot.language !== appState.language) { // Dil uygulanacak mı
+    setLanguage(snapshot.language, { silent: true }); // Dili güncelle
+  }
+  if (appState.simulation) stopSimulation(false); // Çalışan simülasyonu durdur
+  appState.simulation = null; // Motor referansını temizle
+  viz.clearJobs(); // Baloncukları temizle
+  updateCompletedCounter(0); // Sayaç sıfırla
   const safeStations = Array.isArray(snapshot.stations) ? snapshot.stations : []; // Güvenli istasyon listesi
   appState.stations = safeStations.map(raw => { // Her istasyon için
     const stationId = raw.id ? String(raw.id) : `station-${appState.nextStationId++}`; // Kimliği belirle
@@ -2399,6 +4844,12 @@ function restoreFromSnapshot(snapshot) { // Yerel depolamadan gelen durumu uygul
       Math.max(1, Number(taskRaw.operators) || 1), // Operatör
       Math.max(1, Number(taskRaw.durationSec) || 1) // Süre
     ));
+    const rawOutputs = Array.isArray(raw.outputs) ? raw.outputs : []; // Çıkış listesi
+    station.outputs = rawOutputs.map(out => String(out)).filter((out, idx, arr) => arr.indexOf(out) === idx); // Benzersiz çıkışlar
+    const rawPos = raw.position; // Ham koordinat
+    if (rawPos && Number.isFinite(rawPos.x) && Number.isFinite(rawPos.y)) { // Geçerliyse
+      station.position = { x: Number(rawPos.x), y: Number(rawPos.y) }; // Konumu aktar
+    }
     return station; // Hazır istasyon
   });
   const snapshotNext = snapshot.nextStationId ? Number(snapshot.nextStationId) : appState.nextStationId; // Sonraki sayaç
@@ -2425,10 +4876,17 @@ function restoreFromSnapshot(snapshot) { // Yerel depolamadan gelen durumu uygul
   if (typeof snapshot.taktTime === 'number' && snapshot.taktTime > 0) { // Takt değeri geçerli mi
     appState.taktTime = snapshot.taktTime; // Takt time ata
   }
+  if (snapshot.mode === 'edit' || snapshot.mode === 'view') { // Mod bilgisi geçerli mi
+    appState.mode = snapshot.mode; // Modu ata
+  }
+  document.body.dataset.editMode = appState.mode; // Body veri niteliğini güncelle
   syncControlsFromState(); // Kontrolleri güncelle
   renderStations(); // Kartları çiz
   renderGraph(appState.stations); // Akışı güncelle
-  saveState(appState); // Normalize edilmiş durumu kaydet
+  if (persist) { // Persist gerekiyorsa
+    const payload = captureStatePayload(); // Snapshot üret
+    updateActiveTabSnapshot(payload, { markDirty: false, reason: 'restore' }); // Sekmeyi güncelle
+  }
 }
 
 let eventsBound = false; // Olay bağlama bayrağı
@@ -2454,18 +4912,35 @@ function attachUiEvents() { // UI olaylarını bağla
   const addBtn = document.querySelector('#addStationBtn, [data-action="add-station"]'); // Butonu bul
   console.assert(addBtn, 'Add Station button not found'); // Kontrol
   addBtn?.addEventListener('click', onAddStationClick, { once: false }); // Tıklama bağla
-  sampleBtn?.addEventListener('click', loadSample); // Örnek kurulum
+  sampleBtn?.addEventListener('click', () => { closeDropdownMenu(); loadSample(); }); // Örnek kurulum
+  clearBtn?.addEventListener('click', () => clearActiveTab()); // Sekmeyi temizle
   startBtn?.addEventListener('click', () => startSimulation()); // Başlat
   stopBtn?.addEventListener('click', () => stopSimulation(true)); // Durdur
   resetBtn?.addEventListener('click', () => resetSimulation()); // Sıfırla
-  analysisBtn?.addEventListener('click', () => openAnalysisModal()); // Analiz modalını aç
-  resultsBtn?.addEventListener('click', () => openReportModal()); // Raporu aç
+  saveScenarioBtn?.addEventListener('click', () => handleSaveScenario()); // Senaryoyu kaydet
+  loadScenarioBtn?.addEventListener('click', () => handleLoadScenario()); // Senaryoyu yükle
+  newTabToolbarBtn?.addEventListener('click', () => handleNewTab()); // Yeni sekme aç
+  newTabBtn?.addEventListener('click', () => handleNewTab()); // Sekme çubuğunda yeni sekme
+  tabBarEl?.addEventListener('click', handleTabClick); // Sekme tıklaması
+  tabBarEl?.addEventListener('dblclick', handleTabDoubleClick); // Sekme çift tıklaması
+  tabBarEl?.addEventListener('dragstart', handleTabDragStart); // Sekme sürükleme
+  tabBarEl?.addEventListener('dragover', handleTabDragOver); // Sürükleme sırasında
+  tabBarEl?.addEventListener('drop', handleTabDrop); // Sekme bırakma
+  tabBarEl?.addEventListener('dragend', handleTabDragEnd); // Sürükleme bitişi
+  analysisBtn?.addEventListener('click', () => { closeDropdownMenu(); openAnalysisModal(); }); // Analiz modalını aç
+  resultsBtn?.addEventListener('click', () => { closeDropdownMenu(); openReportModal(); }); // Raporu aç
   fullscreenBtn?.addEventListener('click', () => toggleFullscreen()); // Tam ekran değiştir
   closeAnalysisBtn?.addEventListener('click', () => closeAnalysisModal()); // Analiz modalını kapat
   analysisModal?.addEventListener('click', event => { if (event.target === analysisModal) closeAnalysisModal(); }); // Dışa tıklayınca kapat
   analysisRecalcBtn?.addEventListener('click', () => runAnalysis()); // Analizi yenile
   closeReportBtn?.addEventListener('click', () => closeReport()); // Rapor kapat
   reportModal?.addEventListener('click', event => { if (event.target === reportModal) closeReport(); }); // Modal dışı kapat
+  viewModeBtn?.addEventListener('click', () => setMode('view')); // Görüntüleme moduna geç
+  editModeBtn?.addEventListener('click', () => setMode('edit')); // Düzenleme moduna geç
+  centerLayoutBtn?.addEventListener('click', () => { viz.centerViewOnBounds(); showGraphToast('Görünüm merkeze toplandı.', 'info'); }); // Merkezleme
+  resetLayoutBtn?.addEventListener('click', () => resetLayoutToDefault()); // Yerleşimi sıfırla
+  normalizeLayoutBtn?.addEventListener('click', () => { viz.normalizeWorld(); showGraphToast('Yerleşim transformları onarıldı.', 'success'); }); // Normalize et
+  refreshBubblesBtn?.addEventListener('click', () => { viz.refreshJobAnchors(true); showGraphToast('Baloncuk konumları yenilendi.', 'info'); }); // Baloncukları yenile
   speedSlider?.addEventListener('input', () => { // Hız değişimi
     const value = Number(speedSlider.value); // Değer al
     appState.speed = value; // Duruma ata
@@ -2502,6 +4977,20 @@ function attachUiEvents() { // UI olaylarını bağla
   zoomOutBtn?.addEventListener('click', () => adjustZoom(-0.25)); // Zoom azalt
   zoomInBtn?.addEventListener('click', () => adjustZoom(0.25)); // Zoom artır
   zoomResetBtn?.addEventListener('click', () => resetZoom()); // Zoom sıfırla
+  saveLayoutBtn?.addEventListener('click', () => { saveState(appState); showGraphToast('Yerleşim kaydedildi.', 'success'); }); // Yerleşimi kaydet
+  languageBtn?.addEventListener('click', () => toggleDropdown(languageMenu)); // Dil menüsünü aç
+  languageMenu?.querySelectorAll('button[data-lang]').forEach(button => { // Dil seçenekleri
+    button.addEventListener('click', () => { // Tıklama
+      const lang = button.dataset.lang; // Dil kodu
+      if (lang) setLanguage(lang); // Dili değiştir
+      closeDropdownMenu(); // Menüyü kapat
+    });
+  });
+  otherMenuBtn?.addEventListener('click', () => toggleDropdown(otherMenu)); // Diğer menü
+  otherMenu?.querySelectorAll('button').forEach(button => button.addEventListener('click', () => closeDropdownMenu())); // Menü kapanışı
+  restoreYesBtn?.addEventListener('click', () => handleRestoreConfirm()); // Kurtarma onayı
+  restoreNoBtn?.addEventListener('click', () => handleRestoreDecline()); // Kurtarma reddi
+  restoreNeverBtn?.addEventListener('click', () => handleRestoreNever()); // Bir daha sorma
   document.addEventListener('keydown', bindKeyboardShortcuts); // Klavye olayları
   document.addEventListener('fullscreenchange', () => { // Tam ekran değişince
     updateFullscreenLabel(); // Etiketi güncelle
@@ -2512,13 +5001,19 @@ function attachUiEvents() { // UI olaylarını bağla
 
 function initApp() { // Başlatıcı
   attachUiEvents(); // Olayları bağla
-  if (persistedSnapshot) { // Kayıtlı durum varsa
-    restoreFromSnapshot(persistedSnapshot); // Durumu yükle
-  } else {
-    syncControlsFromState(); // Varsayılan kontroller
-    renderStations(); // Varsayılan çizim
-    renderGraph(appState.stations); // Akışı güncelle
-    saveState(appState); // Başlangıç durumunu yaz
+  initializeTabs(); // Sekmeleri yükle
+  applyTranslations(document); // Metinleri çevir
+  updateLanguageButton(); // Dil düğmesini güncelle
+  updateCompletedCounter(appState.completedDisplayCount || 0); // Sayaç metnini hizala
+  const rawSnapshot = typeof localStorage !== 'undefined' ? localStorage.getItem(SNAPSHOT_KEY) : null; // Ham kurtarma verisi
+  if (shouldPromptRestore() && rawSnapshot) { // Kurtarma sorulacaksa
+    const payload = loadCrashSnapshotPayload(); // Veriyi oku
+    if (payload) { // Geçerliyse
+      showRestorePrompt(payload); // Modalı aç
+    } else { // Geçersizse
+      clearCrashSnapshot(); // Veriyi temizle
+      showGraphToast(t('toast.snapshotFailed'), 'error'); // Hata bildirimi
+    }
   }
   setTimeout(() => { // Programatik doğrulama
     const addBtn = document.querySelector('#addStationBtn, [data-action="add-station"]'); // Butonu bul
