@@ -128,94 +128,44 @@ header { /* Üst çubuk stili */
   align-items: center; /* Dikey ortala */
 }
 
-.control-group { /* Buton grubu */
+.toolbar-dropdown { /* Üst menü açılır grup */
+  position: relative; /* Menü konum referansı */
   display: inline-flex; /* Yatay hizalama */
   align-items: center; /* Dikey ortala */
-  gap: 8px; /* Eleman aralığı */
-  padding: 6px 10px; /* İç boşluk */
-  border-radius: 12px; /* Köşe yuvarla */
-  background: rgba(18, 20, 26, 0.7); /* Grup arka planı */
-  border: 1px solid rgba(255,255,255,0.08); /* İnce kenar */
 }
 
-.control-group[data-tone="accent"] { /* Vurgulu grup */
-  border-color: rgba(100,210,255,0.28); /* Kenarı parlat */
-}
-
-.control-group label { /* Grup içi etiket */
-  display: inline-flex; /* Yatay hizala */
+.dropdown-toggle { /* Açılır menü tetikleyicisi */
+  display: inline-flex; /* Yatay hizalama */
   align-items: center; /* Dikey ortala */
-  gap: 6px; /* Boşluk */
-}
-
-.mini-zoom { /* Zoom mini panel */
-  display: inline-flex; /* Yatay hizala */
-  align-items: center; /* Dikey ortala */
-  gap: 4px; /* Boşluk */
-  background: rgba(255,255,255,0.08); /* Hafif panel */
-  border-radius: 999px; /* Tam yuvarlak */
-  padding: 4px 8px; /* İç boşluk */
-}
-
-.mini-zoom button { /* Mini zoom butonları */
-  background: transparent; /* Şeffaf */
-  border: none; /* Kenar yok */
+  gap: 6px; /* Sembol boşluğu */
+  padding: 8px 16px; /* İç boşluk */
+  border-radius: 999px; /* Yuvarlak şekil */
+  background: rgba(26, 30, 36, 0.76); /* Arka plan */
+  border: 1px solid rgba(255,255,255,0.14); /* Kenar */
   color: var(--text); /* Metin rengi */
-  font-weight: 600; /* Kalın */
   cursor: pointer; /* El imleci */
-  padding: 2px 6px; /* İç boşluk */
+  transition: background var(--transition), border-color var(--transition), transform var(--transition); /* Geçişler */
 }
 
-.mini-zoom span { /* Zoom değeri */
-  min-width: 52px; /* Minimum genişlik */
-  text-align: center; /* Ortala */
-  font-variant-numeric: tabular-nums; /* Sabit rakam */
-}
-
-.language-menu { /* Dil menüsü */
-  position: absolute; /* Mutlak konum */
-  margin-top: 6px; /* Üst boşluk */
-  right: 0; /* Sağa hizala */
-  background: rgba(18,22,28,0.96); /* Menü arka planı */
-  border-radius: 12px; /* Köşe */
-  border: 1px solid rgba(255,255,255,0.14); /* İnce kenar */
-  box-shadow: 0 18px 40px rgba(0,0,0,0.45); /* Gölge */
-  display: none; /* Varsayılan gizli */
-  flex-direction: column; /* Dikey öğeler */
-  min-width: 160px; /* Minimum genişlik */
-  z-index: 30; /* Üst katman */
-}
-
-.language-menu button { /* Dil menü öğesi */
-  background: transparent; /* Şeffaf */
-  border: none; /* Kenar yok */
-  color: var(--text); /* Metin rengi */
-  padding: 10px 14px; /* İç boşluk */
-  text-align: left; /* Sola hizala */
-  cursor: pointer; /* El imleci */
-  transition: background var(--transition); /* Geçiş */
-}
-
-.language-menu button:hover { /* Hover dil öğesi */
-  background: rgba(100,210,255,0.22); /* Parlak */
-  color: #08202a; /* Kontrast metin */
-}
-
-.dropdown { /* Genel açılır menü */
-  position: relative; /* Menü için referans */
+.dropdown-toggle:hover { /* Hover tetikleyici */
+  background: rgba(100,210,255,0.18); /* Hafif vurgu */
+  border-color: rgba(100,210,255,0.36); /* Kenarı vurgula */
 }
 
 .dropdown-menu { /* Açılır menü paneli */
   position: absolute; /* Mutlak konum */
   top: calc(100% + 6px); /* Buton altı */
-  right: 0; /* Sağa hizala */
+  left: 0; /* Sola hizala */
   background: rgba(18,22,28,0.96); /* Menü fonu */
-  border-radius: 12px; /* Köşe */
+  border-radius: 16px; /* Köşe */
   border: 1px solid rgba(255,255,255,0.14); /* İnce kenar */
   box-shadow: 0 18px 40px rgba(0,0,0,0.45); /* Gölge */
   display: none; /* Varsayılan gizli */
-  min-width: 200px; /* Minimum genişlik */
+  min-width: 220px; /* Minimum genişlik */
+  padding: 8px; /* İç boşluk */
   z-index: 35; /* Katman */
+  flex-direction: column; /* Dikey düzen */
+  gap: 4px; /* Öğeler arası boşluk */
 }
 
 .dropdown-menu button { /* Menü öğesi */
@@ -223,15 +173,100 @@ header { /* Üst çubuk stili */
   background: transparent; /* Şeffaf */
   border: none; /* Kenar yok */
   color: var(--text); /* Metin rengi */
-  padding: 10px 16px; /* İç boşluk */
+  padding: 10px 12px; /* İç boşluk */
   text-align: left; /* Sola hizala */
+  border-radius: 12px; /* Köşe */
   cursor: pointer; /* El imleci */
-  transition: background var(--transition); /* Geçiş */
+  transition: background var(--transition), color var(--transition); /* Geçiş */
 }
 
 .dropdown-menu button:hover { /* Hover menü öğesi */
-  background: rgba(100,210,255,0.2); /* Parlak */
+  background: rgba(100,210,255,0.22); /* Parlak */
   color: #08202a; /* Kontrast */
+}
+
+.dropdown-divider { /* Menü ayırıcısı */
+  height: 1px; /* Çizgi kalınlığı */
+  background: rgba(255,255,255,0.08); /* Çizgi rengi */
+  margin: 4px 0; /* Dikey boşluk */
+}
+
+.dropdown-inline-group { /* Menü içi satır */
+  display: flex; /* Yatay hizala */
+  align-items: center; /* Dikey ortala */
+  gap: 6px; /* Boşluk */
+  padding: 6px 8px; /* İç boşluk */
+  border-radius: 12px; /* Köşeler */
+  background: rgba(26,30,36,0.72); /* Satır fonu */
+}
+
+.dropdown-inline-group button { /* Satır içi buton */
+  flex: 1; /* Eşit paylaştır */
+  text-align: center; /* Ortala */
+  padding: 8px 10px; /* İç boşluk */
+}
+
+.dropdown-inline-group button.active { /* Aktif durum */
+  background: linear-gradient(135deg, rgba(100,210,255,0.9), rgba(136,118,255,0.9)); /* Degrade vurgu */
+  color: #04141c; /* Kontrast metin */
+  font-weight: 600; /* Kalınlık */
+}
+
+.dropdown-inline-group button.active:hover { /* Aktif hover */
+  background: linear-gradient(135deg, rgba(120,220,255,0.95), rgba(156,138,255,0.95)); /* Parlak degrade */
+}
+
+.dropdown-inline-group span[data-role="zoom-value"] { /* Zoom metni */
+  min-width: 56px; /* Minimum genişlik */
+  text-align: center; /* Ortala */
+  font-weight: 600; /* Kalın */
+}
+
+.dropdown-section { /* Menü alt başlık grubu */
+  display: flex; /* Dikey hizala */
+  flex-direction: column; /* Kolon halinde diz */
+  gap: 4px; /* Eleman arası boşluk */
+  padding: 4px; /* İç boşluk */
+}
+
+.dropdown-section-header { /* Alt başlık etiketi */
+  font-size: 0.82rem; /* Küçük yazı */
+  text-transform: uppercase; /* Büyük harf */
+  letter-spacing: 0.08em; /* Harf aralığı */
+  color: rgba(255,255,255,0.55); /* Sönük ton */
+  padding: 4px 4px 2px 4px; /* Boşluk */
+}
+
+.dropdown-list { /* Kaydedilmiş senaryo listesi */
+  display: flex; /* Dikey hizala */
+  flex-direction: column; /* Kolon olarak sırala */
+  max-height: 220px; /* Maks yükseklik */
+  overflow-y: auto; /* Kaydırma */
+  border-radius: 12px; /* Köşeler */
+  background: rgba(15, 18, 24, 0.58); /* Arka plan */
+  padding: 4px; /* İç boşluk */
+  gap: 4px; /* Eleman arası boşluk */
+}
+
+.dropdown-list button { /* Senaryo öğesi butonu */
+  background: rgba(30, 36, 44, 0.9); /* Koyu fon */
+  border-radius: 10px; /* Köşeler */
+  white-space: nowrap; /* Tek satır */
+  text-overflow: ellipsis; /* Taşma üç nokta */
+  overflow: hidden; /* Taşan gizle */
+}
+
+.dropdown-list button:hover { /* Hover senaryo butonu */
+  background: rgba(100,210,255,0.22); /* Vurgu fonu */
+  color: #071620; /* Kontrast */
+}
+
+.dropdown-empty { /* Boş liste mesajı */
+  padding: 12px; /* İç boşluk */
+  border-radius: 12px; /* Köşeler */
+  background: rgba(26, 30, 36, 0.6); /* Arka plan */
+  color: rgba(255,255,255,0.62); /* Metin tonu */
+  text-align: center; /* Ortala */
 }
 
 button, input, select { /* Form kontrolleri ortak stil */
@@ -1025,36 +1060,51 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
   </div>
   <div class="controls"> <!-- Kontrol satırları -->
     <div class="toolbar-row"> <!-- Üst satır -->
-      <div class="control-group" data-group="simulation" data-tone="accent"> <!-- Simülasyon grubu -->
-        <button id="startBtn" type="button" class="primary" data-i18n="toolbar.start" data-i18n-title="title.start" title="Simülasyonu başlat (B)">Başlat</button> <!-- Başlat -->
-        <button id="stopBtn" type="button" class="danger" data-i18n="toolbar.stop" data-i18n-title="title.stop" title="Simülasyonu durdur (D)" disabled>Durdur</button> <!-- Durdur -->
-        <button id="resetBtn" type="button" data-i18n="toolbar.reset" data-i18n-title="title.reset" title="Simülasyonu sıfırla (R)">Sıfırla</button> <!-- Sıfırla -->
-        <button id="clearBtn" type="button" data-i18n="toolbar.clear" data-i18n-title="title.clear" title="Aktif sekmeyi temizle">Temizle</button> <!-- Temizle -->
-      </div>
-      <div class="control-group" data-group="view"> <!-- Görünüm grubu -->
-        <button id="fullscreenBtn" type="button" class="fullscreen-btn" data-i18n-title="title.fullscreen" title="Simülasyon alanını tam ekran yap"><span data-i18n="toolbar.fullscreen">🔳 Tam Ekran</span></button> <!-- Tam ekran -->
-        <div class="mini-zoom" role="group" aria-label="Yakınlaştırma"> <!-- Mini zoom -->
-          <button id="zoomOutBtn" type="button" data-i18n-title="title.zoomOut" title="Görünümü küçült">−</button> <!-- Zoom out -->
-          <button id="zoomResetBtn" type="button" data-i18n-title="title.zoomReset" title="Ölçeği 100% yap"><span id="zoomValue">100%</span></button> <!-- Zoom sıfırla -->
-          <button id="zoomInBtn" type="button" data-i18n-title="title.zoomIn" title="Görünümü büyüt">+</button> <!-- Zoom in -->
+      <div class="toolbar-dropdown" data-menu="simulation"> <!-- Simülasyon menüsü -->
+        <button id="simulationMenuBtn" type="button" class="dropdown-toggle" data-i18n="toolbar.simulationMenu" data-i18n-title="title.simulationMenu" title="Simülasyon işlemleri" aria-haspopup="true" aria-expanded="false">⚙️ Simülasyon ▾</button> <!-- Simülasyon tetikleyici -->
+        <div class="dropdown-menu" id="simulationMenu" role="menu" aria-label="Simülasyon kontrolleri"> <!-- Simülasyon menüsü -->
+          <button id="startBtn" type="button" class="primary" data-i18n="toolbar.start" data-i18n-title="title.start" title="Simülasyonu başlat (B)">Başlat</button> <!-- Başlat -->
+          <button id="stopBtn" type="button" class="danger" data-i18n="toolbar.stop" data-i18n-title="title.stop" title="Simülasyonu durdur (D)" disabled>Durdur</button> <!-- Durdur -->
+          <button id="resetBtn" type="button" data-i18n="toolbar.reset" data-i18n-title="title.reset" title="Simülasyonu sıfırla (R)">Sıfırla</button> <!-- Sıfırla -->
+          <button id="clearBtn" type="button" data-i18n="toolbar.clear" data-i18n-title="title.clear" title="Aktif sekmeyi temizle">Temizle</button> <!-- Temizle -->
         </div>
-        <div class="dropdown" id="languageDropdown"> <!-- Dil seçimi -->
-          <button id="languageBtn" type="button" data-i18n-title="title.language" title="Dili değiştir">🌐 TR</button> <!-- Dil butonu -->
-          <div class="language-menu" id="languageMenu" role="menu" aria-label="Dil seçenekleri"> <!-- Dil menüsü -->
-            <button type="button" data-lang="tr">Türkçe</button> <!-- Türkçe -->
-            <button type="button" data-lang="en">English</button> <!-- İngilizce -->
-            <button type="button" data-lang="de">Deutsch</button> <!-- Almanca -->
+      </div>
+      <div class="toolbar-dropdown" data-menu="view"> <!-- Görünüm menüsü -->
+        <button id="viewMenuBtn" type="button" class="dropdown-toggle" data-i18n="toolbar.viewMenu" data-i18n-title="title.viewMenu" title="Görünüm ve dil ayarları" aria-haspopup="true" aria-expanded="false">🖥️ Görünüm ▾</button> <!-- Görünüm tetikleyici -->
+        <div class="dropdown-menu" id="viewMenu" role="menu" aria-label="Görünüm kontrolleri"> <!-- Görünüm menüsü -->
+          <button id="fullscreenBtn" type="button" class="fullscreen-btn" data-i18n-title="title.fullscreen" title="Simülasyon alanını tam ekran yap"><span data-i18n="toolbar.fullscreen">🔳 Tam Ekran</span></button> <!-- Tam ekran -->
+          <div class="dropdown-inline-group" role="group" aria-label="Zoom"> <!-- Menü içi zoom -->
+            <button id="viewZoomOutBtn" type="button" data-i18n-title="title.zoomOut" title="Görünümü küçült">−</button> <!-- Zoom azalt -->
+            <button id="viewZoomResetBtn" type="button" data-i18n-title="title.zoomReset" title="Ölçeği 100% yap">100%</button> <!-- Zoom sıfırla -->
+            <button id="viewZoomInBtn" type="button" data-i18n-title="title.zoomIn" title="Görünümü büyüt">+</button> <!-- Zoom artır -->
+            <span data-role="zoom-value">100%</span> <!-- Zoom göstergesi -->
+          </div>
+          <div class="dropdown-section" role="group" aria-label="Dil seçenekleri"> <!-- Dil bölümü -->
+            <div class="dropdown-section-header" data-i18n="toolbar.languageLabel">Dil</div> <!-- Dil başlığı -->
+            <div class="dropdown-inline-group" data-role="language-options"> <!-- Dil butonları grubu -->
+              <button type="button" data-lang="tr">Türkçe</button> <!-- Türkçe -->
+              <button type="button" data-lang="en">English</button> <!-- İngilizce -->
+              <button type="button" data-lang="de">Deutsch</button> <!-- Almanca -->
+            </div>
           </div>
         </div>
       </div>
-      <div class="control-group" data-group="storage"> <!-- Kayıt grubu -->
-        <button id="saveScenarioBtn" type="button" data-i18n="toolbar.save" data-i18n-title="title.save" title="Geçerli sekmeyi kaydet">Kaydet</button> <!-- Kaydet -->
-        <button id="loadScenarioBtn" type="button" data-i18n="toolbar.load" data-i18n-title="title.load" title="Kayıtlı senaryoyu yükle">Yükle</button> <!-- Yükle -->
-        <button id="newTabToolbarBtn" type="button" data-i18n="toolbar.newTab" data-i18n-title="title.newTab" title="Yeni sekme aç">Yeni Sekme</button> <!-- Yeni Sekme -->
+      <div class="toolbar-dropdown" data-menu="storage"> <!-- Kayıt menüsü -->
+        <button id="storageMenuBtn" type="button" class="dropdown-toggle" data-i18n="toolbar.storageMenu" data-i18n-title="title.storageMenu" title="Kayıt ve sekme işlemleri" aria-haspopup="true" aria-expanded="false">💾 Kayıt/Sekmeler ▾</button> <!-- Kayıt tetikleyici -->
+        <div class="dropdown-menu" id="storageMenu" role="menu" aria-label="Kayıt ve sekme yönetimi"> <!-- Kayıt menüsü -->
+          <button id="saveScenarioBtn" type="button" data-i18n="toolbar.save" data-i18n-title="title.save" title="Geçerli sekmeyi kaydet">Kaydet</button> <!-- Kaydet -->
+          <div class="dropdown-section" aria-live="polite"> <!-- Yükleme bölümü -->
+            <div class="dropdown-section-header" data-i18n="toolbar.loadList">Yükle</div> <!-- Yükle başlığı -->
+            <div id="loadMenuList" class="dropdown-list" role="menu"></div> <!-- Senaryo listesi -->
+          </div>
+          <div class="dropdown-divider"></div> <!-- Ayırıcı -->
+          <button id="newTabToolbarBtn" type="button" data-i18n="toolbar.newTab" data-i18n-title="title.newTab" title="Yeni sekme aç">Yeni Sekme</button> <!-- Yeni sekme -->
+          <button id="closeTabBtn" type="button" data-i18n="toolbar.closeTab" data-i18n-title="title.closeTab" title="Aktif sekmeyi kapat">Sekmeyi Kapat</button> <!-- Sekme kapat -->
+        </div>
       </div>
-      <div class="control-group dropdown" data-group="other"> <!-- Diğer işlemler -->
-        <button id="otherMenuBtn" type="button" data-i18n="toolbar.other" data-i18n-title="title.other" title="Diğer araçlar">Diğer ▸</button> <!-- Diğer menü -->
-        <div class="dropdown-menu" id="otherMenu" role="menu" aria-label="Diğer işlemler"> <!-- Açılır menü -->
+      <div class="toolbar-dropdown" data-menu="other"> <!-- Diğer menüsü -->
+        <button id="otherMenuBtn" type="button" class="dropdown-toggle" data-i18n="toolbar.other" data-i18n-title="title.other" title="Diğer araçlar" aria-haspopup="true" aria-expanded="false">Diğer ▾</button> <!-- Diğer tetikleyici -->
+        <div class="dropdown-menu" id="otherMenu" role="menu" aria-label="Diğer işlemler"> <!-- Diğer menü -->
           <button id="analysisBtn" type="button" data-i18n="menu.analysis" data-i18n-title="title.analysis" title="Analiz ve önerileri aç">Analiz/Öneri</button> <!-- Analiz -->
           <button id="resultsBtn" type="button" data-i18n="menu.results" data-i18n-title="title.results" title="Simülasyon sonuçlarını aç">Sonuçları Gör</button> <!-- Sonuç -->
           <button id="sampleSetupBtn" type="button" data-i18n="menu.sample" data-i18n-title="title.sample" title="Örnek kurulum yükle">Örnek Kurulum</button> <!-- Örnek -->
@@ -1108,12 +1158,10 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
         <button id="normalizeLayoutBtn" type="button" data-edit-only="true" title="Transformları yeniden hizala">Düzeni Onar</button>
         <button id="refreshBubblesBtn" type="button" title="Baloncuk konumlarını yenile">Baloncukları Yenile</button>
       </div>
-      <button id="saveLayoutBtn" type="button" class="save-layout-btn" title="Geçerli yerleşimi kaydet">Yerleşimi Kaydet</button> <!-- Yerleşim kaydet butonu -->
-      <div class="layout-toolbar" role="group" aria-label="Yerleşim araçları">
-        <button id="centerLayoutBtn" type="button" title="Görünümü merkeze getir">Merkeze Topla</button>
-        <button id="resetLayoutBtn" type="button" data-edit-only="true" title="Yerleşimi varsayılana döndür">Yerleşimi Sıfırla</button>
-        <button id="normalizeLayoutBtn" type="button" data-edit-only="true" title="Transformları yeniden hizala">Düzeni Onar</button>
-        <button id="refreshBubblesBtn" type="button" title="Baloncuk konumlarını yenile">Baloncukları Yenile</button>
+      <div class="zoom-toolbar" id="viewportZoom" role="group" aria-label="Yakınlaştırma paneli"> <!-- Zoom paneli -->
+        <button id="zoomOutBtn" type="button" data-i18n-title="title.zoomOut" title="Görünümü küçült">−</button> <!-- Zoom azalt -->
+        <button id="zoomResetBtn" type="button" data-i18n-title="title.zoomReset" title="Ölçeği 100% yap"><span id="zoomValue" data-role="zoom-value">100%</span></button> <!-- Zoom sıfırla -->
+        <button id="zoomInBtn" type="button" data-i18n-title="title.zoomIn" title="Görünümü büyüt">+</button> <!-- Zoom artır -->
       </div>
       <svg id="lineSvg" role="img" aria-label="Hat akışı animasyonu"></svg> <!-- SVG alanı -->
     </div>
@@ -1318,6 +1366,9 @@ const translations = { // Çok dilli sözlük
     'tabs.new': '+ Yeni Sekme',
     'tabs.default': 'Sekme {{index}}',
     'tabs.restore': 'Son Deneme ({{stamp}})',
+    'toolbar.simulationMenu': '⚙️ Simülasyon ▾',
+    'toolbar.viewMenu': '🖥️ Görünüm ▾',
+    'toolbar.storageMenu': '💾 Kayıt/Sekmeler ▾',
     'toolbar.start': 'Başlat',
     'toolbar.stop': 'Durdur',
     'toolbar.reset': 'Sıfırla',
@@ -1331,6 +1382,10 @@ const translations = { // Çok dilli sözlük
     'toolbar.speed': 'Hız',
     'toolbar.target': 'Hedef adet',
     'toolbar.entry': 'Giriş',
+    'toolbar.languageLabel': 'Dil',
+    'toolbar.loadList': 'Yükle',
+    'toolbar.closeTab': 'Sekmeyi Kapat',
+    'toolbar.noScenarios': 'Kayıt bulunamadı',
     'title.start': 'Simülasyonu başlat (B)',
     'title.stop': 'Simülasyonu durdur (D)',
     'title.reset': 'Simülasyonu sıfırla (R)',
@@ -1340,6 +1395,10 @@ const translations = { // Çok dilli sözlük
     'title.load': 'Kayıtlı senaryoyu yükle',
     'title.newTab': 'Yeni sekme aç',
     'title.other': 'Diğer araçlar',
+    'title.simulationMenu': 'Simülasyon işlemleri',
+    'title.viewMenu': 'Görünüm ve dil ayarları',
+    'title.storageMenu': 'Kayıt ve sekme işlemleri',
+    'title.closeTab': 'Aktif sekmeyi kapat',
     'title.analysis': 'Analiz ve önerileri aç',
     'title.results': 'Simülasyon sonuçlarını aç',
     'title.sample': 'Örnek kurulum yükle',
@@ -1399,6 +1458,9 @@ const translations = { // Çok dilli sözlük
     'tabs.new': '+ New Tab',
     'tabs.default': 'Tab {{index}}',
     'tabs.restore': 'Last Session ({{stamp}})',
+    'toolbar.simulationMenu': '⚙️ Simulation ▾',
+    'toolbar.viewMenu': '🖥️ View ▾',
+    'toolbar.storageMenu': '💾 Save/Tabs ▾',
     'toolbar.start': 'Start',
     'toolbar.stop': 'Stop',
     'toolbar.reset': 'Reset',
@@ -1412,6 +1474,10 @@ const translations = { // Çok dilli sözlük
     'toolbar.speed': 'Speed',
     'toolbar.target': 'Target count',
     'toolbar.entry': 'Entry',
+    'toolbar.languageLabel': 'Language',
+    'toolbar.loadList': 'Load',
+    'toolbar.closeTab': 'Close Tab',
+    'toolbar.noScenarios': 'No saved scenarios yet',
     'title.start': 'Start the simulation (B)',
     'title.stop': 'Stop the simulation (D)',
     'title.reset': 'Reset the simulation (R)',
@@ -1421,6 +1487,10 @@ const translations = { // Çok dilli sözlük
     'title.load': 'Load a saved scenario',
     'title.newTab': 'Open a new tab',
     'title.other': 'Other tools',
+    'title.simulationMenu': 'Simulation controls',
+    'title.viewMenu': 'View and language options',
+    'title.storageMenu': 'Save and tab actions',
+    'title.closeTab': 'Close active tab',
     'title.analysis': 'Open analysis and suggestions',
     'title.results': 'Open simulation results',
     'title.sample': 'Load the sample layout',
@@ -1480,6 +1550,9 @@ const translations = { // Çok dilli sözlük
     'tabs.new': '+ Neuer Tab',
     'tabs.default': 'Tab {{index}}',
     'tabs.restore': 'Letzter Versuch ({{stamp}})',
+    'toolbar.simulationMenu': '⚙️ Simulation ▾',
+    'toolbar.viewMenu': '🖥️ Ansicht ▾',
+    'toolbar.storageMenu': '💾 Speicher/Tabs ▾',
     'toolbar.start': 'Starten',
     'toolbar.stop': 'Stopp',
     'toolbar.reset': 'Zurücksetzen',
@@ -1493,6 +1566,10 @@ const translations = { // Çok dilli sözlük
     'toolbar.speed': 'Geschwindigkeit',
     'toolbar.target': 'Zielmenge',
     'toolbar.entry': 'Zufluss',
+    'toolbar.languageLabel': 'Sprache',
+    'toolbar.loadList': 'Laden',
+    'toolbar.closeTab': 'Tab schließen',
+    'toolbar.noScenarios': 'Keine gespeicherten Szenarien',
     'title.start': 'Simulation starten (B)',
     'title.stop': 'Simulation stoppen (D)',
     'title.reset': 'Simulation zurücksetzen (R)',
@@ -1502,6 +1579,10 @@ const translations = { // Çok dilli sözlük
     'title.load': 'Gespeichertes Szenario laden',
     'title.newTab': 'Neuen Tab öffnen',
     'title.other': 'Weitere Werkzeuge',
+    'title.simulationMenu': 'Simulationsaktionen',
+    'title.viewMenu': 'Ansicht- und Spracheinstellungen',
+    'title.storageMenu': 'Speicher- und Tab-Verwaltung',
+    'title.closeTab': 'Aktiven Tab schließen',
     'title.analysis': 'Analyse und Empfehlungen öffnen',
     'title.results': 'Simulationsergebnisse öffnen',
     'title.sample': 'Beispielaufbau laden',
@@ -1707,10 +1788,7 @@ function closeTab(tabId) { // Sekmeyi kapat
   const index = appState.tabs.findIndex(tab => tab.id === tabId); // Sekme indeksini bul
   if (index === -1) return; // Bulunamazsa çık
   const tab = appState.tabs[index]; // Sekme referansı
-  if (tab.dirty) { // Kaydedilmemiş değişiklik varsa
-    const proceed = window.confirm(t('confirm.unsavedTabSwitch')); // Kullanıcı onayı al
-    if (!proceed) return; // İptal edildi
-  }
+  if (appState.activeTabId === tabId) storeActiveTabSnapshot('close'); // Aktif sekmeyse snapshot al
   appState.tabs.splice(index, 1); // Sekmeyi listeden çıkar
   if (!appState.tabs.length) { // Hiç sekme kalmadıysa
     const fallback = normalizeStoredTab({ snapshot: createEmptySnapshot(), name: t('tabs.default', { index: 1 }), dirty: false }, 0); // Yeni sekme oluştur
@@ -1837,6 +1915,36 @@ function handleTabDragEnd() { // Sürükleme bitişi
   draggingTabId = null; // Bayrağı temizle
 }
 
+function renderSavedScenarioMenu() { // Kayıtlı senaryo listesini menüye yaz
+  if (!loadMenuList) return; // Liste elemanı yoksa çık
+  loadMenuList.innerHTML = ''; // İçeriği temizle
+  const entries = loadScenarioStore(); // Depodaki kayıtları oku
+  savedScenarios = entries.slice(); // Global listeyi güncelle
+  if (!entries.length) { // Hiç kayıt yoksa
+    const empty = document.createElement('div'); // Boş mesaj elemanı oluştur
+    empty.className = 'dropdown-empty'; // Stil sınıfı ata
+    empty.dataset.i18n = 'toolbar.noScenarios'; // Çeviri anahtarı yaz
+    empty.textContent = t('toolbar.noScenarios'); // Metni doldur
+    loadMenuList.appendChild(empty); // Listeye ekle
+    applyTranslations(loadMenuList); // Çevirileri uygula
+    return; // Çık
+  }
+  entries.forEach(entry => { // Her kayıt için
+    const button = document.createElement('button'); // Menü butonu oluştur
+    button.type = 'button'; // Buton tipini ayarla
+    button.dataset.scenario = entry.name; // Senaryo adını veri olarak ata
+    button.textContent = entry.name; // Buton metni
+    if (entry.timestamp) { // Zaman bilgisi varsa
+      try { // Güvenli tarih formatı
+        button.title = new Date(entry.timestamp).toLocaleString(); // İpucu olarak tarih yaz
+      } catch (error) { // Hata yakala
+        button.title = entry.name; // Yedek ipucu kullan
+      }
+    }
+    loadMenuList.appendChild(button); // Butonu listeye ekle
+  });
+}
+
 function handleSaveScenario() { // Senaryoyu kaydet
   storeActiveTabSnapshot('save'); // Aktif sekme snapshotını güncelle
   const active = getActiveTab(); // Aktif sekmeyi al
@@ -1869,26 +1977,25 @@ function handleSaveScenario() { // Senaryoyu kaydet
   persistScenarioStore(savedScenarios); // Depoyu yaz
   updateActiveTabSnapshot(snapshot, { markDirty: false, reason: 'save' }); // Sekmeyi temiz olarak işaretle
   renderTabs(); // Sekmeleri yenile
+  renderSavedScenarioMenu(); // Kayıt listesini tazele
   return true; // Başarılı
 }
 
-function handleLoadScenario() { // Senaryoyu yükle
+function handleLoadScenario(name) { // Senaryoyu yükle
+  if (!name) { // Geçersiz ad kontrolü
+    showGraphToast(t('toast.loadEmpty'), 'info'); // Bilgi ver
+    return false; // Başarısız
+  }
   savedScenarios = loadScenarioStore(); // Depoyu tazele
   if (!savedScenarios.length) { // Kayıt yoksa
     showGraphToast(t('toast.loadEmpty'), 'info'); // Bilgi ver
-    return false; // Çık
-  }
-  const listText = savedScenarios.map((item, index) => `${index + 1}) ${item.name}`).join('\n'); // Liste metni
-  const input = window.prompt(`${t('prompt.loadName')}\n${listText}`, savedScenarios[0].name); // Kullanıcı seçimi
-  if (input === null) return false; // İptal edildiyse çık
-  const name = input.trim(); // Adı kırp
-  if (!name) { // Boşsa
-    showGraphToast(t('toast.loadEmpty'), 'info'); // Bilgi ver
+    renderSavedScenarioMenu(); // Listeyi boş göster
     return false; // Çık
   }
   const entry = savedScenarios.find(item => item.name === name); // Kaydı bul
   if (!entry) { // Bulunamadıysa
     showGraphToast(t('toast.loadEmpty'), 'info'); // Bilgi ver
+    renderSavedScenarioMenu(); // Listeyi güncelle
     return false; // Çık
   }
   if (entry.language && entry.language !== appState.language) setLanguage(entry.language, { silent: true }); // Dil uygula
@@ -1902,6 +2009,7 @@ function handleLoadScenario() { // Senaryoyu yükle
   updateActiveTabSnapshot(snapshot, { markDirty: false, reason: 'load' }); // Sekmeyi temizle
   persistTabsState(); // Sekmeleri sakla
   showGraphToast(t('toast.loadSuccess', { name: entry.name }), 'success'); // Başarı bildirimi
+  renderSavedScenarioMenu(); // Kayıt listesini güncelle
   return true; // Başarılı
 }
 
@@ -1934,10 +2042,14 @@ function clearActiveTab() { // Aktif sekmeyi temizle
   return true; // Başarılı
 }
 
-function updateLanguageButton() { // Dil düğmesini güncelle
-  if (!languageBtn) return; // Buton yoksa çık
-  const code = appState.language ? appState.language.toUpperCase() : 'TR'; // Kod
-  languageBtn.textContent = `🌐 ${code}`; // Metni yaz
+function syncLanguageOptions() { // Dil buton durumlarını senkronize et
+  if (!viewMenu) return; // Menü yoksa çık
+  const buttons = viewMenu.querySelectorAll('button[data-lang]'); // Dil butonlarını seç
+  buttons.forEach(button => { // Her butonu işle
+    const isActive = button.dataset.lang === appState.language; // Aktif mi kontrol et
+    button.classList.toggle('active', isActive); // Sınıfı güncelle
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false'); // ARIA durumunu yaz
+  });
 }
 
 function setLanguage(lang, options = {}) { // Dili değiştir
@@ -1948,7 +2060,7 @@ function setLanguage(lang, options = {}) { // Dili değiştir
   document.documentElement.lang = normalized; // HTML dilini ayarla
   persistLanguagePreference(normalized); // Tercihi kaydet
   applyTranslations(document); // Metinleri çevir
-  updateLanguageButton(); // Dil düğmesini güncelle
+  syncLanguageOptions(); // Dil butonlarını güncelle
   renderTabs(); // Sekme başlıklarını yenile
   renderStations(); // İstasyon kartlarını yeniden çiz
   syncControlsFromState(); // Kontrolleri hizala
@@ -1961,32 +2073,36 @@ function setLanguage(lang, options = {}) { // Dili değiştir
 
 function closeDropdownMenu() { // Açık menüyü kapat
   if (openDropdownMenu) openDropdownMenu.style.display = 'none'; // Menü gizle
+  if (openDropdownTrigger) openDropdownTrigger.setAttribute('aria-expanded', 'false'); // Tetikleyici durumunu sıfırla
   if (dropdownOutsideHandler) document.removeEventListener('mousedown', dropdownOutsideHandler, true); // Dinleyiciyi kaldır
-  openDropdownMenu = null; // Referansı sıfırla
+  openDropdownMenu = null; // Menü referansını sıfırla
+  openDropdownTrigger = null; // Tetikleyici referansını temizle
   dropdownOutsideHandler = null; // Dinleyiciyi sıfırla
 }
 
-function openDropdownMenuFor(menuEl) { // Belirli menüyü aç
+function openDropdownMenuFor(menuEl, triggerBtn = null) { // Belirli menüyü aç
   if (!menuEl) return; // Menü yoksa çık
   if (openDropdownMenu && openDropdownMenu !== menuEl) closeDropdownMenu(); // Öncekini kapat
   menuEl.style.display = 'flex'; // Göster
   menuEl.style.flexDirection = 'column'; // Dikey sırala
-  openDropdownMenu = menuEl; // Referans kaydet
+  openDropdownMenu = menuEl; // Menü referansını kaydet
+  openDropdownTrigger = triggerBtn || null; // Tetikleyiciyi sakla
+  if (openDropdownTrigger) openDropdownTrigger.setAttribute('aria-expanded', 'true'); // Tetikleyiciyi işaretle
   dropdownOutsideHandler = event => { // Dış tıklama dinleyicisi
     if (!openDropdownMenu) return; // Menü yoksa çık
     if (openDropdownMenu.contains(event.target)) return; // Menü içinde ise çık
-    if (event.target === languageBtn || event.target === otherMenuBtn) return; // Tetikleyen buton ise çık
+    if (openDropdownTrigger && (openDropdownTrigger === event.target || openDropdownTrigger.contains(event.target))) return; // Tetikleyici ise çık
     closeDropdownMenu(); // Menüyü kapat
   }; // Dinleyici sonu
   document.addEventListener('mousedown', dropdownOutsideHandler, true); // Dinleyiciyi bağla
 }
 
-function toggleDropdown(menuEl) { // Açılır menüyü aç/kapat
+function toggleDropdown(menuEl, triggerBtn = null) { // Açılır menüyü aç/kapat
   if (!menuEl) return; // Menü yoksa çık
   if (openDropdownMenu === menuEl) { // Zaten açık mı
     closeDropdownMenu(); // Kapat
   } else {
-    openDropdownMenuFor(menuEl); // Aç
+    openDropdownMenuFor(menuEl, triggerBtn); // Aç
     applyTranslations(menuEl); // Menü metinlerini güncelle
   }
 }
@@ -3488,8 +3604,8 @@ const editModeBtn = document.getElementById('editModeBtn'); // Düzenleme modu b
 const sampleBtn = document.getElementById('sampleSetupBtn'); // Örnek kurulum butonu
 const analysisBtn = document.getElementById('analysisBtn'); // Analiz butonu
 const saveScenarioBtn = document.getElementById('saveScenarioBtn'); // Senaryo kaydet butonu
-const loadScenarioBtn = document.getElementById('loadScenarioBtn'); // Senaryo yükle butonu
 const newTabToolbarBtn = document.getElementById('newTabToolbarBtn'); // Yeni sekme butonu (araç çubuğu)
+const closeTabBtn = document.getElementById('closeTabBtn'); // Sekme kapatma butonu
 const newTabBtn = document.getElementById('newTabBtn'); // Sekme çubuğu yeni sekme butonu
 const tabBarEl = document.getElementById('tabBar'); // Sekme çubuğu kapsayıcı
 const speedSlider = document.getElementById('speedSlider'); // Hız slider
@@ -3498,15 +3614,23 @@ const targetInput = document.getElementById('targetInput'); // Hedef girişi
 const entryPolicySelect = document.getElementById('entryPolicySelect'); // Giriş politikası seçimi
 const entryIntervalInput = document.getElementById('entryIntervalInput'); // Aralık girişi
 const taktInput = document.getElementById('taktInput'); // Takt time girişi
+const simulationMenuBtn = document.getElementById('simulationMenuBtn'); // Simülasyon menü butonu
+const simulationMenu = document.getElementById('simulationMenu'); // Simülasyon menü paneli
+const viewMenuBtn = document.getElementById('viewMenuBtn'); // Görünüm menü butonu
+const viewMenu = document.getElementById('viewMenu'); // Görünüm menü paneli
+const storageMenuBtn = document.getElementById('storageMenuBtn'); // Kayıt menü butonu
+const storageMenu = document.getElementById('storageMenu'); // Kayıt menü paneli
+const loadMenuList = document.getElementById('loadMenuList'); // Kayıtlı senaryo listesi
+const viewZoomOutBtn = document.getElementById('viewZoomOutBtn'); // Menülü zoom azalt butonu
+const viewZoomResetBtn = document.getElementById('viewZoomResetBtn'); // Menülü zoom sıfırla butonu
+const viewZoomInBtn = document.getElementById('viewZoomInBtn'); // Menülü zoom artır butonu
 const zoomOutBtn = document.getElementById('zoomOutBtn'); // Zoom küçült butonu
 const zoomInBtn = document.getElementById('zoomInBtn'); // Zoom büyüt butonu
 const zoomResetBtn = document.getElementById('zoomResetBtn'); // Zoom sıfırlama butonu
-const zoomValueEl = document.getElementById('zoomValue'); // Zoom metni
+const zoomValueEls = Array.from(document.querySelectorAll('[data-role="zoom-value"]')); // Zoom değer etiketleri
 const visualPanel = document.getElementById('visualPanel'); // Görsel panel kapsayıcı
 const fullscreenBtn = document.getElementById('fullscreenBtn'); // Tam ekran butonu
 const fullscreenLabel = fullscreenBtn ? fullscreenBtn.querySelector('span') : null; // Tam ekran etiket metni
-const languageBtn = document.getElementById('languageBtn'); // Dil butonu
-const languageMenu = document.getElementById('languageMenu'); // Dil menüsü
 const otherMenuBtn = document.getElementById('otherMenuBtn'); // Diğer menü butonu
 const otherMenu = document.getElementById('otherMenu'); // Diğer menü paneli
 const saveLayoutBtn = document.getElementById('saveLayoutBtn'); // Yerleşim kaydet butonu
@@ -3554,6 +3678,7 @@ let graphToastEl = null; // Grafik bildirim etiketi
 let graphToastTimer = 0; // Bildirim zamanlayıcısı
 let openDropdownMenu = null; // Açık menü referansı
 let dropdownOutsideHandler = null; // Menü dışı tıklama dinleyicisi
+let openDropdownTrigger = null; // Açık menünün tetikleyicisi referansı
 let draggingTabId = null; // Sürüklenen sekme kimliği
 let edgeDraftKeyHandler = null; // Taslak klavye dinleyicisi
 let pendingRestoreSnapshot = null; // Kurtarma modalı için bekleyen veri
@@ -3679,6 +3804,48 @@ function wouldCreateCycle(sourceId, targetId) { // Döngü kontrolü
   return false; // Döngü yok
 }
 
+function reorderStationsByTopology() { // Bağlantılara göre istasyonları sırala
+  if (!Array.isArray(appState.stations) || appState.stations.length <= 1) return; // Yetersiz istasyon varsa çık
+  const idToStation = new Map(); // Kimlikten istasyona sözlük
+  const indegree = new Map(); // Giriş dereceleri
+  const adjacency = new Map(); // Komşuluk listesi
+  appState.stations.forEach((station, index) => { // Her istasyon için
+    const id = String(station.id); // Kimliği string yap
+    idToStation.set(id, station); // İstasyonu haritaya yaz
+    indegree.set(id, 0); // Başlangıç indegree
+    const neighbors = Array.isArray(station.outputs) ? station.outputs.map(output => String(output)) : []; // Çıkış listesi
+    adjacency.set(id, neighbors); // Komşuları kaydet
+    station._originalIndex = index; // Geçici sırayı sakla
+  });
+  adjacency.forEach(neighbors => { // Tüm komşulukları dolaş
+    neighbors.forEach(neighbor => { // Her hedef için
+      if (indegree.has(neighbor)) indegree.set(neighbor, indegree.get(neighbor) + 1); // Giriş derecesini artır
+    });
+  });
+  const queue = Array.from(indegree.entries()) // Giriş derecesi sıfır olanlar
+    .filter(([, degree]) => degree === 0) // Sıfır filtrele
+    .sort((a, b) => (idToStation.get(a[0])._originalIndex ?? 0) - (idToStation.get(b[0])._originalIndex ?? 0)) // Orijinal sıraya göre sırala
+    .map(([id]) => id); // Kimlik listesi
+  const ordered = []; // Son sıra
+  while (queue.length) { // Kahn algoritması
+    const current = queue.shift(); // Kuyruktan al
+    ordered.push(current); // Sıraya ekle
+    const neighbors = adjacency.get(current) || []; // Komşuları al
+    neighbors.forEach(neighbor => { // Her komşu için
+      if (!indegree.has(neighbor)) return; // Bilinmiyorsa geç
+      indegree.set(neighbor, indegree.get(neighbor) - 1); // Derece azalt
+      if (indegree.get(neighbor) === 0) { // Sıfıra düştüyse
+        queue.push(neighbor); // Kuyruğa ekle
+        queue.sort((a, b) => (idToStation.get(a)._originalIndex ?? 0) - (idToStation.get(b)._originalIndex ?? 0)); // Orijinale göre sırala
+      }
+    });
+  }
+  appState.stations.forEach(station => delete station._originalIndex); // Geçici alanı temizle
+  if (ordered.length !== appState.stations.length) return; // Tüm düğümler sıralanamadıysa çık
+  const reordered = ordered.map(id => idToStation.get(id)).filter(Boolean); // Yeni diziyi oluştur
+  if (reordered.length === appState.stations.length) appState.stations = reordered; // Diziyi güncelle
+}
+
 function addConnection(sourceId, targetId, options = {}) { // Bağlantı ekle
   const { silent = false } = options; // Sessiz mod parametresi
   if (appState.running) { // Simülasyon çalışıyorsa
@@ -3698,6 +3865,7 @@ function addConnection(sourceId, targetId, options = {}) { // Bağlantı ekle
     return false; // Başarısız
   }
   source.outputs.push(targetId); // Bağlantıyı ekle
+  reorderStationsByTopology(); // Diziyi yeniden sırala
   saveState(appState); // Durumu kaydet
   if (!silent) { // Sessiz değilse
     showGraphToast(t('toast.edgeAdded', { source: source.name || source.id, target: target.name || target.id }), 'success'); // Başarı bildirimi
@@ -3720,6 +3888,7 @@ function removeConnection(sourceId, targetId, options = {}) { // Bağlantı sil
     if (!silent) showGraphToast(t('toast.edgeMissing'), 'info'); // Bilgi ver
     return false; // Başarısız
   }
+  reorderStationsByTopology(); // Diziyi yeniden sırala
   saveState(appState); // Durumu kaydet
   if (!silent) { // Sessiz değilse
     const target = appState.stations.find(station => station.id === targetId); // Hedefi bul
@@ -3741,6 +3910,7 @@ function handleNodeMove(stationId, x, y, meta = {}) { // Düğüm taşıma geri 
 }
 
 function renderGraph(stations) { // Akış grafiğini çiz
+  reorderStationsByTopology(); // İstasyon sırasını bağlara göre hizala
   normalizeStationTopology(stations); // İstasyonları normalize et
   const editingEnabled = !appState.running && appState.mode === 'edit'; // Düzenleme aktif mi
   if (!editingEnabled) cancelConnectionDraft('mode-change'); // Düzenleme kapalıysa taslağı temizle
@@ -3753,13 +3923,16 @@ function renderGraph(stations) { // Akış grafiğini çiz
 }
 
 function updateZoomDisplay() { // Zoom metnini güncelle
-  if (zoomValueEl) zoomValueEl.textContent = `${Math.round(appState.zoom * 100)}%`; // Yüzdelik göster
-  if (zoomResetBtn) zoomResetBtn.title = `Ölçeği ${Math.round(appState.zoom * 100)}% durumundan 100% yap`; // İpucu güncelle
+  const display = `${Math.round(appState.zoom * 100)}%`; // Yüzdelik metin
+  zoomValueEls.forEach(node => { // Her etiketi dolaş
+    if (node) node.textContent = display; // Metni yaz
+  });
+  if (zoomResetBtn) zoomResetBtn.title = `Ölçeği ${display} durumundan 100% yap`; // İpucu güncelle
   viz.setZoom(appState.zoom); // Görsel ölçeği uygula
 }
 
 function adjustZoom(delta) { // Zoom değerini değiştir
-  const next = Math.max(0.5, Math.min(2.5, parseFloat((appState.zoom + delta).toFixed(2)))); // Sınırla ve yuvarla
+  const next = Math.max(0.25, Math.min(2, parseFloat((appState.zoom + delta).toFixed(2)))); // Sınırla ve yuvarla
   appState.zoom = next; // Duruma yaz
   updateZoomDisplay(); // Görseli güncelle
   saveState(appState); // Durumu kaydet
@@ -4878,7 +5051,7 @@ function restoreFromSnapshot(snapshot, options = {}) { // Yerel depolamadan gele
     appState.speed = Math.max(0.25, Math.min(16, snapshot.speed)); // Hızı sınırla
   }
   if (typeof snapshot.zoom === 'number' && snapshot.zoom > 0) { // Zoom geçerli mi
-    appState.zoom = Math.max(0.5, Math.min(2.5, snapshot.zoom)); // Zoom aralığını sınırla
+    appState.zoom = Math.max(0.25, Math.min(2, snapshot.zoom)); // Zoom aralığını sınırla
   }
   if (typeof snapshot.taktTime === 'number' && snapshot.taktTime > 0) { // Takt değeri geçerli mi
     appState.taktTime = snapshot.taktTime; // Takt time ata
@@ -4886,6 +5059,7 @@ function restoreFromSnapshot(snapshot, options = {}) { // Yerel depolamadan gele
   if (snapshot.mode === 'edit' || snapshot.mode === 'view') { // Mod bilgisi geçerli mi
     appState.mode = snapshot.mode; // Modu ata
   }
+  reorderStationsByTopology(); // Bağlantı sırasına göre diz
   document.body.dataset.editMode = appState.mode; // Body veri niteliğini güncelle
   syncControlsFromState(); // Kontrolleri güncelle
   renderStations(); // Kartları çiz
@@ -4925,8 +5099,11 @@ function attachUiEvents() { // UI olaylarını bağla
   stopBtn?.addEventListener('click', () => stopSimulation(true)); // Durdur
   resetBtn?.addEventListener('click', () => resetSimulation()); // Sıfırla
   saveScenarioBtn?.addEventListener('click', () => handleSaveScenario()); // Senaryoyu kaydet
-  loadScenarioBtn?.addEventListener('click', () => handleLoadScenario()); // Senaryoyu yükle
   newTabToolbarBtn?.addEventListener('click', () => handleNewTab()); // Yeni sekme aç
+  closeTabBtn?.addEventListener('click', () => { // Sekme kapat butonu
+    if (appState.activeTabId) closeTab(appState.activeTabId); // Aktif sekmeyi kapat
+    closeDropdownMenu(); // Menüleri kapat
+  });
   newTabBtn?.addEventListener('click', () => handleNewTab()); // Sekme çubuğunda yeni sekme
   tabBarEl?.addEventListener('click', handleTabClick); // Sekme tıklaması
   tabBarEl?.addEventListener('dblclick', handleTabDoubleClick); // Sekme çift tıklaması
@@ -4936,6 +5113,9 @@ function attachUiEvents() { // UI olaylarını bağla
   tabBarEl?.addEventListener('dragend', handleTabDragEnd); // Sürükleme bitişi
   analysisBtn?.addEventListener('click', () => { closeDropdownMenu(); openAnalysisModal(); }); // Analiz modalını aç
   resultsBtn?.addEventListener('click', () => { closeDropdownMenu(); openReportModal(); }); // Raporu aç
+  simulationMenuBtn?.addEventListener('click', () => toggleDropdown(simulationMenu, simulationMenuBtn)); // Simülasyon menüsünü aç
+  viewMenuBtn?.addEventListener('click', () => toggleDropdown(viewMenu, viewMenuBtn)); // Görünüm menüsünü aç
+  storageMenuBtn?.addEventListener('click', () => { renderSavedScenarioMenu(); toggleDropdown(storageMenu, storageMenuBtn); }); // Kayıt menüsünü aç
   fullscreenBtn?.addEventListener('click', () => toggleFullscreen()); // Tam ekran değiştir
   closeAnalysisBtn?.addEventListener('click', () => closeAnalysisModal()); // Analiz modalını kapat
   analysisModal?.addEventListener('click', event => { if (event.target === analysisModal) closeAnalysisModal(); }); // Dışa tıklayınca kapat
@@ -4984,17 +5164,25 @@ function attachUiEvents() { // UI olaylarını bağla
   zoomOutBtn?.addEventListener('click', () => adjustZoom(-0.25)); // Zoom azalt
   zoomInBtn?.addEventListener('click', () => adjustZoom(0.25)); // Zoom artır
   zoomResetBtn?.addEventListener('click', () => resetZoom()); // Zoom sıfırla
+  viewZoomOutBtn?.addEventListener('click', () => adjustZoom(-0.25)); // Menü zoom azalt
+  viewZoomResetBtn?.addEventListener('click', () => resetZoom()); // Menü zoom sıfırla
+  viewZoomInBtn?.addEventListener('click', () => adjustZoom(0.25)); // Menü zoom artır
   saveLayoutBtn?.addEventListener('click', () => { saveState(appState); showGraphToast('Yerleşim kaydedildi.', 'success'); }); // Yerleşimi kaydet
-  languageBtn?.addEventListener('click', () => toggleDropdown(languageMenu)); // Dil menüsünü aç
-  languageMenu?.querySelectorAll('button[data-lang]').forEach(button => { // Dil seçenekleri
+  viewMenu?.querySelectorAll('button[data-lang]').forEach(button => { // Dil seçenekleri
     button.addEventListener('click', () => { // Tıklama
       const lang = button.dataset.lang; // Dil kodu
       if (lang) setLanguage(lang); // Dili değiştir
       closeDropdownMenu(); // Menüyü kapat
     });
   });
-  otherMenuBtn?.addEventListener('click', () => toggleDropdown(otherMenu)); // Diğer menü
+  otherMenuBtn?.addEventListener('click', () => toggleDropdown(otherMenu, otherMenuBtn)); // Diğer menü
   otherMenu?.querySelectorAll('button').forEach(button => button.addEventListener('click', () => closeDropdownMenu())); // Menü kapanışı
+  loadMenuList?.addEventListener('click', event => { // Kayıt seçimi
+    const button = event.target.closest('button[data-scenario]'); // Hedef butonu bul
+    if (!button) return; // Bulunamadıysa çık
+    handleLoadScenario(button.dataset.scenario); // Senaryoyu yükle
+    closeDropdownMenu(); // Menüyü kapat
+  });
   restoreYesBtn?.addEventListener('click', () => handleRestoreConfirm()); // Kurtarma onayı
   restoreNoBtn?.addEventListener('click', () => handleRestoreDecline()); // Kurtarma reddi
   restoreNeverBtn?.addEventListener('click', () => handleRestoreNever()); // Bir daha sorma
@@ -5010,7 +5198,8 @@ function initApp() { // Başlatıcı
   attachUiEvents(); // Olayları bağla
   initializeTabs(); // Sekmeleri yükle
   applyTranslations(document); // Metinleri çevir
-  updateLanguageButton(); // Dil düğmesini güncelle
+  syncLanguageOptions(); // Dil butonlarını hizala
+  renderSavedScenarioMenu(); // Kayıt menüsünü hazırla
   updateCompletedCounter(appState.completedDisplayCount || 0); // Sayaç metnini hizala
   const rawSnapshot = typeof localStorage !== 'undefined' ? localStorage.getItem(SNAPSHOT_KEY) : null; // Ham kurtarma verisi
   if (shouldPromptRestore() && rawSnapshot) { // Kurtarma sorulacaksa
