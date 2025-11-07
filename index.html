@@ -1258,11 +1258,12 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
           <thead>
             <tr>
               <th>İstasyon</th>
-              <th>Operatör</th>
-              <th>Ortalama Servis Süresi (sn)</th>
+              <th>Operatör (Paralel)</th>
+              <th>Servis Süresi (sn)</th>
+              <th>Idle/Starved Süre (sn)</th>
               <th>Ortalama Kuyruk</th>
-              <th>Utilization (%)</th>
               <th>Bekleme (sn)</th>
+              <th>Utilization (%)</th>
               <th>Tamamlanan İş</th>
             </tr>
           </thead>
@@ -1289,7 +1290,7 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
             <tr>
               <th>İstasyon</th>
               <th>Çıkış Sayısı</th>
-              <th>Üretilen Çocuk</th>
+              <th>Üretilen Parça</th>
               <th>Fork Olayı</th>
             </tr>
           </thead>
@@ -2509,9 +2510,11 @@ class SimulationEngine { // Motor sınıfı
       busyCount: 0, // Anlık meşgul sunucu adedi
       lastBusyUpdate: 0, // Son meşgul güncellemesi
       busyArea: 0, // Meşgul integrali
+      idleArea: 0, // Boş kalan sunucu zamanı
       totalWaitTime: 0, // Toplam bekleme süresi
       serviceTimeAccum: 0, // Toplam servis süresi
-      serviceCount: 0 // Toplam servis adedi
+      serviceCount: 0, // Toplam servis adedi
+      dispatchCursor: 0 // Round-robin çıkış imleci
     }));
     this.entrySpawnCursor = 0; // Giriş istasyon seçim imlecini sıfırla
     this.jobs = new Map(); // İş nesneleri haritası
@@ -2522,7 +2525,7 @@ class SimulationEngine { // Motor sınıfı
     this.engineCursor = 0; // Mantıksal hedef zaman
     this.pendingStop = false; // Durdurma isteği
     this.viz.clearJobs(); // Görsel baloncukları temizle
-    this.forkStats = new Map(this.stations.map(station => [station.id, { produced: 0, forkEvents: 0 }])); // Fork istatistiklerini sıfırla
+    this.forkStats = new Map(this.stations.map(station => [station.id, { producedParts: 0, forkEvents: 0 }])); // Fork istatistiklerini sıfırla
   }
   compareEvents = (a, b) => (a.time - b.time) || ((a.order || 0) - (b.order || 0)); // Olay karşılaştırıcısı
   schedule(event) { // Olayı kuyruğa ekle
@@ -2713,14 +2716,11 @@ class SimulationEngine { // Motor sınıfı
     const validTargets = rawTargets // Geçerli hedefleri çıkar
       .map(targetId => ({ targetId, index: this.stationIndexById.get(targetId) })) // Kimlik ve indeks eşleştir
       .filter(entry => entry.index !== undefined); // İndeksi olmayanları ele
-    const parentVizNode = this.viz && this.viz.jobs ? this.viz.jobs.get(job.id) : null; // Görsel pozisyon referansı
-    const spawnX = parentVizNode ? parentVizNode.x : 0; // Çocuk balon X
-    const spawnY = parentVizNode ? parentVizNode.y : 0; // Çocuk balon Y
-    const baseHistory = job.history.map(record => ({ ...record })); // Tarihçe kopyası
-    const baseRoute = Array.isArray(job.route) ? job.route.slice() : []; // Rota kopyası
-    const baseLineage = Array.isArray(job.lineage) ? job.lineage.slice() : []; // Soy kopyası
     const sink = validTargets.length === 0; // Çıkış yok mu kontrolü
     if (sink) { // Çıkışsız istasyon
+      const baseHistory = job.history.map(record => ({ ...record })); // Tarihçe kopyası
+      const baseRoute = Array.isArray(job.route) ? job.route.slice() : []; // Rota kopyası
+      const baseLineage = Array.isArray(job.lineage) ? job.lineage.slice() : []; // Soy kopyası
       const completed = { // Tamamlanan iş özeti
         id: job.id, // Kimlik
         parentId: job.parentId, // Üst iş
@@ -2744,41 +2744,21 @@ class SimulationEngine { // Motor sınıfı
       if (this.options.targetCount && this.completedJobs.length >= this.options.targetCount) { // Hedefe ulaşıldı mı
         this.requestStop(); // Simülasyonu durdur
       }
-    } else { // Fork üreten istasyon
-      const newWip = Math.max(0, this.wipCount - 1 + validTargets.length); // Yeni WIP değeri
-      this.updateWip(newWip, event.time); // WIP güncelle
+    } else { // Çok çıkışlı istasyon
       const stats = this.forkStats.get(station.id); // Fork istatistiği
+      const totalTargets = validTargets.length; // Geçerli hedef sayısı
+      const cursorBase = Number.isFinite(rt.dispatchCursor) ? rt.dispatchCursor : 0; // Mevcut imleç
+      const normalizedCursor = totalTargets ? ((cursorBase % totalTargets) + totalTargets) % totalTargets : 0; // Güvenli imleç
+      const target = validTargets[normalizedCursor]; // Seçilen hedef
+      rt.dispatchCursor = totalTargets ? (normalizedCursor + 1) % totalTargets : 0; // Sonraki imleç
       if (stats) { // İstatistik varsa
-        stats.produced += validTargets.length; // Üretilen çocuk sayısını artır
-        stats.forkEvents += 1; // Fork olay sayısını artır
+        stats.producedParts += 1; // Üretilen parça sayısını artır
+        stats.forkEvents += 1; // Yönlendirme olayını say
       }
-      validTargets.forEach((target, forkIndex) => { // Her hedef için
-        const childId = this.nextJobId++; // Yeni iş kimliği
-        const childJob = { // Çocuk iş nesnesi
-          id: childId, // Kimlik
-          stage: target.index, // Hedef istasyon indeksi
-          enterTime: job.enterTime, // Sisteme giriş zamanı
-          exitTime: null, // Çıkış zamanı
-          history: baseHistory.map(record => ({ ...record })), // Tarihçe kopyası
-          parentId: job.id, // Ebeveyn kimliği
-          forkIndex, // Fork dal indeksi
-          materialType: job.materialType, // Malzeme türü
-          attrs: { ...(job.attrs || {}) }, // Özellikler
-          lineage: [...baseLineage, job.id], // Soy ağacı güncelle
-          route: baseRoute.slice(), // Rota kopyası
-          routeId: job.routeId || baseRoute.join('→'), // Rota metni
-          currentStationId: null, // Güncel istasyon
-          lastTargetId: target.targetId // Son hedef kimliği
-        }; // Nesne sonu
-        this.jobs.set(childId, childJob); // Haritaya ekle
-        this.viz.ensureJob(childId); // Balon oluştur
-        this.viz.moveNodeInstant(childId, spawnX, spawnY); // Pozisyonu ata
-        this.viz.tagJob(childId, 'waiting'); // Durumu beklemede yap
-        this.schedule({ type: 'arrival', jobId: childId, stationIndex: target.index, time: event.time, order: 0 }); // Varışı planla
-      });
-      this.viz.tagJob(job.id, 'completed'); // Ebeveyni kapat
-      this.viz.markForRemoval(job.id); // Balonu kaldır
-      this.jobs.delete(job.id); // Ebeveyn iş kaydını sil
+      job.lastTargetId = target.targetId; // Son hedef kimliği
+      this.viz.tagJob(job.id, 'waiting'); // Balonu beklemede işaretle
+      this.schedule({ type: 'arrival', jobId: job.id, stationIndex: target.index, time: event.time, order: 0 }); // Varışı planla
+      console.debug(`[Motor] İş ${event.jobId} ${station.name} çıkışından ${target.targetId} hedefine yönlendirildi (RR).`); // RR logu
     }
     if (this.entryStations.includes(station.id) && this.options.entryPolicy === 'trigger') { // Giriş tetikleyicisi kontrolü
       if (!this.options.targetCount || this.completedJobs.length < this.options.targetCount) { // Hedef kontrolü
@@ -2794,7 +2774,13 @@ class SimulationEngine { // Motor sınıfı
     rt.lastQueueUpdate = time; // Zaman kaydı
   }
   updateBusy(rt, newBusy, time) { // Meşgul metriği güncelle
-    rt.busyArea += rt.busyCount * (time - rt.lastBusyUpdate); // Alan artışı
+    const delta = time - rt.lastBusyUpdate; // Zaman farkı
+    if (delta > 0) { // Pozitif süre varsa
+      const serverCount = Array.isArray(rt.servers) ? rt.servers.length : rt.station.parallelServers; // Toplam sunucu
+      const idleServers = Math.max(0, serverCount - rt.busyCount); // Boşta kalan sunucular
+      rt.busyArea += rt.busyCount * delta; // Meşgul alanını artır
+      rt.idleArea += idleServers * delta; // Boşta alanını artır
+    }
     rt.busyCount = Math.max(0, Math.min(newBusy, rt.servers.length)); // Yeni değer
     rt.lastBusyUpdate = time; // Zaman kaydı
   }
@@ -2866,11 +2852,13 @@ class SimulationEngine { // Motor sınıfı
     const throughputPerMin = throughputPerSec * 60; // Ürün/dk
     const avgWip = this.wipArea / horizon; // Ortalama WIP
     const stationRows = this.runtimeStations.map(rt => { // İstasyon raporu
-      const util = horizon ? (rt.busyArea / (horizon * (rt.servers.length || 1))) : 0; // Utilizasyon
+      const serverSlots = Math.max(1, (Array.isArray(rt.servers) ? rt.servers.length : rt.station.parallelServers)); // Sunucu adetini belirle
+      const util = horizon ? (rt.busyArea / (horizon * serverSlots)) : 0; // Utilizasyon
       const avgQ = horizon ? (rt.queueArea / horizon) : 0; // Ortalama kuyruk
       const wait = rt.serviceCount ? (rt.totalWaitTime / rt.serviceCount) : 0; // Ortalama bekleme
       const serviceTime = rt.station.totalDuration(); // Tek iş servis süresi
       const capacityPerSec = serviceTime > 0 ? rt.station.parallelServers / serviceTime : 0; // Teorik kapasite
+      const idle = horizon ? (rt.idleArea / serverSlots) : 0; // Ortalama idle süresi
       return { // Satır nesnesi
         stationId: rt.station.id, // Kimlik
         stationName: rt.station.name, // İsim
@@ -2880,7 +2868,8 @@ class SimulationEngine { // Motor sınıfı
         avgWait: wait, // Bekleme
         serviceTime, // Servis süresi
         capacityPerSec, // Kapasite
-        serviceCount: rt.serviceCount // Tamamlanan iş adedi
+        serviceCount: rt.serviceCount, // Tamamlanan iş adedi
+        idleTime: idle // Boş/atıl kalma süresi
       };
     });
     const bottleneckUtil = stationRows.reduce((max, row) => (!max || row.utilization > max.utilization ? row : max), null); // Util darboğazı
@@ -2890,13 +2879,13 @@ class SimulationEngine { // Motor sınıfı
       .sort((a, b) => a.exitTime - b.exitTime) // Zaman sıralaması
       .map((job, index) => ({ time: job.exitTime, count: index + 1 })); // Kümülatif nokta
     const forkSummary = this.stations.map(station => { // Fork özetini hazırla
-      const stats = this.forkStats.get(station.id) || { produced: 0, forkEvents: 0 }; // İstatistiği al
+      const stats = this.forkStats.get(station.id) || { producedParts: 0, forkEvents: 0 }; // İstatistiği al
       return { // Satır nesnesi
         stationId: station.id, // Kimlik
         stationName: station.name, // İsim
         outDegree: Array.isArray(station.outputs) ? station.outputs.length : 0, // Çıkış sayısı
-        producedChildren: stats.produced || 0, // Üretilen çocuk sayısı
-        forkEvents: stats.forkEvents || 0 // Fork olayı sayısı
+        producedParts: stats.producedParts || 0, // Üretilen parça sayısı
+        forkEvents: stats.forkEvents || 0 // Yönlendirme olayı sayısı
       }; // Nesne sonu
     });
     const completedRows = this.completedJobs.map(job => ({ // Tamamlanan iş satırları
@@ -4489,7 +4478,8 @@ function collectStationSummaries(report) { // İstasyon özetlerini hazırla
     const utilization = reportRow ? reportRow.utilization : null; // Utilizasyon değeri
     const avgQueue = reportRow ? reportRow.avgQueue : null; // Ortalama kuyruk
     const serviceCount = reportRow ? reportRow.serviceCount : 0; // Tamamlanan iş adedi
-    return { station, duration, parallel, capacityPerSec, utilization, avgQueue, serviceCount }; // Özet nesnesi
+    const idleTime = reportRow ? reportRow.idleTime : null; // Idle süresi
+    return { station, duration, parallel, capacityPerSec, utilization, avgQueue, serviceCount, idleTime }; // Özet nesnesi
   });
 }
 
@@ -4634,12 +4624,17 @@ function openReportModal() { // Rapor modalını aç
     stationPerformanceBody.innerHTML = ''; // Tabloyu temizle
     if (!report.stationRows.length) { // Satır yoksa
       const tr = document.createElement('tr'); // Tek satır
-      tr.innerHTML = '<td colspan="7">Veri yok</td>'; // Mesaj
+      tr.innerHTML = '<td colspan="8">Veri yok</td>'; // Mesaj
       stationPerformanceBody.appendChild(tr); // Tabloya ekle
     } else {
       report.stationRows.forEach(row => { // Her istasyon için
         const tr = document.createElement('tr'); // Satır oluştur
-        tr.innerHTML = `<td>${row.stationName}</td><td>${row.parallelServers}</td><td>${row.serviceTime.toFixed(2)}</td><td>${row.avgQueue.toFixed(2)}</td><td>${(row.utilization * 100).toFixed(1)}</td><td>${row.avgWait.toFixed(2)}</td><td>${row.serviceCount}</td>`; // Hücreler
+        const serviceTime = Number.isFinite(row.serviceTime) ? row.serviceTime : 0; // Servis süresi değeri
+        const idleTime = Number.isFinite(row.idleTime) ? row.idleTime : 0; // Idle süresi değeri
+        const avgQueue = Number.isFinite(row.avgQueue) ? row.avgQueue : 0; // Kuyruk değeri
+        const avgWait = Number.isFinite(row.avgWait) ? row.avgWait : 0; // Bekleme değeri
+        const utilization = Number.isFinite(row.utilization) ? row.utilization : 0; // Utilizasyon değeri
+        tr.innerHTML = `<td>${row.stationName}</td><td>${row.parallelServers}</td><td>${serviceTime.toFixed(2)}</td><td>${idleTime.toFixed(2)}</td><td>${avgQueue.toFixed(2)}</td><td>${avgWait.toFixed(2)}</td><td>${(utilization * 100).toFixed(1)}</td><td>${row.serviceCount}</td>`; // Hücreler
         stationPerformanceBody.appendChild(tr); // Tabloya ekle
       });
     }
@@ -4667,7 +4662,7 @@ function openReportModal() { // Rapor modalını aç
     } else {
       report.forkSummary.forEach(row => { // Her istasyon için
         const tr = document.createElement('tr'); // Satır oluştur
-        tr.innerHTML = `<td>${row.stationName}</td><td>${row.outDegree}</td><td>${row.producedChildren}</td><td>${row.forkEvents}</td>`; // Hücreler
+        tr.innerHTML = `<td>${row.stationName}</td><td>${row.outDegree}</td><td>${row.producedParts}</td><td>${row.forkEvents}</td>`; // Hücreler
         forkSummaryBody.appendChild(tr); // Tabloya ekle
       });
     }
@@ -4755,13 +4750,14 @@ function downloadCsv(report) { // CSV indirme fonksiyonu
   lines.push([ 'Throughput(dk)', report.throughputPerMin.toFixed(3) ].map(csvEscape).join(',')); // Ürün/dk
   lines.push([ 'Ortalama WIP', report.avgWip.toFixed(2) ].map(csvEscape).join(',')); // Ortalama WIP
   lines.push(''); // Boş satır
-  lines.push('İstasyon,Operatör,Paralel,Servis Süresi(sn),Tamamlanan İş,Teorik Kapasite(ürün/sn),Utilizasyon(%),Ortalama Kuyruk,Ortalama Bekleme(sn)'); // Tablo başlığı
+  lines.push('İstasyon,Operatör(Paralel),Servis Süresi(sn),Idle/Starved Süre(sn),Tamamlanan İş,Teorik Kapasite(ürün/sn),Utilizasyon(%),Ortalama Kuyruk,Ortalama Bekleme(sn)'); // Tablo başlığı
   report.stationRows.forEach(row => { // Her istasyon için
+    const idleTime = Number.isFinite(row.idleTime) ? row.idleTime : 0; // Idle süresi değeri
     lines.push([
       row.stationName, // İstasyon adı
       row.parallelServers, // Operatör sayısı
-      row.parallelServers, // Paralel sunucu sayısı
       row.serviceTime.toFixed(2), // Servis süresi
+      idleTime.toFixed(2), // Idle süresi
       row.serviceCount, // Tamamlanan iş
       row.capacityPerSec.toFixed(3), // Teorik kapasite
       (row.utilization * 100).toFixed(1), // Utilizasyon
@@ -4771,13 +4767,13 @@ function downloadCsv(report) { // CSV indirme fonksiyonu
   });
   lines.push(''); // Boş satır
   lines.push('Fork Çıkışları'); // Başlık
-  lines.push('İstasyon,Çıkış Sayısı,Üretilen Çocuk,Fork Olayı'); // Fork başlığı
+  lines.push('İstasyon,Çıkış Sayısı,Üretilen Parça,Fork Olayı'); // Fork başlığı
   report.forkSummary.forEach(row => { // Her fork satırı için
     lines.push([
       row.stationName, // İstasyon adı
       row.outDegree, // Çıkış sayısı
-      row.producedChildren, // Üretilen çocuk adedi
-      row.forkEvents // Fork olay sayısı
+      row.producedParts, // Üretilen parça adedi
+      row.forkEvents // Yönlendirme olay sayısı
     ].map(csvEscape).join(',')); // Satırı ekle
   });
   lines.push(''); // Boş satır
