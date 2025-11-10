@@ -311,10 +311,135 @@ button:disabled, input:disabled, select:disabled { /* Pasif durum */
   cursor: not-allowed; /* İşaretçi */
 }
 
+#workspaceShell { /* Çalışma yüzeyi kabuğu */
+  display: flex; /* Yatay hizalama */
+  align-items: stretch; /* Yükseklikleri hizala */
+  gap: 24px; /* Panel boşluğu */
+  min-height: calc(100vh - 200px); /* Alt sınır */
+}
+
+#flowSurface { /* Akış yüzeyi bölümü */
+  flex: 1; /* Kullanılabilir alanı doldur */
+  display: flex; /* Dikey düzen */
+  flex-direction: column; /* Başlık + panel */
+}
+
+#stationDrawer { /* Sağ veri paneli */
+  width: 340px; /* Panel genişliği */
+  flex: 0 0 340px; /* Sabit genişlik */
+  background: var(--card); /* Arka plan */
+  border-radius: var(--border-radius); /* Köşeler */
+  box-shadow: 0 24px 48px rgba(0,0,0,0.32); /* Gölge */
+  display: flex; /* Dikey düzen */
+  flex-direction: column; /* Başlık + gövde */
+  transition: transform 220ms ease, opacity 220ms ease; /* Animasyon */
+  transform: translateX(24px); /* Varsayılan hafif kaydırma */
+  opacity: 0; /* Başlangıçta görünmez */
+  pointer-events: none; /* Etkileşimi kapat */
+}
+
+#stationDrawer[aria-hidden="false"] { /* Panel açıkken */
+  transform: translateX(0); /* Yerine getir */
+  opacity: 1; /* Görünür yap */
+  pointer-events: auto; /* Etkileşimi aç */
+}
+
+#stationDrawer:focus { /* Panel odak stili */
+  outline: 2px solid var(--accent); /* Vurgu çerçeve */
+  outline-offset: 4px; /* Dış boşluk */
+}
+
+.drawer-header { /* Drawer başlık alanı */
+  display: flex; /* Yatay hizala */
+  align-items: center; /* Dikey ortala */
+  justify-content: space-between; /* Boşluğu dağıt */
+  padding: 18px 20px; /* İç boşluk */
+  border-bottom: 1px solid rgba(255,255,255,0.08); /* Alt çizgi */
+}
+
+.drawer-header h2 { /* Drawer başlık metni */
+  margin: 0; /* Boşluğu kaldır */
+  font-size: 1.05rem; /* Boyut */
+}
+
+.drawer-close { /* Panel kapatma butonu */
+  background: rgba(255,255,255,0.08); /* Hafif parlak */
+  border: none; /* Kenar yok */
+  color: var(--text); /* Metin */
+  width: 32px; /* Kare buton */
+  height: 32px; /* Kare buton */
+  border-radius: 999px; /* Daire */
+  font-size: 1.1rem; /* İkon boyutu */
+  cursor: pointer; /* El imleci */
+  transition: background var(--transition), transform var(--transition); /* Geçişler */
+}
+
+.drawer-close:hover { /* Hover kapatma */
+  background: rgba(100,210,255,0.24); /* Vurgu */
+  transform: rotate(90deg); /* Hafif dönüş */
+}
+
+.drawer-body { /* Drawer gövdesi */
+  padding: 16px 20px 24px; /* İç boşluk */
+  overflow-y: auto; /* Kaydırma */
+  flex: 1; /* Kalan alanı doldur */
+  display: flex; /* Dikey düzen */
+  flex-direction: column; /* Kartları sırala */
+  gap: 16px; /* Elemanlar arası boşluk */
+}
+.drawer-meta-row { /* Form satırı */
+  display: flex; /* Yatay hizalama */
+  flex-wrap: wrap; /* Taşanları alt satıra geçir */
+  gap: 12px; /* Hücre arası boşluk */
+  margin-top: 12px; /* Üst boşluk */
+}
+.drawer-meta-row label { /* Form etiketi */
+  flex: 1 1 150px; /* Esnek genişlik */
+  display: flex; /* Dikey düzen */
+  flex-direction: column; /* Etiket + alan */
+  gap: 6px; /* İç boşluk */
+  font-size: 0.82rem; /* Yazı boyutu */
+  color: var(--muted); /* Metin rengi */
+}
+.drawer-meta-row input { /* Form alanı */
+  width: 100%; /* Tam genişlik */
+}
+.drawer-note-label { /* Not alanı etiketi */
+  display: flex; /* Dikey düzen */
+  flex-direction: column; /* Etiket + metin */
+  gap: 6px; /* Boşluk */
+  margin-top: 12px; /* Üst boşluk */
+  font-size: 0.82rem; /* Yazı boyutu */
+  color: var(--muted); /* Renk */
+}
+.drawer-note-label textarea { /* Not metin alanı */
+  width: 100%; /* Tam genişlik */
+  min-height: 80px; /* Minimum yükseklik */
+  resize: vertical; /* Dikey boyutlandırma */
+}
+.drawer-footer-actions { /* Drawer alt aksiyonları */
+  display: flex; /* Yatay hizala */
+  justify-content: flex-end; /* Sağa yasla */
+  gap: 10px; /* Boşluk */
+  flex-wrap: wrap; /* Satır kırılmasına izin ver */
+  margin-top: 18px; /* Üst boşluk */
+}
+.drawer-footer-actions button { /* Drawer butonları */
+  min-width: 120px; /* Minimum genişlik */
+}
+.drawer-dirty-indicator { /* Kaydetme durumu etiketi */
+  font-size: 0.8rem; /* Yazı boyutu */
+  color: var(--muted); /* Varsayılan renk */
+  text-align: right; /* Sağa hizala */
+  flex: 1 1 100%; /* Tam genişlikte satır */
+}
+.drawer-dirty-indicator[data-dirty="true"] { /* Kirli durumda vurgu */
+  color: var(--accent); /* Vurgu rengi */
+  font-weight: 600; /* Kalınlık */
+}
+
 main { /* Ana içerik */
   padding: 24px; /* İç boşluk */
-  display: grid; /* Izgara */
-  gap: 24px; /* Bölümler arası boşluk */
 }
 
 .section { /* Bölüm kartı */
@@ -516,6 +641,36 @@ main { /* Ana içerik */
   stroke: rgba(100,210,255,0.85); /* Hedef kenar rengi */
   stroke-width: 2; /* Kenar kalınlığı */
   filter: drop-shadow(0 0 18px rgba(100,210,255,0.45)); /* Parlama efekti */
+}
+.station-node.selected .station-shape { /* Seçili düğüm vurgusu */
+  stroke: rgba(100,210,255,0.95); /* Parlak kenar */
+  stroke-width: 2.4; /* Biraz kalın */
+  filter: drop-shadow(0 0 20px rgba(100,210,255,0.55)); /* Parıltı */
+}
+.node-data-chip { /* Veri çipi grubu */
+  opacity: 0; /* Varsayılan gizli */
+  transform: translateY(-6px); /* Hafif kaydır */
+  transition: opacity var(--transition), transform var(--transition); /* Geçiş */
+  pointer-events: all; /* Etkileşim açık */
+  cursor: pointer; /* İmleç */
+}
+.station-node:hover .node-data-chip,
+.station-node.selected .node-data-chip { /* Hover veya seçili */
+  opacity: 1; /* Görünür */
+  transform: translateY(0); /* Konuma getir */
+}
+.node-data-chip-bg { /* Veri çipi arka planı */
+  fill: rgba(100,210,255,0.22); /* Hafif vurgu */
+  stroke: rgba(100,210,255,0.45); /* Kenar */
+  stroke-width: 1; /* İnce kenar */
+}
+.node-data-chip-text { /* Veri çipi metni */
+  fill: var(--text); /* Metin rengi */
+  font-size: 0.7rem; /* Yazı boyutu */
+  font-weight: 600; /* Kalın */
+  text-transform: uppercase; /* Büyük harf */
+  letter-spacing: 0.12em; /* Harf aralığı */
+  pointer-events: none; /* Etkileşimi kapat */
 }
 
 .edge-label { /* Kenar etiketi */
@@ -1054,7 +1209,7 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
 </style> <!-- Stil bitişi -->
 </head>
 <body> <!-- Gövde başlangıcı -->
-<header> <!-- Üst çubuk -->
+<header data-drawer-inert> <!-- Üst çubuk -->
   <div class="tab-bar" id="tabBar" role="tablist" aria-label="Senaryo sekmeleri"> <!-- Sekme çubuğu -->
     <button id="newTabBtn" type="button" class="new-tab-btn" data-i18n="tabs.new" data-i18n-title="title.newTab" title="Yeni sekme aç">+ Yeni Sekme</button> <!-- Yeni sekme -->
   </div>
@@ -1123,7 +1278,20 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
       </div>
       <div class="control-group" data-group="speed"> <!-- Hız kontrolü -->
         <label for="speedSlider" data-i18n="toolbar.speed" data-i18n-title="title.speed" title="Animasyon hızını ayarla">Hız</label> <!-- Hız etiketi -->
-        <input id="speedSlider" type="range" min="0.25" max="16" step="0.25" value="1" data-i18n-title="title.speed" title="Animasyon hızını ayarla"> <!-- Slider -->
+        <input id="speedSlider" type="range" min="0" max="10" step="1" value="2" data-i18n-title="title.speed" title="Animasyon hızını ayarla"> <!-- Slider -->
+        <select id="speedSelect" title="Hız seçenekleri">
+          <option value="0.25">0.25×</option>
+          <option value="0.5">0.5×</option>
+          <option value="1">1×</option>
+          <option value="2">2×</option>
+          <option value="4">4×</option>
+          <option value="8">8×</option>
+          <option value="16">16×</option>
+          <option value="25">25×</option>
+          <option value="50">50×</option>
+          <option value="100">100×</option>
+          <option value="200">200×</option>
+        </select>
         <span id="speedValue" class="badge">1×</span> <!-- Hız göstergesi -->
       </div>
       <div class="control-group" data-group="target"> <!-- Hedef kontrolü -->
@@ -1143,31 +1311,38 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
   </div>
 </header>
 <main> <!-- Ana içerik -->
-  <section class="section" aria-labelledby="stationsTitle"> <!-- İstasyonlar bölümü -->
-    <h2 id="stationsTitle">İstasyonlar</h2> <!-- Başlık -->
-    <p id="emptyState">İstasyon ekleyin veya <strong>Örnek Kurulum</strong> butonunu kullanın.</p> <!-- Boş durum -->
-    <div id="stationList" aria-live="polite"></div> <!-- Kart listesi -->
-  </section>
-  <section class="section" aria-labelledby="vizTitle"> <!-- Görselleştirme bölümü -->
-    <h2 id="vizTitle">Hat Akışı</h2> <!-- Başlık -->
-    <div id="visualPanel"> <!-- Görsel panel -->
-      <button id="saveLayoutBtn" type="button" class="save-layout-btn" title="Geçerli yerleşimi kaydet">Yerleşimi Kaydet</button> <!-- Yerleşim kaydet butonu -->
-      <div class="layout-toolbar" role="group" aria-label="Yerleşim araçları">
-        <button id="centerLayoutBtn" type="button" title="Görünümü merkeze getir">Merkeze Topla</button>
-        <button id="resetLayoutBtn" type="button" data-edit-only="true" title="Yerleşimi varsayılana döndür">Yerleşimi Sıfırla</button>
-        <button id="normalizeLayoutBtn" type="button" data-edit-only="true" title="Transformları yeniden hizala">Düzeni Onar</button>
-        <button id="refreshBubblesBtn" type="button" title="Baloncuk konumlarını yenile">Baloncukları Yenile</button>
+  <div id="workspaceShell"> <!-- Akış yüzeyi ve veri paneli -->
+    <section id="flowSurface" class="section" aria-labelledby="vizTitle"> <!-- Görselleştirme bölümü -->
+      <h2 id="vizTitle">Hat Akışı</h2> <!-- Başlık -->
+      <div id="visualPanel"> <!-- Görsel panel -->
+        <button id="saveLayoutBtn" type="button" class="save-layout-btn" title="Geçerli yerleşimi kaydet">Yerleşimi Kaydet</button> <!-- Yerleşim kaydet butonu -->
+        <div class="layout-toolbar" role="group" aria-label="Yerleşim araçları">
+          <button id="centerLayoutBtn" type="button" title="Görünümü merkeze getir">Merkeze Topla</button>
+          <button id="resetLayoutBtn" type="button" data-edit-only="true" title="Yerleşimi varsayılana döndür">Yerleşimi Sıfırla</button>
+          <button id="normalizeLayoutBtn" type="button" data-edit-only="true" title="Transformları yeniden hizala">Düzeni Onar</button>
+          <button id="refreshBubblesBtn" type="button" title="Baloncuk konumlarını yenile">Baloncukları Yenile</button>
+        </div>
+        <div class="zoom-toolbar" id="viewportZoom" role="group" aria-label="Yakınlaştırma paneli"> <!-- Zoom paneli -->
+          <button id="zoomOutBtn" type="button" data-i18n-title="title.zoomOut" title="Görünümü küçült">−</button> <!-- Zoom azalt -->
+          <button id="zoomResetBtn" type="button" data-i18n-title="title.zoomReset" title="Ölçeği 100% yap"><span id="zoomValue" data-role="zoom-value">100%</span></button> <!-- Zoom sıfırla -->
+          <button id="zoomInBtn" type="button" data-i18n-title="title.zoomIn" title="Görünümü büyüt">+</button> <!-- Zoom artır -->
+        </div>
+        <svg id="lineSvg" role="img" aria-label="Hat akışı animasyonu"></svg> <!-- SVG alanı -->
       </div>
-      <div class="zoom-toolbar" id="viewportZoom" role="group" aria-label="Yakınlaştırma paneli"> <!-- Zoom paneli -->
-        <button id="zoomOutBtn" type="button" data-i18n-title="title.zoomOut" title="Görünümü küçült">−</button> <!-- Zoom azalt -->
-        <button id="zoomResetBtn" type="button" data-i18n-title="title.zoomReset" title="Ölçeği 100% yap"><span id="zoomValue" data-role="zoom-value">100%</span></button> <!-- Zoom sıfırla -->
-        <button id="zoomInBtn" type="button" data-i18n-title="title.zoomIn" title="Görünümü büyüt">+</button> <!-- Zoom artır -->
+    </section>
+    <aside id="stationDrawer" aria-labelledby="drawerTitle" aria-hidden="true" role="dialog" aria-modal="true" tabindex="-1"> <!-- Sağ veri paneli -->
+      <header class="drawer-header"> <!-- Drawer başlığı -->
+        <h2 id="drawerTitle">İstasyon Verisi</h2> <!-- Panel başlığı -->
+        <button id="closeDrawerBtn" type="button" class="drawer-close" aria-label="Paneli kapat">×</button> <!-- Kapat butonu -->
+      </header>
+      <div class="drawer-body"> <!-- Drawer içeriği -->
+        <p id="emptyState">İstasyon seçmek için sahneden bir kutuya tıklayın veya <strong>Örnek Kurulum</strong> butonunu kullanın.</p> <!-- Boş durum -->
+        <div id="stationList" aria-live="polite"></div> <!-- Kart listesi -->
       </div>
-      <svg id="lineSvg" role="img" aria-label="Hat akışı animasyonu"></svg> <!-- SVG alanı -->
-    </div>
-  </section>
+    </aside>
+  </div>
 </main>
-<footer> <!-- Alt bilgi -->
+<footer data-drawer-inert> <!-- Alt bilgi -->
   <div class="footer-content"> <!-- Footer içeriği -->
     <div class="footer-brand">Franz Kiel Türkiye (FKT)</div> <!-- Kurumsal metin -->
     <div class="footer-hints"> <!-- Kısayol bilgisi -->
@@ -1258,11 +1433,13 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
           <thead>
             <tr>
               <th>İstasyon</th>
-              <th>Operatör</th>
-              <th>Ortalama Servis Süresi (sn)</th>
+              <th>Operatör (Paralel)</th>
+              <th>Servis Süresi (sn)</th>
               <th>Ortalama Kuyruk</th>
-              <th>Utilization (%)</th>
               <th>Bekleme (sn)</th>
+              <th>Utilization (%)</th>
+              <th>Idle/Starved Süre (sn)</th>
+              <th>İhtiyaç Karşılama (Alınan/İstenen)</th>
               <th>Tamamlanan İş</th>
             </tr>
           </thead>
@@ -1289,7 +1466,7 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
             <tr>
               <th>İstasyon</th>
               <th>Çıkış Sayısı</th>
-              <th>Üretilen Çocuk</th>
+              <th>Üretilen Parça</th>
               <th>Fork Olayı</th>
             </tr>
           </thead>
@@ -1343,6 +1520,18 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
       <button id="restoreYesBtn" type="button" class="primary" data-i18n="restore.yes">Evet, geri yükle</button> <!-- Evet butonu -->
       <button id="restoreNoBtn" type="button" data-i18n="restore.no">Hayır, boş başla</button> <!-- Hayır butonu -->
       <button id="restoreNeverBtn" type="button" data-i18n="restore.never">Bir daha sorma</button> <!-- Bir daha sorma -->
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="drawerConfirmModal"> <!-- Drawer kapatma uyarısı -->
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="drawerConfirmTitle"> <!-- Drawer modal kutusu -->
+    <h3 id="drawerConfirmTitle" data-i18n="confirm.drawerTitle">Değişiklikleri kaydetmek ister misiniz?</h3> <!-- Başlık -->
+    <p id="drawerConfirmMessage" data-i18n="confirm.drawerMessage">Paneli kapatmadan önce yaptığınız değişiklikleri kaydetmek ister misiniz?</p> <!-- Mesaj -->
+    <div class="modal-actions"> <!-- Buton grubu -->
+      <button id="drawerConfirmSave" type="button" class="primary" data-i18n="confirm.drawerSave">Kaydet</button> <!-- Kaydet -->
+      <button id="drawerConfirmDiscard" type="button" data-i18n="confirm.drawerDiscard">Kaydetmeden Kapat</button> <!-- Kaydetmeden -->
+      <button id="drawerConfirmCancel" type="button" class="danger" data-i18n="confirm.drawerCancel">İptal</button> <!-- İptal -->
     </div>
   </div>
 </div>
@@ -1441,9 +1630,17 @@ const translations = { // Çok dilli sözlük
     'toast.renameDone': 'Sekme adı güncellendi.',
     'toast.renameCancelled': 'Yeniden adlandırma iptal edildi.',
     'toast.renameRequired': 'Sekme adı boş olamaz.',
+    'toast.taskRequired': 'En az bir görev tanımlayın.',
     'confirm.clear': 'Aktif sekmedeki tüm veri silinsin mi?',
     'confirm.unsavedTabSwitch': 'Kaydedilmemiş değişiklikler var. Sekme değiştirilsin mi?',
     'confirm.overwrite': 'Bu adla bir kayıt var. Üzerine yazmak ister misiniz?',
+    'confirm.drawerTitle': 'Değişiklikleri kaydetmek ister misiniz?',
+    'confirm.drawerMessage': 'Paneli kapatmadan önce yaptığınız değişiklikleri nasıl yönetmek istersiniz?',
+    'confirm.drawerSave': 'Kaydet',
+    'confirm.drawerDiscard': 'Kaydetmeden Kapat',
+    'confirm.drawerCancel': 'İptal',
+    'confirm.edgeDuplicate': 'Bu bağlantı zaten mevcut. Mükerrer bağlantı oluşturmak ister misiniz?',
+    'confirm.edgeCycle': 'Bu bağlantı bir döngü oluşturacak. Yine de devam edilsin mi?',
     'prompt.saveName': 'Senaryo adını girin',
     'prompt.renameTab': 'Sekme adını girin',
     'prompt.loadName': 'Yüklenecek senaryo adını girin',
@@ -1533,9 +1730,17 @@ const translations = { // Çok dilli sözlük
     'toast.renameDone': 'Tab name updated.',
     'toast.renameCancelled': 'Rename cancelled.',
     'toast.renameRequired': 'Tab name cannot be empty.',
+    'toast.taskRequired': 'Please define at least one task.',
     'confirm.clear': 'Clear all data in the active tab?',
     'confirm.unsavedTabSwitch': 'You have unsaved changes. Switch tabs anyway?',
     'confirm.overwrite': 'A scenario with this name exists. Overwrite it?',
+    'confirm.drawerTitle': 'Save your changes?',
+    'confirm.drawerMessage': 'How would you like to handle the edits before closing the panel?',
+    'confirm.drawerSave': 'Save',
+    'confirm.drawerDiscard': 'Close without Saving',
+    'confirm.drawerCancel': 'Cancel',
+    'confirm.edgeDuplicate': 'This connection already exists. Do you want to create another one?',
+    'confirm.edgeCycle': 'This connection will create a cycle. Do you want to continue?',
     'prompt.saveName': 'Enter scenario name',
     'prompt.renameTab': 'Enter tab name',
     'prompt.loadName': 'Enter scenario name to load',
@@ -1625,9 +1830,17 @@ const translations = { // Çok dilli sözlük
     'toast.renameDone': 'Tab-Name aktualisiert.',
     'toast.renameCancelled': 'Umbenennen abgebrochen.',
     'toast.renameRequired': 'Tab-Name darf nicht leer sein.',
+    'toast.taskRequired': 'Definieren Sie mindestens eine Aufgabe.',
     'confirm.clear': 'Alle Daten im aktiven Tab löschen?',
     'confirm.unsavedTabSwitch': 'Es gibt ungespeicherte Änderungen. Trotzdem wechseln?',
     'confirm.overwrite': 'Ein Szenario mit diesem Namen existiert. Überschreiben?',
+    'confirm.drawerTitle': 'Änderungen speichern?',
+    'confirm.drawerMessage': 'Wie sollen die Änderungen vor dem Schließen des Panels behandelt werden?',
+    'confirm.drawerSave': 'Speichern',
+    'confirm.drawerDiscard': 'Ohne Speichern schließen',
+    'confirm.drawerCancel': 'Abbrechen',
+    'confirm.edgeDuplicate': 'Diese Verbindung existiert bereits. Möchten Sie dennoch eine weitere erstellen?',
+    'confirm.edgeCycle': 'Diese Verbindung erzeugt einen Zyklus. Trotzdem fortfahren?',
     'prompt.saveName': 'Szenarionamen eingeben',
     'prompt.renameTab': 'Tab-Namen eingeben',
     'prompt.loadName': 'Zu ladenden Szenarionamen eingeben',
@@ -1854,7 +2067,7 @@ function activateTab(tabId, options = {}) { // Sekme değiştir
   if (!target) return false; // Bulunamadı
   const current = getActiveTab(); // Mevcut aktif
   if (current && current.dirty && !options.force) { // Kaydedilmemiş değişiklik varsa
-    const proceed = window.confirm(t('confirm.unsavedTabSwitch')); // Onay iste
+    const proceed = requestConfirmation('confirm.unsavedTabSwitch'); // Onay iste
     if (!proceed) return false; // İptal edildi
   }
   if (current) storeActiveTabSnapshot('switch'); // Mevcut sekmeyi sakla
@@ -1963,7 +2176,7 @@ function handleSaveScenario() { // Senaryoyu kaydet
   const entry = { name, snapshot, language: appState.language, timestamp: Date.now(), appVersion: APP_VERSION }; // Kayıt nesnesi
   const existingIndex = savedScenarios.findIndex(item => item.name === name); // Var olan kayıt var mı
   if (existingIndex !== -1) { // Üzerine yazma durumu
-    const confirmOverwrite = window.confirm(t('confirm.overwrite')); // Onay al
+    const confirmOverwrite = requestConfirmation('confirm.overwrite'); // Onay al
     if (!confirmOverwrite) { // Reddedildiyse
       showGraphToast(t('toast.saveCancelled'), 'info'); // Bilgi ver
       return false; // Çık
@@ -2014,7 +2227,7 @@ function handleLoadScenario(name) { // Senaryoyu yükle
 }
 
 function clearActiveTab() { // Aktif sekmeyi temizle
-  const confirmClear = window.confirm(t('confirm.clear')); // Onay iste
+  const confirmClear = requestConfirmation('confirm.clear'); // Onay iste
   if (!confirmClear) return false; // İptal edildi
   cancelConnectionDraft('mode-change'); // Aktif taslağı kapat
   if (appState.simulation) stopSimulation(false); // Simülasyonu durdur
@@ -2028,11 +2241,12 @@ function clearActiveTab() { // Aktif sekmeyi temizle
   appState.taktTime = null; // Takt time sıfırla
   appState.zoom = 1; // Zoom sıfırla
   appState.speed = 1; // Hızı varsay
+  appState.selectedStationId = null; // Seçimi temizle
   viz.clearJobs(); // Baloncukları temizle
   viz.setSpeed(appState.speed); // Görsel hızını sıfırla
   updateZoomDisplay(); // Zoom göstergesini yenile
   syncControlsFromState(); // Kontrolleri hizala
-  renderStations(); // Kartları boşalt
+  setSelectedStation(null, { skipSave: true }); // Paneli kapat
   renderGraph(appState.stations); // Grafiği temizle
   updateCompletedCounter(0); // Sayaç sıfırla
   const snapshot = captureStatePayload(); // Yeni snapshot çıkar
@@ -2111,7 +2325,7 @@ function toggleDropdown(menuEl, triggerBtn = null) { // Açılır menüyü aç/k
 const MAX_SERVERS = 16; // Maksimum paralel sunucu sayısı
 const UPDATE_INTERVAL_MS = 150; // UI metrik güncelleme aralığı
 const MOVE_DURATION_MS = 900; // Baloncuk hareket süresi
-const LOGICAL_RATE = 4; // 1 saniyede işlenecek mantıksal saniye
+const SPEED_OPTIONS = [1, 2, 4, 8, 16, 25, 50, 100, 200]; // Desteklenen hız çarpanları
 
 // Küresel durum //
 const appState = window.appState ?? { // Uygulama genel durumu
@@ -2135,7 +2349,9 @@ const appState = window.appState ?? { // Uygulama genel durumu
   activeTabId: null, // Aktif sekme kimliği
   tabCounter: 1, // Sekme kimliği üreteci
   edgeDraft: null, // Bağlantı oluşturma durumu
-  completedDisplayCount: 0 // Görüntülenen tamamlanan sayısı
+  completedDisplayCount: 0, // Görüntülenen tamamlanan sayısı
+  selectedStationId: null, // Açık paneldeki istasyon
+  stationEditor: null // Sağ panel taslak durumu
 };
 window.appState = appState; // Durumu küresele yaz
 document.body.dataset.editMode = appState.mode; // Başlangıç modunu body'ye işle
@@ -2300,7 +2516,10 @@ function captureStatePayload(state = appState) { // Aktif sekme anlık görünt�
         name: task.name, // Görev adı
         operators: task.operators, // Operatör sayısı
         durationSec: task.durationSec // Süre
-      }))
+      })),
+      need: Number.isFinite(st.need) ? st.need : 0, // İhtiyaç
+      queueLimit: st.queueLimit === null || st.queueLimit === undefined ? null : st.queueLimit, // Kuyruk sınırı
+      note: st.note || '' // Not
     })),
     targetCount: state.targetCount ?? null, // Hedef adet
     entryPolicy: state.entryPolicy, // Giriş politikası
@@ -2311,6 +2530,7 @@ function captureStatePayload(state = appState) { // Aktif sekme anlık görünt�
     nextStationId: state.nextStationId, // Sonraki istasyon kimliği
     mode: state.mode, // Arayüz modu
     language: state.language, // Dil ayarı
+    selectedStationId: state.selectedStationId ?? null, // Seçilen istasyon
     timestamp: Date.now(), // Zaman damgası
     appVersion: APP_VERSION // Sürüm bilgisi
   }; // Snapshot döndür
@@ -2389,6 +2609,9 @@ class Station { // İstasyon modeli
     this.parallelServers = 1; // Paralel sunucu sayısı
     this.outputs = []; // Çıkış bağlantıları listesi
     this.position = { x: 0, y: 0 }; // Yerleşim koordinatı
+    this.need = 0; // İhtiyaç adedi
+    this.queueLimit = null; // Kuyruk sınırı
+    this.note = ''; // Not metni
   }
   totalDuration() { // Toplam görev süresi hesaplar
     return this.tasks.reduce((sum, task) => sum + task.durationSec, 0); // Sürelerin toplamı
@@ -2499,20 +2722,29 @@ class SimulationEngine { // Motor sınıfı
     this.nextJobId = 1; // Yeni iş kimliği
     this.running = false; // Çalışma bayrağı
     this.completedJobs = []; // Tamamlanan işler
-    this.runtimeStations = this.stations.map(station => ({ // Çalışma zamanlı istasyon durumları
-      station, // Referans
-      queue: new FastQueue(), // Kuyruk iş kimlikleri
-      servers: Array.from({ length: station.parallelServers }, () => null), // Sunucular
-      queueLength: 0, // Anlık kuyruk uzunluğu
-      lastQueueUpdate: 0, // Son güncelleme zamanı
-      queueArea: 0, // Kuyruk uzunluğu integrali
-      busyCount: 0, // Anlık meşgul sunucu adedi
-      lastBusyUpdate: 0, // Son meşgul güncellemesi
-      busyArea: 0, // Meşgul integrali
-      totalWaitTime: 0, // Toplam bekleme süresi
-      serviceTimeAccum: 0, // Toplam servis süresi
-      serviceCount: 0 // Toplam servis adedi
-    }));
+    this.runtimeStations = this.stations.map(station => { // Çalışma zamanlı istasyon durumları
+      const needInitial = Math.max(0, Number(station.need) || 0); // Başlangıç ihtiyacı
+      return {
+        station, // Referans
+        queue: new FastQueue(), // Kuyruk iş kimlikleri
+        servers: Array.from({ length: station.parallelServers }, () => null), // Sunucular
+        queueLength: 0, // Anlık kuyruk uzunluğu
+        lastQueueUpdate: 0, // Son güncelleme zamanı
+        queueArea: 0, // Kuyruk uzunluğu integrali
+        busyCount: 0, // Anlık meşgul sunucu adedi
+        lastBusyUpdate: 0, // Son meşgul güncellemesi
+        busyArea: 0, // Meşgul integrali
+        idleArea: 0, // Boş kalan sunucu zamanı
+        totalWaitTime: 0, // Toplam bekleme süresi
+        serviceTimeAccum: 0, // Toplam servis süresi
+        serviceCount: 0, // Toplam servis adedi
+        dispatchCursor: 0, // Round-robin çıkış imleci
+        stickyTargetIndex: null, // Yapışkan RR hedefi
+        needInitial, // Başlangıç ihtiyacı
+        needRemaining: needInitial, // Kalan ihtiyaç
+        needReceived: 0 // Alınan ürün adedi
+      };
+    });
     this.entrySpawnCursor = 0; // Giriş istasyon seçim imlecini sıfırla
     this.jobs = new Map(); // İş nesneleri haritası
     this.wipCount = 0; // Anlık WIP
@@ -2522,7 +2754,7 @@ class SimulationEngine { // Motor sınıfı
     this.engineCursor = 0; // Mantıksal hedef zaman
     this.pendingStop = false; // Durdurma isteği
     this.viz.clearJobs(); // Görsel baloncukları temizle
-    this.forkStats = new Map(this.stations.map(station => [station.id, { produced: 0, forkEvents: 0 }])); // Fork istatistiklerini sıfırla
+    this.forkStats = new Map(this.stations.map(station => [station.id, { producedParts: 0, forkEvents: 0 }])); // Fork istatistiklerini sıfırla
   }
   compareEvents = (a, b) => (a.time - b.time) || ((a.order || 0) - (b.order || 0)); // Olay karşılaştırıcısı
   schedule(event) { // Olayı kuyruğa ekle
@@ -2665,6 +2897,7 @@ class SimulationEngine { // Motor sınıfı
     const arrivalRecord = { jobId: job.id, arrival: event.time }; // Kuyruk kaydı
     rt.queue.enqueue(arrivalRecord); // Kuyruğa ekle
     this.updateQueue(rt, rt.queue.length, event.time); // Kuyruk artışı
+    if (typeof rt.needReceived === 'number') rt.needReceived += 1; // İhtiyaç karşılama sayacını artır
     this.viz.ensureJob(job.id); // Balon var mı kontrol
     this.viz.tagJob(job.id, 'waiting'); // Görsel durumu güncelle
     this.tryStartService(rt, event.stationIndex, event.time); // Servis kontrolü
@@ -2713,14 +2946,11 @@ class SimulationEngine { // Motor sınıfı
     const validTargets = rawTargets // Geçerli hedefleri çıkar
       .map(targetId => ({ targetId, index: this.stationIndexById.get(targetId) })) // Kimlik ve indeks eşleştir
       .filter(entry => entry.index !== undefined); // İndeksi olmayanları ele
-    const parentVizNode = this.viz && this.viz.jobs ? this.viz.jobs.get(job.id) : null; // Görsel pozisyon referansı
-    const spawnX = parentVizNode ? parentVizNode.x : 0; // Çocuk balon X
-    const spawnY = parentVizNode ? parentVizNode.y : 0; // Çocuk balon Y
-    const baseHistory = job.history.map(record => ({ ...record })); // Tarihçe kopyası
-    const baseRoute = Array.isArray(job.route) ? job.route.slice() : []; // Rota kopyası
-    const baseLineage = Array.isArray(job.lineage) ? job.lineage.slice() : []; // Soy kopyası
     const sink = validTargets.length === 0; // Çıkış yok mu kontrolü
     if (sink) { // Çıkışsız istasyon
+      const baseHistory = job.history.map(record => ({ ...record })); // Tarihçe kopyası
+      const baseRoute = Array.isArray(job.route) ? job.route.slice() : []; // Rota kopyası
+      const baseLineage = Array.isArray(job.lineage) ? job.lineage.slice() : []; // Soy kopyası
       const completed = { // Tamamlanan iş özeti
         id: job.id, // Kimlik
         parentId: job.parentId, // Üst iş
@@ -2744,41 +2974,62 @@ class SimulationEngine { // Motor sınıfı
       if (this.options.targetCount && this.completedJobs.length >= this.options.targetCount) { // Hedefe ulaşıldı mı
         this.requestStop(); // Simülasyonu durdur
       }
-    } else { // Fork üreten istasyon
-      const newWip = Math.max(0, this.wipCount - 1 + validTargets.length); // Yeni WIP değeri
-      this.updateWip(newWip, event.time); // WIP güncelle
+    } else { // Çok çıkışlı istasyon
       const stats = this.forkStats.get(station.id); // Fork istatistiği
-      if (stats) { // İstatistik varsa
-        stats.produced += validTargets.length; // Üretilen çocuk sayısını artır
-        stats.forkEvents += 1; // Fork olay sayısını artır
-      }
-      validTargets.forEach((target, forkIndex) => { // Her hedef için
-        const childId = this.nextJobId++; // Yeni iş kimliği
-        const childJob = { // Çocuk iş nesnesi
-          id: childId, // Kimlik
-          stage: target.index, // Hedef istasyon indeksi
-          enterTime: job.enterTime, // Sisteme giriş zamanı
-          exitTime: null, // Çıkış zamanı
-          history: baseHistory.map(record => ({ ...record })), // Tarihçe kopyası
-          parentId: job.id, // Ebeveyn kimliği
-          forkIndex, // Fork dal indeksi
-          materialType: job.materialType, // Malzeme türü
-          attrs: { ...(job.attrs || {}) }, // Özellikler
-          lineage: [...baseLineage, job.id], // Soy ağacı güncelle
-          route: baseRoute.slice(), // Rota kopyası
-          routeId: job.routeId || baseRoute.join('→'), // Rota metni
-          currentStationId: null, // Güncel istasyon
-          lastTargetId: target.targetId // Son hedef kimliği
-        }; // Nesne sonu
-        this.jobs.set(childId, childJob); // Haritaya ekle
-        this.viz.ensureJob(childId); // Balon oluştur
-        this.viz.moveNodeInstant(childId, spawnX, spawnY); // Pozisyonu ata
-        this.viz.tagJob(childId, 'waiting'); // Durumu beklemede yap
-        this.schedule({ type: 'arrival', jobId: childId, stationIndex: target.index, time: event.time, order: 0 }); // Varışı planla
+      const totalTargets = validTargets.length; // Geçerli hedef sayısı
+      const normalizeIndex = index => totalTargets ? ((index % totalTargets) + totalTargets) % totalTargets : 0; // İndeks normalizasyonu
+      const baseCursor = Number.isFinite(rt.dispatchCursor) ? rt.dispatchCursor : 0; // Mevcut imleç
+      let selectedIndex = null; // Seçilecek hedef indeks
+      const hasNeedTargets = validTargets.some(entry => { // İhtiyaçlı hedef var mı
+        const targetRt = this.runtimeStations[entry.index]; // Hedef runtime
+        return targetRt && targetRt.needRemaining > 0; // Pozitif ihtiyaç kontrolü
       });
-      this.viz.tagJob(job.id, 'completed'); // Ebeveyni kapat
-      this.viz.markForRemoval(job.id); // Balonu kaldır
-      this.jobs.delete(job.id); // Ebeveyn iş kaydını sil
+      if (hasNeedTargets && Number.isInteger(rt.stickyTargetIndex)) { // Yapışkan hedef geçerli mi
+        const stickyIndex = normalizeIndex(rt.stickyTargetIndex); // Yapışkan indeksi normalleştir
+        const stickyEntry = validTargets[stickyIndex]; // Yapışkan hedef
+        const stickyRuntime = stickyEntry ? this.runtimeStations[stickyEntry.index] : null; // Runtime referansı
+        if (stickyRuntime && stickyRuntime.needRemaining > 0) { // Hâlâ ihtiyaç var mı
+          selectedIndex = stickyIndex; // Aynı hedefi kullan
+        } else {
+          rt.stickyTargetIndex = null; // Yapışkan hedefi temizle
+        }
+      }
+      if (selectedIndex === null && hasNeedTargets) { // Yapışkan yoksa ve ihtiyaçlı hedef varsa
+        for (let offset = 0; offset < totalTargets; offset++) { // Tüm hedefleri tara
+          const idx = normalizeIndex(baseCursor + offset); // Aday indeks
+          const entry = validTargets[idx]; // Hedef girişi
+          const targetRuntime = entry ? this.runtimeStations[entry.index] : null; // Runtime referansı
+          if (targetRuntime && targetRuntime.needRemaining > 0) { // İhtiyaç varsa
+            selectedIndex = idx; // Bu hedefi seç
+            break; // Döngüyü sonlandır
+          }
+        }
+      }
+      if (selectedIndex === null) { // Normal RR moduna dön
+        selectedIndex = normalizeIndex(baseCursor); // Sıradaki hedef
+      }
+      const target = validTargets[selectedIndex]; // Seçilen hedef
+      rt.dispatchCursor = totalTargets ? (selectedIndex + 1) % totalTargets : 0; // Bir sonraki imleci hazırla
+      const targetRuntime = target ? this.runtimeStations[target.index] : null; // Hedef runtime
+      const usingNeedMode = hasNeedTargets && targetRuntime && targetRuntime.needRemaining > 0; // İhtiyaç modunda mı
+      if (usingNeedMode && targetRuntime) { // İhtiyaç modunda sayacı azalt
+        targetRuntime.needRemaining = Math.max(0, targetRuntime.needRemaining - 1); // Kalan ihtiyacı azalt
+        rt.stickyTargetIndex = targetRuntime.needRemaining > 0 ? selectedIndex : null; // Yapışkanlığı güncelle
+      } else {
+        rt.stickyTargetIndex = null; // Normal RR
+      }
+      if (stats && target) { // İstatistik güncelle
+        stats.producedParts += 1; // Üretilen parça sayısını artır
+        stats.forkEvents += 1; // Yönlendirme olayını say
+      }
+      if (target) { // Geçerli hedef varsa
+        job.lastTargetId = target.targetId; // Son hedef kimliği
+        this.viz.tagJob(job.id, 'waiting'); // Balonu beklemede işaretle
+        this.schedule({ type: 'arrival', jobId: job.id, stationIndex: target.index, time: event.time, order: 0 }); // Varışı planla
+        console.debug(`[Motor] İş ${event.jobId} ${station.name} çıkışından ${target.targetId} hedefine yönlendirildi (RR).`); // RR logu
+      } else {
+        console.warn(`[Motor] ${station.id} çıkışı için uygun hedef bulunamadı, iş ${job.id} beklemede kaldı.`); // Uyarı
+      }
     }
     if (this.entryStations.includes(station.id) && this.options.entryPolicy === 'trigger') { // Giriş tetikleyicisi kontrolü
       if (!this.options.targetCount || this.completedJobs.length < this.options.targetCount) { // Hedef kontrolü
@@ -2794,7 +3045,13 @@ class SimulationEngine { // Motor sınıfı
     rt.lastQueueUpdate = time; // Zaman kaydı
   }
   updateBusy(rt, newBusy, time) { // Meşgul metriği güncelle
-    rt.busyArea += rt.busyCount * (time - rt.lastBusyUpdate); // Alan artışı
+    const delta = time - rt.lastBusyUpdate; // Zaman farkı
+    if (delta > 0) { // Pozitif süre varsa
+      const serverCount = Array.isArray(rt.servers) ? rt.servers.length : rt.station.parallelServers; // Toplam sunucu
+      const idleServers = Math.max(0, serverCount - rt.busyCount); // Boşta kalan sunucular
+      rt.busyArea += rt.busyCount * delta; // Meşgul alanını artır
+      rt.idleArea += idleServers * delta; // Boşta alanını artır
+    }
     rt.busyCount = Math.max(0, Math.min(newBusy, rt.servers.length)); // Yeni değer
     rt.lastBusyUpdate = time; // Zaman kaydı
   }
@@ -2866,11 +3123,13 @@ class SimulationEngine { // Motor sınıfı
     const throughputPerMin = throughputPerSec * 60; // Ürün/dk
     const avgWip = this.wipArea / horizon; // Ortalama WIP
     const stationRows = this.runtimeStations.map(rt => { // İstasyon raporu
-      const util = horizon ? (rt.busyArea / (horizon * (rt.servers.length || 1))) : 0; // Utilizasyon
+      const serverSlots = Math.max(1, (Array.isArray(rt.servers) ? rt.servers.length : rt.station.parallelServers)); // Sunucu adetini belirle
+      const util = horizon ? (rt.busyArea / (horizon * serverSlots)) : 0; // Utilizasyon
       const avgQ = horizon ? (rt.queueArea / horizon) : 0; // Ortalama kuyruk
       const wait = rt.serviceCount ? (rt.totalWaitTime / rt.serviceCount) : 0; // Ortalama bekleme
       const serviceTime = rt.station.totalDuration(); // Tek iş servis süresi
       const capacityPerSec = serviceTime > 0 ? rt.station.parallelServers / serviceTime : 0; // Teorik kapasite
+      const idle = horizon ? (rt.idleArea / serverSlots) : 0; // Ortalama idle süresi
       return { // Satır nesnesi
         stationId: rt.station.id, // Kimlik
         stationName: rt.station.name, // İsim
@@ -2880,7 +3139,11 @@ class SimulationEngine { // Motor sınıfı
         avgWait: wait, // Bekleme
         serviceTime, // Servis süresi
         capacityPerSec, // Kapasite
-        serviceCount: rt.serviceCount // Tamamlanan iş adedi
+        serviceCount: rt.serviceCount, // Tamamlanan iş adedi
+        idleTime: idle, // Boş/atıl kalma süresi
+        needInitial: Number.isFinite(rt.needInitial) ? rt.needInitial : 0, // Başlangıç ihtiyacı
+        needRemaining: Number.isFinite(rt.needRemaining) ? Math.max(0, rt.needRemaining) : 0, // Kalan ihtiyaç
+        needReceived: Number.isFinite(rt.needReceived) ? Math.max(0, rt.needReceived) : 0 // Alınan ürün
       };
     });
     const bottleneckUtil = stationRows.reduce((max, row) => (!max || row.utilization > max.utilization ? row : max), null); // Util darboğazı
@@ -2890,13 +3153,13 @@ class SimulationEngine { // Motor sınıfı
       .sort((a, b) => a.exitTime - b.exitTime) // Zaman sıralaması
       .map((job, index) => ({ time: job.exitTime, count: index + 1 })); // Kümülatif nokta
     const forkSummary = this.stations.map(station => { // Fork özetini hazırla
-      const stats = this.forkStats.get(station.id) || { produced: 0, forkEvents: 0 }; // İstatistiği al
+      const stats = this.forkStats.get(station.id) || { producedParts: 0, forkEvents: 0 }; // İstatistiği al
       return { // Satır nesnesi
         stationId: station.id, // Kimlik
         stationName: station.name, // İsim
         outDegree: Array.isArray(station.outputs) ? station.outputs.length : 0, // Çıkış sayısı
-        producedChildren: stats.produced || 0, // Üretilen çocuk sayısı
-        forkEvents: stats.forkEvents || 0 // Fork olayı sayısı
+        producedParts: stats.producedParts || 0, // Üretilen parça sayısı
+        forkEvents: stats.forkEvents || 0 // Yönlendirme olayı sayısı
       }; // Nesne sonu
     });
     const completedRows = this.completedJobs.map(job => ({ // Tamamlanan iş satırları
@@ -2946,7 +3209,7 @@ class Visualization { // Görsel katman
     this.hasCentered = false; // İlk merkezleme yapıldı mı
     this.edgeElements = new Map(); // Kenar öğeleri haritası
     this.nodeElements = new Map(); // Düğüm öğeleri haritası
-    this.handlers = { beginEdge: null, completeEdge: null, cancelEdge: null, removeEdge: null, moveNode: null }; // Olay geri çağrıları
+    this.handlers = { beginEdge: null, completeEdge: null, cancelEdge: null, removeEdge: null, moveNode: null, selectNode: null }; // Olay geri çağrıları
     this.dragState = null; // Sürükleme durumu
     this.edgeDraft = null; // Aktif bağlantı taslağı
     this.nodeWidth = 180; // Kutu genişliği
@@ -2955,6 +3218,7 @@ class Visualization { // Görsel katman
     this.resizeObserver = new ResizeObserver(() => this.drawStations()); // Yeniden çizim dinleyicisi
     if (svg && svg.parentElement) this.resizeObserver.observe(svg.parentElement); // Paneli izle
     this.frame = this.frame.bind(this); // Animasyon bağlama
+    this.selectedStationId = null; // Seçili düğüm
     this.updateViewBox(); // Başlangıç görünümünü ayarla
     if (this.svg) { // SVG mevcutsa
       this.svg.addEventListener('pointermove', event => this.handleDraftPointer(event), { passive: true }); // Taslak çizgiyi güncelle
@@ -3085,6 +3349,18 @@ class Visualization { // Görsel katman
       }
     });
     if (!this.editing) this.cancelEdgeDraft(); // Düzenleme kapatıldığında taslağı temizle
+  }
+  setSelectedStation(stationId) { // Seçili düğümü ayarla
+    this.selectedStationId = stationId || null; // Kimliği sakla
+    this.applySelection(); // Görsel güncelle
+  }
+  applySelection() { // Seçili düğüm vurgusunu uygula
+    const selectedId = this.selectedStationId; // Seçili kimlik
+    this.nodeElements.forEach(entry => { // Her düğüm için
+      if (!entry || !entry.group) return; // Geçersizse atla
+      const isSelected = selectedId && entry.group.dataset.id === String(selectedId); // Seçili mi
+      entry.group.classList.toggle('selected', !!isSelected); // Sınıfı uygula
+    });
   }
   calculateBounds() { // Yerleşim sınırlarını hesapla
     if (!this.stationLayout.length) { // İstasyon yoksa
@@ -3267,6 +3543,7 @@ class Visualization { // Görsel katman
     this.stationLayout.forEach(layout => this.buildNodeGroup(layout)); // Her düğümü oluştur
     this.drawEdges(); // Kenarları çiz
     this.jobs.forEach(node => this.svg.appendChild(node.circle)); // Baloncukları üste taşı
+    this.applySelection(); // Seçili düğümü vurgula
   }
   buildNodeGroup(layout) { // Tek düğümü oluştur
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Grup oluştur
@@ -3290,6 +3567,25 @@ class Visualization { // Görsel katman
     label.setAttribute('text-anchor', 'middle'); // Ortala
     label.textContent = layout.station.name || layout.station.id; // Metin ata
     group.appendChild(label); // Gruba ekle
+    const dataGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Veri çipi
+    dataGroup.classList.add('node-data-chip'); // Stil
+    dataGroup.style.pointerEvents = 'all'; // Etkileşim açık
+    const dataRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); // Çip arka planı
+    dataRect.setAttribute('x', layout.width - 68); // Konum
+    dataRect.setAttribute('y', -20); // Konum
+    dataRect.setAttribute('width', 52); // Genişlik
+    dataRect.setAttribute('height', 24); // Yükseklik
+    dataRect.setAttribute('rx', 12); // Köşe
+    dataRect.classList.add('node-data-chip-bg'); // Stil
+    const dataText = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Çip metni
+    dataText.classList.add('node-data-chip-text'); // Stil
+    dataText.setAttribute('x', layout.width - 42); // Metin X
+    dataText.setAttribute('y', -4); // Metin Y
+    dataText.setAttribute('text-anchor', 'middle'); // Ortala
+    dataText.textContent = 'veri'; // Metin
+    dataGroup.appendChild(dataRect); // Çip arka planını ekle
+    dataGroup.appendChild(dataText); // Metni ekle
+    group.appendChild(dataGroup); // Gruba ekle
     const addGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); // Bağlantı ekleme grubu
     addGroup.classList.add('node-connector-add'); // Sınıf ekle
     addGroup.style.pointerEvents = 'all'; // Etkileşimi aç
@@ -3329,15 +3625,27 @@ class Visualization { // Görsel katman
     layout.rect = rect; // Yerleşim referansı
     layout.group = group; // Grup referansı
     layout.forkIcon = forkIcon; // Fork simgesi referansı
-    this.nodeElements.set(layout.station.id, { group, addGroup, forkIcon, rect }); // Referansları sakla
+    this.nodeElements.set(layout.station.id, { group, addGroup, forkIcon, rect, dataChip: dataGroup }); // Referansları sakla
     this.updateNodeTransform(layout); // Konumu uygula
     this.bindDrag(group, layout); // Sürüklemeyi bağla
     group.addEventListener('click', event => { // Düğüm tıklaması
-      if (!this.edgeDraft) return; // Taslak yoksa çık
-      if (this.edgeDraft.sourceId === layout.station.id) return; // Kaynağa tıklamayı yoksay
+      if (this.edgeDraft) { // Taslak varsa tamamla
+        if (this.edgeDraft.sourceId === layout.station.id) return; // Kaynağa tıklamayı yoksay
+        event.stopPropagation(); // Kabarcığı durdur
+        if (typeof this.handlers.completeEdge === 'function') { // Handler var mı
+          this.handlers.completeEdge(this.edgeDraft.sourceId, layout.station.id); // Taslağı tamamla
+        }
+        return; // Erken çık
+      }
+      if (typeof this.handlers.selectNode === 'function') { // Seçim işleyicisi varsa
+        event.stopPropagation(); // Kabarcığı durdur
+        this.handlers.selectNode(layout.station.id, { source: 'node', event }); // Seçimi bildir
+      }
+    });
+    dataGroup.addEventListener('click', event => { // Veri çipi tıklaması
       event.stopPropagation(); // Kabarcığı durdur
-      if (typeof this.handlers.completeEdge === 'function') { // Handler var mı
-        this.handlers.completeEdge(this.edgeDraft.sourceId, layout.station.id); // Taslağı tamamla
+      if (typeof this.handlers.selectNode === 'function') { // İşleyici varsa
+        this.handlers.selectNode(layout.station.id, { source: 'chip', event }); // Paneli aç
       }
     });
   }
@@ -3594,6 +3902,10 @@ class Visualization { // Görsel katman
 // UI yardımcıları //
 const stationListEl = document.getElementById('stationList'); // İstasyon liste alanı
 const emptyStateEl = document.getElementById('emptyState'); // Boş durum mesajı
+const stationDrawer = document.getElementById('stationDrawer'); // Veri paneli
+const drawerFocusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'; // Odaklanabilir öğeler
+const drawerInertTargets = Array.from(document.querySelectorAll('[data-drawer-inert]')).filter(el => el && el !== stationDrawer); // İnert uygulanacak alanlar
+const closeDrawerBtn = document.getElementById('closeDrawerBtn'); // Panel kapatma butonu
 const addStationBtn = document.getElementById('addStationBtn'); // İstasyon ekleme butonu
 const startBtn = document.getElementById('startBtn'); // Başlat butonu
 const stopBtn = document.getElementById('stopBtn'); // Durdur butonu
@@ -3609,6 +3921,7 @@ const closeTabBtn = document.getElementById('closeTabBtn'); // Sekme kapatma but
 const newTabBtn = document.getElementById('newTabBtn'); // Sekme çubuğu yeni sekme butonu
 const tabBarEl = document.getElementById('tabBar'); // Sekme çubuğu kapsayıcı
 const speedSlider = document.getElementById('speedSlider'); // Hız slider
+const speedSelect = document.getElementById('speedSelect'); // Hız seçimi
 const speedValue = document.getElementById('speedValue'); // Hız değeri
 const targetInput = document.getElementById('targetInput'); // Hedef girişi
 const entryPolicySelect = document.getElementById('entryPolicySelect'); // Giriş politikası seçimi
@@ -3647,6 +3960,11 @@ const restoreModal = document.getElementById('restoreModal'); // Kurtarma modal�
 const restoreYesBtn = document.getElementById('restoreYesBtn'); // Kurtarma evet butonu
 const restoreNoBtn = document.getElementById('restoreNoBtn'); // Kurtarma hayır butonu
 const restoreNeverBtn = document.getElementById('restoreNeverBtn'); // Kurtarma hiç sorma butonu
+const drawerConfirmModal = document.getElementById('drawerConfirmModal'); // Drawer uyarı modalı
+const drawerConfirmMessage = document.getElementById('drawerConfirmMessage'); // Drawer uyarı metni
+const drawerConfirmSaveBtn = document.getElementById('drawerConfirmSave'); // Drawer kaydet butonu
+const drawerConfirmDiscardBtn = document.getElementById('drawerConfirmDiscard'); // Drawer kaydetmeden butonu
+const drawerConfirmCancelBtn = document.getElementById('drawerConfirmCancel'); // Drawer iptal butonu
 const cardCycleEl = document.getElementById('cardCycle'); // Cycle kartı metni
 const cardCompletedEl = document.getElementById('cardCompleted'); // Tamamlanan kart metni
 const cardThroughputEl = document.getElementById('cardThroughput'); // Throughput kart metni
@@ -3682,6 +4000,11 @@ let openDropdownTrigger = null; // Açık menünün tetikleyicisi referansı
 let draggingTabId = null; // Sürüklenen sekme kimliği
 let edgeDraftKeyHandler = null; // Taslak klavye dinleyicisi
 let pendingRestoreSnapshot = null; // Kurtarma modalı için bekleyen veri
+let drawerConfirmResolver = null; // Drawer onay çözücü
+let drawerConfirmPromise = null; // Drawer onay sözü
+let drawerFocusTrapActive = false; // Drawer odak tuzağı açık mı
+let drawerFocusRestoreTarget = null; // Drawer kapatıldığında odağın döneceği öğe
+let drawerFocusInHandler = null; // Drawer odak takip dinleyicisi
 
 function showGraphToast(message, tone = 'info') { // Görsel panelde uyarı göster
   if (!visualPanel) return; // Panel yoksa çık
@@ -3697,6 +4020,193 @@ function showGraphToast(message, tone = 'info') { // Görsel panelde uyarı gös
   graphToastTimer = window.setTimeout(() => { // Yeni zamanlayıcı
     if (graphToastEl) graphToastEl.style.opacity = '0'; // Yumuşak kaybolma
   }, 3200); // Süre
+}
+
+function requestConfirmation(messageKey, replacements = {}, options = {}) { // Onay penceresi iste
+  const { defaultValue = true } = options; // Varsayılan dönüş
+  const message = t(messageKey, replacements); // Mesajı çevir
+  if (typeof appState.confirmHandler === 'function') { // Özel onay işleyici varsa
+    try {
+      const result = appState.confirmHandler({ key: messageKey, message, replacements }); // İşleyiciyi çağır
+      return !!result; // Boolean döndür
+    } catch (error) {
+      console.warn('Onay işleyicisi hata verdi:', error); // Hata kaydı
+    }
+  }
+  const confirmFn = typeof window !== 'undefined' && typeof window.confirm === 'function'
+    ? window.confirm
+    : (typeof globalThis !== 'undefined' && typeof globalThis.confirm === 'function' ? globalThis.confirm : null); // Küresel onay
+  if (confirmFn) {
+    try {
+      return !!confirmFn(message); // Kullanıcı yanıtını döndür
+    } catch (error) {
+      console.warn('Onay istemi başarısız oldu:', error); // Hata kaydı
+      return !!defaultValue; // Varsayılan
+    }
+  }
+  console.info('Onay iletişim kutusu kullanılamıyor, varsayılan değer döndürülüyor.'); // Bilgi
+  return !!defaultValue; // Varsayılan
+}
+
+function setElementInert(element, active) { // İnert durumunu uygula
+  if (!element) return; // Eleman yoksa çık
+  if (active) { // İnert aç
+    element.setAttribute('inert', ''); // Özniteliği ekle
+    if ('inert' in element) { // Özellik destekleniyorsa
+      try { element.inert = true; } catch (error) { /* Yoksay */ }
+    }
+  } else { // İnert kapat
+    element.removeAttribute('inert'); // Özniteliği kaldır
+    if ('inert' in element) {
+      try { element.inert = false; } catch (error) { /* Yoksay */ }
+    }
+  }
+}
+
+function toggleDrawerInertState(active) { // Drawer açıkken inert durumu ayarla
+  drawerInertTargets.forEach(element => setElementInert(element, active));
+}
+
+function isElementVisibleForFocus(element) { // Odak için görünürlük kontrolü
+  if (!element || element.hasAttribute('hidden')) return false;
+  if (element.getAttribute('aria-hidden') === 'true') return false;
+  if (element.offsetParent) return true;
+  const rect = element.getBoundingClientRect();
+  return rect.width > 0 || rect.height > 0;
+}
+
+function getDrawerFocusableElements() { // Drawer içindeki odaklanabilirler
+  if (!stationDrawer) return [];
+  return Array.from(stationDrawer.querySelectorAll(drawerFocusableSelector))
+    .filter(element => !element.hasAttribute('disabled') && isElementVisibleForFocus(element));
+}
+
+function focusDrawerContents(options = {}) { // Drawer içi odağı yönet
+  const { force = false } = options;
+  if (!stationDrawer) return;
+  const active = document.activeElement;
+  if (!force && active && stationDrawer.contains(active)) return;
+  const focusables = getDrawerFocusableElements();
+  const target = focusables[0] || stationDrawer;
+  if (typeof target.focus === 'function') {
+    requestAnimationFrame(() => target.focus({ preventScroll: true }));
+  }
+}
+
+function handleDrawerKeydown(event) { // Tab dolaşımını yakala
+  if (!drawerFocusTrapActive || !stationDrawer) return;
+  if (event.key !== 'Tab' || event.defaultPrevented) return;
+  const focusables = getDrawerFocusableElements();
+  if (!focusables.length) {
+    event.preventDefault();
+    focusDrawerContents({ force: true });
+    return;
+  }
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement;
+  if (event.shiftKey) {
+    if (active === first || !stationDrawer.contains(active)) {
+      event.preventDefault();
+      if (typeof last.focus === 'function') last.focus({ preventScroll: true });
+    }
+  } else if (active === last) {
+    event.preventDefault();
+    if (typeof first.focus === 'function') first.focus({ preventScroll: true });
+  }
+}
+
+function activateDrawerFocusTrap(trigger) { // Drawer odak tuzağını başlat
+  if (!stationDrawer || drawerFocusTrapActive) return;
+  drawerFocusTrapActive = true;
+  drawerFocusRestoreTarget = null;
+  if (trigger && typeof trigger.focus === 'function') {
+    drawerFocusRestoreTarget = trigger;
+  } else {
+    const active = document.activeElement;
+    if (active && active !== document.body && typeof active.focus === 'function' && !stationDrawer.contains(active)) {
+      drawerFocusRestoreTarget = active;
+    }
+  }
+  if (!drawerFocusRestoreTarget && addStationBtn && typeof addStationBtn.focus === 'function') {
+    drawerFocusRestoreTarget = addStationBtn;
+  }
+  stationDrawer.addEventListener('keydown', handleDrawerKeydown, true);
+  drawerFocusInHandler = event => {
+    if (!stationDrawer.contains(event.target)) {
+      const modalHost = event.target && event.target.closest('.modal, .modal-backdrop');
+      if (modalHost) return; // Modal odaklarına izin ver
+      focusDrawerContents({ force: true });
+    }
+  };
+  document.addEventListener('focusin', drawerFocusInHandler, true);
+  focusDrawerContents({ force: true });
+}
+
+function deactivateDrawerFocusTrap() { // Drawer odak tuzağını kapat
+  if (!stationDrawer || !drawerFocusTrapActive) return;
+  drawerFocusTrapActive = false;
+  stationDrawer.removeEventListener('keydown', handleDrawerKeydown, true);
+  if (drawerFocusInHandler) {
+    document.removeEventListener('focusin', drawerFocusInHandler, true);
+    drawerFocusInHandler = null;
+  }
+  const target = drawerFocusRestoreTarget;
+  drawerFocusRestoreTarget = null;
+  const fallback = addStationBtn && typeof addStationBtn.focus === 'function' ? addStationBtn : null;
+  const focusTarget = target && typeof target.focus === 'function' && target instanceof Node && document.contains(target)
+    ? target
+    : fallback;
+  if (focusTarget) {
+    requestAnimationFrame(() => focusTarget.focus({ preventScroll: true }));
+  }
+}
+
+function resolveDrawerConfirm(choice = 'cancel') { // Drawer onay modülünü kapat
+  if (!drawerConfirmResolver) return; // Aktif çözüm yok
+  if (drawerConfirmModal) drawerConfirmModal.classList.remove('active'); // Modalı gizle
+  const resolver = drawerConfirmResolver; // Çözücüyü sakla
+  drawerConfirmResolver = null; // Referansı temizle
+  drawerConfirmPromise = null; // Sözü temizle
+  resolver(choice); // Sonucu ilet
+}
+
+function openDrawerConfirm() { // Drawer kapanış onayı iste
+  if (!drawerConfirmModal) return Promise.resolve('cancel'); // Modal yoksa iptal
+  if (drawerConfirmResolver) return drawerConfirmPromise; // Zaten açık
+  applyTranslations(drawerConfirmModal); // Metinleri güncelle
+  drawerConfirmModal.classList.add('active'); // Modalı göster
+  drawerConfirmPromise = new Promise(resolve => {
+    drawerConfirmResolver = resolve; // Çözümleyiciyi sakla
+  });
+  return drawerConfirmPromise; // Sözü döndür
+}
+
+function handleDrawerOutside(event) { // Panel dışı tıklamayı işle
+  if (!appState.selectedStationId) return; // Seçili istasyon yoksa çık
+  if (!stationDrawer || stationDrawer.getAttribute('aria-hidden') === 'true') return; // Panel kapalıysa çık
+  if (drawerConfirmResolver) return; // Onay diyaloğu açıksa bekle
+  if (drawerConfirmModal && drawerConfirmModal.classList.contains('active')) return; // Modal açık
+  const target = event.target;
+  if (!target) return;
+  if (stationDrawer.contains(target)) return; // Panel içiyse çık
+  if (target.closest('.station-node') || target.closest('.node-data-chip')) return; // Grafik etkileşimi
+  if (target.closest('.modal')) return; // Başka modal varsa
+  setSelectedStation(null); // Paneli kapat
+}
+
+function handleDrawerEscape(event) { // Paneli ESC ile kapat
+  if (!event || event.key !== 'Escape') return; // ESC değilse çık
+  if (drawerConfirmResolver) { // Onay modalı açık
+    event.preventDefault();
+    resolveDrawerConfirm('cancel');
+    return;
+  }
+  if (!appState.selectedStationId) return; // Panel açık değil
+  if (drawerConfirmModal && drawerConfirmModal.classList.contains('active')) return; // Modal açık
+  if (analysisModal?.classList.contains('active') || reportModal?.classList.contains('active')) return; // Diğer modallar
+  event.preventDefault();
+  setSelectedStation(null); // Paneli kapat
 }
 
 function cancelConnectionDraft(reason = 'manual') { // Bağlantı taslağını iptal et
@@ -3763,7 +4273,7 @@ function completeConnectionDraft(sourceId, targetId) { // Taslak bağlantıyı t
 function normalizeStationTopology(stations) { // İstasyon topolojisini normalize et
   stations.forEach((station, index) => { // Her istasyonu dolaş
     if (!Array.isArray(station.outputs)) station.outputs = []; // Çıkış listesi oluştur
-    station.outputs = station.outputs.map(target => String(target)).filter((target, idx, arr) => arr.indexOf(target) === idx); // Benzersiz ve string hale getir
+    station.outputs = station.outputs.map(target => String(target)); // Çıkışları stringe dönüştür
     if (!station.position || !Number.isFinite(station.position.x) || !Number.isFinite(station.position.y)) { // Konum yoksa
       const fallback = suggestStationPosition(index); // Varsayılan konumu al
       station.position = { x: fallback.x, y: fallback.y }; // Konumu ata
@@ -3774,12 +4284,7 @@ function normalizeStationTopology(stations) { // İstasyon topolojisini normaliz
 function listPotentialTargets(sourceId) { // Uygun hedef istasyonları listele
   const source = appState.stations.find(station => station.id === sourceId); // Kaynak istasyonu bul
   if (!source) return []; // Yoksa boş
-  const existing = new Set(Array.isArray(source.outputs) ? source.outputs : []); // Mevcut bağlantılar
-  return appState.stations.filter(target => { // İstasyonları filtrele
-    if (target.id === sourceId) return false; // Kendine bağlantıyı engelle
-    if (existing.has(target.id)) return false; // Mükerrer bağlantıyı engelle
-    return !wouldCreateCycle(sourceId, target.id); // Döngüyü engelle
-  });
+  return appState.stations.filter(target => target.id !== sourceId); // Kaynak dışındaki tüm istasyonlar
 }
 
 function wouldCreateCycle(sourceId, targetId) { // Döngü kontrolü
@@ -3849,26 +4354,38 @@ function reorderStationsByTopology() { // Bağlantılara göre istasyonları sı
 function addConnection(sourceId, targetId, options = {}) { // Bağlantı ekle
   const { silent = false } = options; // Sessiz mod parametresi
   if (appState.running) { // Simülasyon çalışıyorsa
-    if (!silent) showGraphToast(t('toast.runningLock'), 'warning'); // Uyarı göster
+    showGraphToast(t('toast.runningLock'), 'warning'); // Uyarı göster
     return false; // Başarısız
   }
   const source = appState.stations.find(station => station.id === sourceId); // Kaynak bul
   const target = appState.stations.find(station => station.id === targetId); // Hedef bul
   if (!source || !target) return false; // Geçersizse çık
   if (!Array.isArray(source.outputs)) source.outputs = []; // Çıkış listesini hazırla
+
+  const sourceName = source.name || source.id; // Kaynak adı
+  const targetName = target.name || target.id; // Hedef adı
+
   if (source.outputs.includes(targetId)) { // Mükerrer bağlantı
-    if (!silent) showGraphToast(t('toast.edgeExists'), 'info'); // Bilgi ver
-    return false; // Başarısız
+    const proceedDuplicate = requestConfirmation('confirm.edgeDuplicate', { source: sourceName, target: targetName }); // Onay iste
+    if (!proceedDuplicate) { // Reddedildiyse
+      showGraphToast(t('toast.edgeExists'), 'info'); // Bilgi ver
+      return false; // Başarısız
+    }
   }
+
   if (wouldCreateCycle(sourceId, targetId)) { // Döngü kontrolü
-    if (!silent) showGraphToast(t('toast.edgeCycle'), 'error'); // Hata bildir
-    return false; // Başarısız
+    const proceedCycle = requestConfirmation('confirm.edgeCycle', { source: sourceName, target: targetName }); // Onay iste
+    if (!proceedCycle) { // Reddedildiyse
+      showGraphToast(t('toast.edgeCycle'), 'error'); // Hata bildir
+      return false; // Başarısız
+    }
   }
+
   source.outputs.push(targetId); // Bağlantıyı ekle
   reorderStationsByTopology(); // Diziyi yeniden sırala
   saveState(appState); // Durumu kaydet
   if (!silent) { // Sessiz değilse
-    showGraphToast(t('toast.edgeAdded', { source: source.name || source.id, target: target.name || target.id }), 'success'); // Başarı bildirimi
+    showGraphToast(t('toast.edgeAdded', { source: sourceName, target: targetName }), 'success'); // Başarı bildirimi
     renderGraph(appState.stations); // Grafiği yenile
   }
   return true; // Başarılı
@@ -3915,11 +4432,12 @@ function renderGraph(stations) { // Akış grafiğini çiz
   const editingEnabled = !appState.running && appState.mode === 'edit'; // Düzenleme aktif mi
   if (!editingEnabled) cancelConnectionDraft('mode-change'); // Düzenleme kapalıysa taslağı temizle
   const handlerConfig = editingEnabled // Çalışma durumuna göre handler seç
-    ? { beginEdge: beginConnectionDraft, completeEdge: completeConnectionDraft, cancelEdge: cancelConnectionDraft, removeEdge: removeConnection, moveNode: handleNodeMove } // Tam düzenleme
-    : { beginEdge: null, completeEdge: null, cancelEdge: null, removeEdge: null, moveNode: null }; // Etkileşimi kapat
+    ? { beginEdge: beginConnectionDraft, completeEdge: completeConnectionDraft, cancelEdge: cancelConnectionDraft, removeEdge: removeConnection, moveNode: handleNodeMove, selectNode: handleStationSelect } // Tam düzenleme
+    : { beginEdge: null, completeEdge: null, cancelEdge: null, removeEdge: null, moveNode: null, selectNode: handleStationSelect }; // Etkileşimi kapat
   viz.setHandlers(handlerConfig); // Handlerları ata
   viz.setEditing(editingEnabled); // Sürükleme izinlerini ayarla
   viz.setStations(stations); // Görselleştirme modelini güncelle
+  viz.setSelectedStation(appState.selectedStationId); // Seçili düğümü uygula
 }
 
 function updateZoomDisplay() { // Zoom metnini güncelle
@@ -3951,6 +4469,9 @@ function cloneStationsForRun() { // Simülasyon için istasyon kopyala
     clone.tasks = source.tasks.map(task => new Task(task.name, task.operators, task.durationSec)); // Görevleri kopyala
     clone.outputs = Array.isArray(source.outputs) ? source.outputs.slice() : []; // Çıkış bağlantılarını kopyala
     clone.position = source.position ? { x: source.position.x, y: source.position.y } : { x: 0, y: 0 }; // Yerleşimi kopyala
+    clone.need = Math.max(0, Number(source.need) || 0); // İhtiyaç kopyala
+    clone.queueLimit = source.queueLimit === null || source.queueLimit === undefined ? null : Math.max(0, Number(source.queueLimit) || 0); // Kuyruk sınırı
+    clone.note = source.note ? String(source.note) : ''; // Notu aktar
     return clone; // Sonucu döndür
   });
 }
@@ -3984,13 +4505,13 @@ function addStation(name = null) { // İstasyon ekleme fonksiyonu
   const stationName = name ? String(name) : `İstasyon ${stationNumber}`; // İsmi belirle
   const station = new Station(stationId, stationName); // Yeni istasyon nesnesi
   station.parallelServers = 1; // Varsayılan kapasite
-  station.tasks = []; // Görevleri boş başlat
+  station.tasks = [new Task('Görev', 1, 10)]; // Varsayılan görev
   station.outputs = []; // Çıkış bağlantılarını sıfırla
   const gridIndex = appState.stations.length; // Izgara indeksi
   station.position = suggestStationPosition(gridIndex, gridIndex + 1); // Varsayılan konumu ata
   appState.stations.push(station); // Listeye ekle
   if (!renderingPaused) { // Yeniden çizim açıksa
-    renderStations(); // Kart listesini güncelle
+    setSelectedStation(station.id, { skipSave: true }); // Paneli aç
     renderGraph(appState.stations); // Akış diyagramını tazele
     saveState(appState); // Durumu kaydet
   }
@@ -4018,11 +4539,18 @@ function onAddStationClick(event) { // İstasyon ekle buton tıklaması
 }
 
 function removeStation(id) { // İstasyon silme fonksiyonu
+  const wasSelected = appState.selectedStationId === id; // Seçim kontrolü
   appState.stations = appState.stations.filter(station => station.id !== id); // Filtrele
   appState.stations.forEach(station => { // Kalan istasyonları dolaş
     station.outputs = station.outputs.filter(targetId => targetId !== id); // Silinen istasyona giden bağlantıları temizle
   });
-  renderStations(); // Yeniden çiz
+  if (appState.stationEditor && appState.stationEditor.stationId === id) appState.stationEditor = null; // Taslağı temizle
+  if (wasSelected) { // Seçili istasyon silindiyse
+    const nextId = appState.stations.length ? appState.stations[0].id : null; // Yeni seçim
+    setSelectedStation(nextId, { skipSave: true }); // Paneli güncelle
+  } else {
+    renderStations(); // Paneli yenile
+  }
   renderGraph(appState.stations); // Akışı güncelle
   saveState(appState); // Durumu kaydet
 }
@@ -4040,184 +4568,461 @@ function moveStation(id, direction) { // İstasyon sıralama fonksiyonu
 }
 
 function addTask(stationId) { // Görev ekleme fonksiyonu
-  const station = appState.stations.find(st => st.id === stationId); // İstasyon bul
-  if (!station) return; // Yoksa çık
-  station.tasks.push(new Task('Görev', 1, 10)); // Varsayılan görev ekle
+  const editor = ensureStationEditor(stationId); // Taslak bul
+  if (!editor) return; // Yoksa çık
+  if (!Array.isArray(editor.draft.tasks)) editor.draft.tasks = []; // Güvenli liste
+  editor.draft.tasks.push({ name: 'Görev', operators: 1, durationSec: 10 }); // Taslağa ekle
+  markStationDraftDirty(editor); // Kirli işaretle
   renderStations(); // UI yenile
-  renderGraph(appState.stations); // Akışı güncelle
-  saveState(appState); // Durumu kaydet
 }
 
 function removeTask(stationId, taskIndex) { // Görev silme fonksiyonu
-  const station = appState.stations.find(st => st.id === stationId); // İstasyon bul
-  if (!station) return; // Yoksa çık
-  if (station.tasks.length <= 1) return; // En az bir görev bırak
-  station.tasks.splice(taskIndex, 1); // Görevi çıkar
+  const editor = ensureStationEditor(stationId); // Taslak bul
+  if (!editor || !Array.isArray(editor.draft.tasks)) return; // Geçerli değilse çık
+  if (editor.draft.tasks.length <= 1) return; // En az bir görev kalmalı
+  editor.draft.tasks.splice(taskIndex, 1); // Taslaktan çıkar
+  markStationDraftDirty(editor); // Kirli işaretle
   renderStations(); // UI yenile
-  renderGraph(appState.stations); // Akışı güncelle
-  saveState(appState); // Durumu kaydet
 }
 
-function renderStations() { // İstasyon kartlarını çiz
-  stationListEl.innerHTML = ''; // Listeyi temizle
-  stationRuntimeRefs.clear(); // Canlı referansları sıfırla
-  if (!appState.stations.length) { // İstasyon yoksa
-    emptyStateEl.style.display = 'block'; // Boş mesaj göster
-  } else {
-    emptyStateEl.style.display = 'none'; // Mesajı gizle
-  }
-  appState.stations.forEach((station, index) => { // Her istasyon için
-    const card = document.createElement('div'); // Kart divi
-    card.className = 'station-card'; // Sınıf ata
-    card.dataset.id = station.id; // Veri ata
-    card.draggable = !appState.running; // Çalışırken sürüklemeyi kapat
-    const header = document.createElement('div'); // Başlık satırı
-    header.className = 'station-header'; // Sınıf ata
-    const nameInput = document.createElement('input'); // İsim inputu
-    nameInput.value = station.name; // Değer ata
-    nameInput.disabled = appState.running; // Çalışırken kilitle
-    nameInput.addEventListener('input', () => { station.name = nameInput.value; renderGraph(appState.stations); saveState(appState); }); // İsim değişince güncelle
-    header.appendChild(nameInput); // Başlığa ekle
-    const totalLabel = document.createElement('span'); // Süre etiketi
-    totalLabel.className = 'badge'; // Sınıf ata
-    totalLabel.textContent = `Toplam: ${station.totalDuration()} sn`; // Metin
-    header.appendChild(totalLabel); // Başlığa ekle
-    card.appendChild(header); // Kart içine ekle
-
-    const runtimeLine = document.createElement('div'); // Canlı metrik satırı
-    runtimeLine.className = 'runtime-line'; // Sınıf ata
-    const capacityPill = document.createElement('span'); // Kapasite rozeti
-    capacityPill.className = 'runtime-pill'; // Sınıf ata
-    capacityPill.textContent = `Operatör: ${station.parallelServers} (Paralel: ${station.parallelServers})`; // Varsayılan metin
-    const queuePill = document.createElement('span'); // Kuyruk rozeti
-    queuePill.className = 'runtime-pill'; // Sınıf ata
-    queuePill.textContent = 'Kuyruk: 0'; // Varsayılan metin
-    const servicePill = document.createElement('span'); // Servis rozeti
-    servicePill.className = 'runtime-pill'; // Sınıf ata
-    servicePill.textContent = `Servis: 0/${station.parallelServers}`; // Varsayılan metin
-    const remainingPill = document.createElement('span'); // Kalan süre rozeti
-    remainingPill.className = 'runtime-pill'; // Sınıf ata
-    remainingPill.textContent = 'Kalan: -'; // Varsayılan metin
-    runtimeLine.appendChild(capacityPill); // Kapasiteyi ekle
-    runtimeLine.appendChild(queuePill); // Kuyruğu ekle
-    runtimeLine.appendChild(servicePill); // Servisi ekle
-    runtimeLine.appendChild(remainingPill); // Kalanı ekle
-    card.appendChild(runtimeLine); // Kart içine yerleştir
-    stationRuntimeRefs.set(station.id, { card, capacity: capacityPill, queue: queuePill, service: servicePill, remaining: remainingPill }); // Referansı kaydet
-
-    const serverRow = document.createElement('div'); // Sunucu satırı
-    serverRow.style.display = 'flex'; // Yatay düzen
-    serverRow.style.gap = '8px'; // Boşluk
-    serverRow.style.alignItems = 'center'; // Ortala
-    const serverLabel = document.createElement('span'); // Etiket
-    serverLabel.textContent = 'Operatör (Paralel Kapasite)'; // Metin
-    serverRow.appendChild(serverLabel); // Satıra ekle
-    const serverInput = document.createElement('input'); // Sayısal girdi
-    serverInput.type = 'number'; // Tip
-    serverInput.min = 1; // Minimum
-    serverInput.max = MAX_SERVERS; // Maksimum
-    serverInput.value = station.parallelServers; // Değer
-    serverInput.disabled = appState.running; // Çalışırken kapat
-    serverInput.style.width = '80px'; // Genişlik
-    serverInput.addEventListener('change', () => { // Değişim dinleyici
-      const value = Math.max(1, Math.min(MAX_SERVERS, Number(serverInput.value) || 1)); // Sınırla
-      station.parallelServers = value; // Ata
-      renderStations(); // Yeniden çiz
-      renderGraph(appState.stations); // Akışı güncelle
-      saveState(appState); // Durumu kaydet
-    });
-    serverRow.appendChild(serverInput); // Satıra ekle
-    card.appendChild(serverRow); // Kart içine ekle
-
-    const table = document.createElement('table'); // Görev tablosu
-    table.className = 'task-table'; // Sınıf ata
-    const thead = document.createElement('thead'); // Başlık
-    thead.innerHTML = '<tr><th>Görev Adı</th><th>Operatör</th><th>Süre (sn)</th><th></th></tr>'; // Başlık satırı
-    table.appendChild(thead); // Tabloya ekle
-    const tbody = document.createElement('tbody'); // Gövde
-    station.tasks.forEach((task, taskIndex) => { // Her görev için
-      const row = document.createElement('tr'); // Satır
-      const nameCell = document.createElement('td'); // Hücre
-      const nameField = document.createElement('input'); // Girdi
-      nameField.value = task.name; // Değer
-      nameField.disabled = appState.running; // Kilit
-      nameField.addEventListener('input', () => { task.name = nameField.value; saveState(appState); }); // Güncelle
-      nameCell.appendChild(nameField); // Hücreye ekle
-      row.appendChild(nameCell); // Satıra ekle
-
-      const opCell = document.createElement('td'); // Operatör hücresi
-      const opField = document.createElement('input'); // Girdi
-      opField.type = 'number'; // Tip
-      opField.min = 1; // Minimum
-      opField.value = task.operators; // Değer
-      opField.disabled = appState.running; // Kilit
-      opField.addEventListener('change', () => { // Değişim
-        const value = Math.max(1, Number(opField.value) || 1); // Sınırla
-        task.operators = value; // Ata
-        saveState(appState); // Durumu kaydet
-      });
-      opCell.appendChild(opField); // Hücreye ekle
-      row.appendChild(opCell); // Satıra ekle
-
-      const durationCell = document.createElement('td'); // Süre hücresi
-      const durationField = document.createElement('input'); // Girdi
-      durationField.type = 'number'; // Tip
-      durationField.min = 1; // Minimum
-      durationField.value = task.durationSec; // Değer
-      durationField.disabled = appState.running; // Kilit
-      durationField.addEventListener('change', () => { // Değişim
-        const value = Math.max(1, Number(durationField.value) || 1); // Sınırla
-        task.durationSec = value; // Ata
-        renderStations(); // Toplam süreyi güncelle
-        renderGraph(appState.stations); // Akışı güncelle
-        saveState(appState); // Durumu kaydet
-      });
-      durationCell.appendChild(durationField); // Hücreye ekle
-      row.appendChild(durationCell); // Satıra ekle
-
-      const actionCell = document.createElement('td'); // Aksiyon hücresi
-      if (!appState.running) { // Simülasyon kapalıysa
-        const removeBtn = document.createElement('button'); // Silme butonu
-        removeBtn.textContent = 'Sil'; // Metin
-        removeBtn.addEventListener('click', () => removeTask(station.id, taskIndex)); // Olay bağla
-        actionCell.appendChild(removeBtn); // Hücreye ekle
-      }
-      row.appendChild(actionCell); // Satıra ekle
-      tbody.appendChild(row); // Gövdeye ekle
-    });
-    table.appendChild(tbody); // Tabloya ekle
-    card.appendChild(table); // Kart içine ekle
-
-    if (!appState.running) { // Simülasyon dururken
-      const actions = document.createElement('div'); // Aksiyon satırı
-      actions.className = 'task-actions'; // Sınıf ata
-      const addTaskBtn = document.createElement('button'); // Görev ekleme butonu
-      addTaskBtn.textContent = '+ Görev'; // Metin
-      addTaskBtn.addEventListener('click', () => addTask(station.id)); // Olay bağla
-      actions.appendChild(addTaskBtn); // Satıra ekle
-      const moveGroup = document.createElement('div'); // Taşıma grubu
-      moveGroup.style.display = 'flex'; // Yatay
-      moveGroup.style.gap = '8px'; // Boşluk
-      const upBtn = document.createElement('button'); // Yukarı buton
-      upBtn.textContent = '↑'; // Metin
-      upBtn.disabled = index === 0; // İlk ise kilit
-      upBtn.addEventListener('click', () => moveStation(station.id, -1)); // Taşı
-      const downBtn = document.createElement('button'); // Aşağı buton
-      downBtn.textContent = '↓'; // Metin
-      downBtn.disabled = index === appState.stations.length - 1; // Son ise kilit
-      downBtn.addEventListener('click', () => moveStation(station.id, 1)); // Taşı
-      const deleteBtn = document.createElement('button'); // Silme butonu
-      deleteBtn.textContent = 'Sil'; // Metin
-      deleteBtn.className = 'danger'; // Renk
-      deleteBtn.addEventListener('click', () => removeStation(station.id)); // Sil
-      moveGroup.appendChild(upBtn); // Gruba ekle
-      moveGroup.appendChild(downBtn); // Gruba ekle
-      moveGroup.appendChild(deleteBtn); // Gruba ekle
-      actions.appendChild(moveGroup); // Satıra ekle
-      card.appendChild(actions); // Kart içine ekle
-    }
-    stationListEl.appendChild(card); // Listeye ekle
+function getNearestSpeedIndex(value) { // Hız değerine en yakın dizin
+  const numeric = Number(value) || 1; // Sayıya çevir
+  let best = 0; // Varsayılan
+  SPEED_OPTIONS.forEach((option, index) => { // Tüm seçenekleri dolaş
+    if (Math.abs(option - numeric) < Math.abs(SPEED_OPTIONS[best] - numeric)) best = index; // Daha yakınsa seç
   });
+  return best; // Dizin döndür
+}
+
+function updateSpeedControls(speed) { // Hız kontrollerini güncelle
+  const index = getNearestSpeedIndex(speed); // En yakın dizin
+  if (speedSlider) speedSlider.value = String(index); // Sliderı ayarla
+  if (speedSelect) speedSelect.value = String(SPEED_OPTIONS[index]); // Dropdown'u ayarla
+  if (speedValue) speedValue.textContent = `${SPEED_OPTIONS[index]}×`; // Rozeti yaz
+}
+
+function setSpeedByIndex(index, options = {}) { // Hızı dizine göre ayarla
+  const { skipSave = false } = options; // Kaydetme bayrağı
+  const clamped = Math.max(0, Math.min(SPEED_OPTIONS.length - 1, Number(index) || 0)); // Dizin sınırı
+  const speed = Math.max(0.01, SPEED_OPTIONS[clamped]); // Çarpan
+  appState.speed = speed; // Duruma yaz
+  updateSpeedControls(speed); // UI güncelle
+  viz?.setSpeed(speed); // Görsel hızı uygula
+  if (!skipSave) saveState(appState); // Kaydet
+}
+
+function cloneStationToDraft(station) { // İstasyonu düzenleme taslağına kopyala
+  if (!station) return null; // Geçersizse çık
+  const tasks = Array.isArray(station.tasks) && station.tasks.length
+    ? station.tasks
+    : [new Task('Görev', 1, 10)]; // En az bir görev bırak
+  return {
+    id: station.id,
+    name: station.name || '',
+    parallelServers: Math.max(1, Math.min(MAX_SERVERS, Number(station.parallelServers) || 1)),
+    need: Math.max(0, Number(station.need) || 0),
+    queueLimit: station.queueLimit === null || station.queueLimit === undefined ? null : Math.max(0, Number(station.queueLimit) || 0),
+    note: station.note ? String(station.note) : '',
+    tasks: tasks.map(task => ({
+      name: task.name || 'Görev',
+      operators: Math.max(1, Math.min(MAX_SERVERS, Number(task.operators) || 1)),
+      durationSec: Math.max(1, Number(task.durationSec) || 1)
+    }))
+  };
+}
+
+function computeDraftTotalDuration(draft) { // Taslak toplam süresini hesapla
+  if (!draft || !Array.isArray(draft.tasks)) return 0;
+  return draft.tasks.reduce((sum, task) => sum + Math.max(0, Number(task.durationSec) || 0), 0);
+}
+
+function ensureStationEditor(stationId) { // Taslak düzenleyicisini hazırla
+  if (!stationId) return null;
+  if (appState.stationEditor && appState.stationEditor.stationId === stationId && appState.stationEditor.draft) {
+    return appState.stationEditor;
+  }
+  const station = appState.stations.find(st => st.id === stationId);
+  if (!station) {
+    appState.stationEditor = null;
+    return null;
+  }
+  appState.stationEditor = {
+    stationId,
+    draft: cloneStationToDraft(station),
+    dirty: false,
+    ui: {}
+  };
+  return appState.stationEditor;
+}
+
+function updateStationDraftUi(editor) { // Taslak UI durumunu güncelle
+  if (!editor) return;
+  if (editor.ui?.saveBtn) editor.ui.saveBtn.disabled = !editor.dirty;
+  if (editor.ui?.discardBtn) editor.ui.discardBtn.disabled = !editor.dirty;
+  if (editor.ui?.totalLabel) editor.ui.totalLabel.textContent = `Toplam: ${computeDraftTotalDuration(editor.draft)} sn`;
+  if (stationDrawer) {
+    if (editor.dirty) stationDrawer.dataset.dirty = 'true'; else delete stationDrawer.dataset.dirty;
+  }
+}
+
+function markStationDraftDirty(editor = appState.stationEditor) { // Taslağı kirli işaretle
+  if (!editor) return;
+  if (!editor.dirty) editor.dirty = true;
+  updateStationDraftUi(editor);
+}
+
+function applyStationDraft(options = {}) { // Taslağı kalıcılaştır
+  const { silent = false } = options;
+  const editor = appState.stationEditor;
+  if (!editor || !editor.draft) return true;
+  const station = appState.stations.find(st => st.id === editor.stationId);
+  if (!station) return false;
+  const draft = editor.draft;
+  const tasks = Array.isArray(draft.tasks) ? draft.tasks : [];
+  if (!tasks.length) {
+    showGraphToast(t('toast.taskRequired'), 'warning');
+    return false;
+  }
+  station.name = draft.name && draft.name.trim().length ? draft.name.trim() : station.id;
+  station.parallelServers = Math.max(1, Math.min(MAX_SERVERS, Number(draft.parallelServers) || 1));
+  station.need = Math.max(0, Number(draft.need) || 0);
+  if (draft.queueLimit === null || draft.queueLimit === '' || draft.queueLimit === undefined) {
+    station.queueLimit = null;
+  } else {
+    station.queueLimit = Math.max(0, Number(draft.queueLimit) || 0);
+  }
+  station.note = draft.note ? String(draft.note) : '';
+  station.tasks = tasks.map(task => new Task(
+    task.name && task.name.trim().length ? task.name.trim() : 'Görev',
+    Math.max(1, Math.min(MAX_SERVERS, Number(task.operators) || 1)),
+    Math.max(1, Number(task.durationSec) || 1)
+  ));
+  editor.draft = cloneStationToDraft(station);
+  editor.dirty = false;
+  updateStationDraftUi(editor);
+  saveState(appState);
+  renderGraph(appState.stations);
+  if (!silent) renderStations();
+  return true;
+}
+
+function resetStationDraft(editor = appState.stationEditor, options = {}) { // Taslağı sıfırla
+  const { silent = false } = options;
+  if (!editor) return;
+  const station = appState.stations.find(st => st.id === editor.stationId);
+  if (!station) { appState.stationEditor = null; return; }
+  editor.draft = cloneStationToDraft(station);
+  editor.dirty = false;
+  updateStationDraftUi(editor);
+  if (!silent) renderStations();
+}
+
+function hasDirtyStationDraft() { // Taslakta kaydedilmemiş değişiklik var mı
+  return !!(appState.stationEditor && appState.stationEditor.dirty);
+}
+
+function applyStationSelection(stationId, options = {}) { // Sağ panel seçim uygulaması
+  const { skipSave = false, preserveDraft = false, trigger = null } = options;
+  let normalized = stationId ? String(stationId) : null;
+  if (normalized && !appState.stations.some(st => st.id === normalized)) normalized = null;
+  const previous = appState.selectedStationId;
+  const wasOpen = !!previous;
+  appState.selectedStationId = normalized;
+  const isOpen = !!normalized;
+  if (normalized) {
+    if (!preserveDraft || !appState.stationEditor || appState.stationEditor.stationId !== normalized) {
+      ensureStationEditor(normalized);
+    }
+  } else {
+    appState.stationEditor = null;
+    if (stationDrawer) delete stationDrawer.dataset.dirty;
+  }
+  if (stationDrawer) stationDrawer.setAttribute('aria-hidden', normalized ? 'false' : 'true');
+  toggleDrawerInertState(isOpen);
+  document.body.classList.toggle('drawer-open', !!normalized);
+  renderStations();
+  if (viz) viz.setSelectedStation(normalized);
+  if (!wasOpen && isOpen) {
+    activateDrawerFocusTrap(trigger);
+  } else if (wasOpen && !isOpen) {
+    deactivateDrawerFocusTrap();
+  } else if (isOpen && previous !== normalized) {
+    focusDrawerContents({ force: true });
+  }
+  if (!skipSave && previous !== normalized) saveState(appState, 'station-select');
+}
+
+function setSelectedStation(stationId, options = {}) { // Sağ panel seçimini yönet
+  const { force = false, skipSave = false, preserveDraft = false, trigger = null } = options;
+  const normalized = stationId ? String(stationId) : null;
+  const editor = appState.stationEditor;
+  const currentId = appState.selectedStationId;
+  const sameTarget = normalized === currentId;
+
+  if (!force && editor && editor.dirty) {
+    if (sameTarget && normalized !== null) return; // Aynı seçime tekrar
+    openDrawerConfirm().then(choice => {
+      if (choice === 'save') {
+        if (applyStationDraft({ silent: true })) {
+          setSelectedStation(stationId, { ...options, force: true });
+        } else {
+          markStationDraftDirty(editor);
+        }
+      } else if (choice === 'discard') {
+        resetStationDraft(editor, { silent: true });
+        setSelectedStation(stationId, { ...options, force: true });
+      } else {
+        updateStationDraftUi(editor);
+      }
+    });
+    return;
+  }
+
+  if (sameTarget) {
+    applyStationSelection(normalized, { skipSave: true, preserveDraft: true, trigger });
+    return;
+  }
+
+  applyStationSelection(normalized, { skipSave, preserveDraft, trigger });
+}
+
+function handleStationSelect(stationId, context = {}) { // Görsel seçim geri çağrısı
+  const trigger = context?.event?.currentTarget || context?.event?.target || null;
+  setSelectedStation(stationId, { trigger }); // Seçimi uygula
+}
+
+function closeStationDrawer(options = {}) { // Paneli kapat
+  setSelectedStation(null, options); // Seçimi temizle
+}
+
+function renderStations() { // Sağ panel içeriklerini çiz
+  if (!stationListEl) return; // Panel yoksa çık
+  stationListEl.innerHTML = ''; // İçeriği temizle
+  stationRuntimeRefs.clear(); // Canlı referansları sıfırla
+  const selectedId = appState.selectedStationId; // Seçilen istasyon
+  const station = selectedId ? appState.stations.find(st => st.id === selectedId) : null; // İstasyon bul
+  if (emptyStateEl) emptyStateEl.style.display = station ? 'none' : 'block'; // Boş durum kontrolü
+  if (!station) return; // Seçim yoksa çık
+
+  const editor = ensureStationEditor(station.id); // Taslağı hazırla
+  if (!editor) return;
+  const draft = editor.draft || cloneStationToDraft(station);
+  editor.ui = {};
+
+  const card = document.createElement('div');
+  card.className = 'station-card';
+  card.dataset.id = station.id;
+
+  const header = document.createElement('div');
+  header.className = 'station-header';
+  const nameInput = document.createElement('input');
+  nameInput.placeholder = 'İstasyon adı';
+  nameInput.value = draft.name || station.name || '';
+  nameInput.disabled = appState.running;
+  nameInput.addEventListener('input', () => {
+    draft.name = nameInput.value;
+    markStationDraftDirty(editor);
+  });
+  header.appendChild(nameInput);
+  const totalLabel = document.createElement('span');
+  totalLabel.className = 'badge';
+  editor.ui.totalLabel = totalLabel;
+  header.appendChild(totalLabel);
+  card.appendChild(header);
+
+  const runtimeLine = document.createElement('div');
+  runtimeLine.className = 'runtime-line';
+  const capacityPill = document.createElement('span');
+  capacityPill.className = 'runtime-pill';
+  capacityPill.textContent = `Operatör: ${station.parallelServers} (Paralel: ${station.parallelServers})`;
+  const queuePill = document.createElement('span');
+  queuePill.className = 'runtime-pill';
+  queuePill.textContent = 'Kuyruk: 0';
+  const servicePill = document.createElement('span');
+  servicePill.className = 'runtime-pill';
+  servicePill.textContent = `Servis: 0/${station.parallelServers}`;
+  const remainingPill = document.createElement('span');
+  remainingPill.className = 'runtime-pill';
+  remainingPill.textContent = 'Kalan: -';
+  runtimeLine.append(capacityPill, queuePill, servicePill, remainingPill);
+  card.appendChild(runtimeLine);
+  stationRuntimeRefs.set(station.id, { card, capacity: capacityPill, queue: queuePill, service: servicePill, remaining: remainingPill });
+
+  const serverRow = document.createElement('div');
+  serverRow.className = 'drawer-meta-row';
+  const serverLabel = document.createElement('label');
+  serverLabel.innerHTML = '<span>Operatör (Paralel)</span>';
+  const serverInput = document.createElement('input');
+  serverInput.type = 'number';
+  serverInput.min = 1;
+  serverInput.max = MAX_SERVERS;
+  serverInput.value = draft.parallelServers;
+  serverInput.disabled = appState.running;
+  serverInput.addEventListener('change', () => {
+    const value = Math.max(1, Math.min(MAX_SERVERS, Number(serverInput.value) || 1));
+    draft.parallelServers = value;
+    serverInput.value = value;
+    capacityPill.textContent = `Operatör: ${value} (Paralel: ${station.parallelServers})`;
+    markStationDraftDirty(editor);
+  });
+  serverLabel.appendChild(serverInput);
+  serverRow.appendChild(serverLabel);
+  card.appendChild(serverRow);
+
+  const demandRow = document.createElement('div');
+  demandRow.className = 'drawer-meta-row';
+  const needLabel = document.createElement('label');
+  needLabel.innerHTML = '<span>İhtiyaç (adet)</span>';
+  const needInput = document.createElement('input');
+  needInput.type = 'number';
+  needInput.min = 0;
+  needInput.step = 1;
+  needInput.value = Number.isFinite(draft.need) ? draft.need : 0;
+  needInput.disabled = appState.running;
+  needInput.addEventListener('change', () => {
+    draft.need = Math.max(0, Number(needInput.value) || 0);
+    needInput.value = draft.need;
+    markStationDraftDirty(editor);
+  });
+  needLabel.appendChild(needInput);
+  demandRow.appendChild(needLabel);
+
+  const queueLabel = document.createElement('label');
+  queueLabel.innerHTML = '<span>Kuyruk sınırı</span>';
+  const queueInput = document.createElement('input');
+  queueInput.type = 'number';
+  queueInput.min = 0;
+  queueInput.placeholder = 'sınırsız';
+  queueInput.value = draft.queueLimit === null || draft.queueLimit === undefined ? '' : draft.queueLimit;
+  queueInput.disabled = appState.running;
+  queueInput.addEventListener('change', () => {
+    const text = queueInput.value.trim();
+    if (!text) {
+      draft.queueLimit = null;
+      queueInput.value = '';
+    } else {
+      const parsed = Math.max(0, Number(text) || 0);
+      draft.queueLimit = parsed;
+      queueInput.value = parsed;
+    }
+    markStationDraftDirty(editor);
+  });
+  queueLabel.appendChild(queueInput);
+  demandRow.appendChild(queueLabel);
+  card.appendChild(demandRow);
+
+  const noteLabel = document.createElement('label');
+  noteLabel.className = 'drawer-note-label';
+  noteLabel.innerHTML = '<span>Not</span>';
+  const noteField = document.createElement('textarea');
+  noteField.rows = 3;
+  noteField.placeholder = 'İstasyonla ilgili notlar';
+  noteField.value = draft.note || '';
+  noteField.disabled = appState.running;
+  noteField.addEventListener('input', () => {
+    draft.note = noteField.value;
+    markStationDraftDirty(editor);
+  });
+  noteLabel.appendChild(noteField);
+  card.appendChild(noteLabel);
+
+  const table = document.createElement('table');
+  table.className = 'task-table';
+  const thead = document.createElement('thead');
+  thead.innerHTML = '<tr><th>Görev Adı</th><th>Operatör</th><th>Süre (sn)</th><th></th></tr>';
+  table.appendChild(thead);
+  const tbody = document.createElement('tbody');
+  const draftTasks = Array.isArray(draft.tasks) ? draft.tasks : [];
+  draftTasks.forEach((task, taskIndex) => {
+    const row = document.createElement('tr');
+    const nameCell = document.createElement('td');
+    const nameField = document.createElement('input');
+    nameField.value = task.name || '';
+    nameField.disabled = appState.running;
+    nameField.addEventListener('input', () => {
+      task.name = nameField.value;
+      markStationDraftDirty(editor);
+    });
+    nameCell.appendChild(nameField);
+    row.appendChild(nameCell);
+
+    const opCell = document.createElement('td');
+    const opField = document.createElement('input');
+    opField.type = 'number';
+    opField.min = 1;
+    opField.value = task.operators;
+    opField.disabled = appState.running;
+    opField.addEventListener('change', () => {
+      task.operators = Math.max(1, Math.min(MAX_SERVERS, Number(opField.value) || 1));
+      opField.value = task.operators;
+      markStationDraftDirty(editor);
+    });
+    opCell.appendChild(opField);
+    row.appendChild(opCell);
+
+    const durationCell = document.createElement('td');
+    const durationField = document.createElement('input');
+    durationField.type = 'number';
+    durationField.min = 1;
+    durationField.value = task.durationSec;
+    durationField.disabled = appState.running;
+    durationField.addEventListener('change', () => {
+      task.durationSec = Math.max(1, Number(durationField.value) || 1);
+      durationField.value = task.durationSec;
+      markStationDraftDirty(editor);
+      updateStationDraftUi(editor);
+    });
+    durationCell.appendChild(durationField);
+    row.appendChild(durationCell);
+
+    const actionCell = document.createElement('td');
+    if (!appState.running && draftTasks.length > 1) {
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Sil';
+      removeBtn.addEventListener('click', () => removeTask(station.id, taskIndex));
+      actionCell.appendChild(removeBtn);
+    }
+    row.appendChild(actionCell);
+    tbody.appendChild(row);
+  });
+  table.appendChild(tbody);
+  card.appendChild(table);
+
+  if (!appState.running) {
+    const actions = document.createElement('div');
+    actions.className = 'task-actions';
+    const addTaskBtn = document.createElement('button');
+    addTaskBtn.textContent = '+ Görev';
+    addTaskBtn.addEventListener('click', () => addTask(station.id));
+    actions.appendChild(addTaskBtn);
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'İstasyonu Sil';
+    deleteBtn.className = 'danger';
+    deleteBtn.addEventListener('click', () => removeStation(station.id));
+    actions.appendChild(deleteBtn);
+    card.appendChild(actions);
+  }
+
+  const footer = document.createElement('div');
+  footer.className = 'drawer-footer-actions';
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'primary';
+  saveBtn.textContent = t('confirm.drawerSave');
+  saveBtn.addEventListener('click', () => {
+    if (applyStationDraft()) {
+      updateStationDraftUi(editor);
+    }
+  });
+  const discardBtn = document.createElement('button');
+  discardBtn.textContent = t('confirm.drawerDiscard');
+  discardBtn.addEventListener('click', () => resetStationDraft());
+  editor.ui.saveBtn = saveBtn;
+  editor.ui.discardBtn = discardBtn;
+  footer.append(saveBtn, discardBtn);
+  card.appendChild(footer);
+
+  stationListEl.appendChild(card);
+  updateStationDraftUi(editor);
 }
 
 function applyLiveStationSnapshot(snapshot) { // Canlı metrikleri karta yaz
@@ -4240,67 +5045,6 @@ function applyLiveStationSnapshot(snapshot) { // Canlı metrikleri karta yaz
   });
   updateCompletedCounter(snapshot.completedCount ?? 0); // Sayaç güncelle
 }
-
-let dragSourceId = null; // Sürüklenen istasyon kimliği
-
-stationListEl.addEventListener('dragstart', event => { // Sürükleme başlangıcı
-  const card = event.target.closest('.station-card'); // Kartı bul
-  if (!card) return; // Kart yoksa çık
-  dragSourceId = card.dataset.id; // Kaynağı kaydet
-  card.classList.add('dragging'); // Stil ekle
-  if (event.dataTransfer) { // DataTransfer mevcut mu
-    event.dataTransfer.effectAllowed = 'move'; // Taşıma modu
-    event.dataTransfer.setData('text/plain', dragSourceId); // Veri aktar
-  }
-});
-
-stationListEl.addEventListener('dragover', event => { // Kart üzerinde gezinme
-  if (!dragSourceId) return; // Kaynak yoksa çık
-  event.preventDefault(); // Bırakmaya izin ver
-  const card = event.target.closest('.station-card'); // Hedef kart
-  if (!card || card.dataset.id === dragSourceId) return; // Geçersiz hedef
-  stationListEl.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); // Eski vurguları temizle
-  card.classList.add('drag-over'); // Yeni vurguyu ekle
-});
-
-stationListEl.addEventListener('dragleave', event => { // Kart dışına çıkış
-  const card = event.target.closest('.station-card'); // Kart bul
-  if (card) card.classList.remove('drag-over'); // Vurguyu kaldır
-});
-
-stationListEl.addEventListener('drop', event => { // Bırakma işlemi
-  if (!dragSourceId) return; // Kaynak yoksa çık
-  event.preventDefault(); // Varsayılanı engelle
-  const targetCard = event.target.closest('.station-card'); // Hedef kart
-  stationListEl.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over')); // Vurguları temizle
-  const sourceIndex = appState.stations.findIndex(st => st.id === dragSourceId); // Kaynak indeks
-  if (sourceIndex === -1) return; // Geçersiz kaynak
-  const targetId = targetCard ? targetCard.dataset.id : null; // Hedef kimliği
-  if (targetId && targetId === dragSourceId) { // Aynı karta bırakıldıysa
-    dragSourceId = null; // Kaynağı temizle
-    renderStations(); // Yeniden çiz
-    renderGraph(appState.stations); // Akışı güncelle
-    return; // Çık
-  }
-  const [moved] = appState.stations.splice(sourceIndex, 1); // Kaynağı çıkar
-  let insertIndex = targetId ? appState.stations.findIndex(st => st.id === targetId) : appState.stations.length; // Hedef sonrası indeks
-  if (insertIndex === -1) insertIndex = appState.stations.length; // Hedef yoksa sona ekle
-  if (targetCard) { // Kart varsa konumu değerlendir
-    const rect = targetCard.getBoundingClientRect(); // Kart geometrisi
-    const after = event.clientY > rect.top + rect.height / 2; // Alt yarıda mı
-    if (after) insertIndex += 1; // Sonrasına ekle
-  }
-  appState.stations.splice(insertIndex, 0, moved); // Yeni konuma yerleştir
-  dragSourceId = null; // Kaynağı sıfırla
-  renderStations(); // Listeyi yenile
-  renderGraph(appState.stations); // Akışı güncelle
-  saveState(appState); // Durumu kaydet
-});
-
-stationListEl.addEventListener('dragend', () => { // Sürükleme bitişi
-  stationListEl.querySelectorAll('.station-card').forEach(card => card.classList.remove('dragging', 'drag-over')); // Sınıfları temizle
-  dragSourceId = null; // Kaynağı sıfırla
-});
 
 function validateSetup() { // Kurulum doğrulama
   if (!appState.stations.length) { // İstasyon yoksa
@@ -4442,6 +5186,7 @@ function setMode(mode) { // Görünüm/düzenleme modunu değiştir
 }
 
 function toggleEditing(enabled) { // UI düzenleme durumunu ayarla
+  if (!stationListEl) return; // Panel yoksa çık
   const inputs = stationListEl.querySelectorAll('input, button'); // Tüm kontroller
   inputs.forEach(el => { // Her biri
     if (el.dataset.lock === 'runtime') return; // Kilitli olanlar
@@ -4463,7 +5208,7 @@ function runLoop() { // Simülasyon döngüsü
   const deltaSec = (now - appState.lastUpdate) / 1000; // Geçen süre saniye
   appState.lastUpdate = now; // Zaman güncelle
   const nextEvent = appState.simulation.peekNextEventTime(); // Sonraki olay zamanı
-  let targetTime = appState.visualCursor + deltaSec * LOGICAL_RATE; // Hedef zaman
+  let targetTime = appState.visualCursor + deltaSec * Math.max(1, appState.speed); // Hedef zaman
   if (nextEvent !== null) targetTime = Math.min(targetTime, nextEvent); // Olayı aşma
   targetTime = Math.max(targetTime, appState.simulation.currentTime); // Geri gitme
   appState.visualCursor = targetTime; // Görsel zamanı güncelle
@@ -4489,7 +5234,8 @@ function collectStationSummaries(report) { // İstasyon özetlerini hazırla
     const utilization = reportRow ? reportRow.utilization : null; // Utilizasyon değeri
     const avgQueue = reportRow ? reportRow.avgQueue : null; // Ortalama kuyruk
     const serviceCount = reportRow ? reportRow.serviceCount : 0; // Tamamlanan iş adedi
-    return { station, duration, parallel, capacityPerSec, utilization, avgQueue, serviceCount }; // Özet nesnesi
+    const idleTime = reportRow ? reportRow.idleTime : null; // Idle süresi
+    return { station, duration, parallel, capacityPerSec, utilization, avgQueue, serviceCount, idleTime }; // Özet nesnesi
   });
 }
 
@@ -4634,12 +5380,20 @@ function openReportModal() { // Rapor modalını aç
     stationPerformanceBody.innerHTML = ''; // Tabloyu temizle
     if (!report.stationRows.length) { // Satır yoksa
       const tr = document.createElement('tr'); // Tek satır
-      tr.innerHTML = '<td colspan="7">Veri yok</td>'; // Mesaj
+      tr.innerHTML = '<td colspan="9">Veri yok</td>'; // Mesaj
       stationPerformanceBody.appendChild(tr); // Tabloya ekle
     } else {
       report.stationRows.forEach(row => { // Her istasyon için
         const tr = document.createElement('tr'); // Satır oluştur
-        tr.innerHTML = `<td>${row.stationName}</td><td>${row.parallelServers}</td><td>${row.serviceTime.toFixed(2)}</td><td>${row.avgQueue.toFixed(2)}</td><td>${(row.utilization * 100).toFixed(1)}</td><td>${row.avgWait.toFixed(2)}</td><td>${row.serviceCount}</td>`; // Hücreler
+        const serviceTime = Number.isFinite(row.serviceTime) ? row.serviceTime : 0; // Servis süresi değeri
+        const idleTime = Number.isFinite(row.idleTime) ? row.idleTime : 0; // Idle süresi değeri
+        const avgQueue = Number.isFinite(row.avgQueue) ? row.avgQueue : 0; // Kuyruk değeri
+        const avgWait = Number.isFinite(row.avgWait) ? row.avgWait : 0; // Bekleme değeri
+        const utilization = Number.isFinite(row.utilization) ? row.utilization : 0; // Utilizasyon değeri
+        const needInitial = Number.isFinite(row.needInitial) ? row.needInitial : 0; // İstenen adet
+        const needReceived = Number.isFinite(row.needReceived) ? row.needReceived : 0; // Alınan adet
+        const needDisplay = needInitial > 0 ? `${needReceived}/${needInitial}` : `${needReceived}/-`; // Tablo metni
+        tr.innerHTML = `<td>${row.stationName}</td><td>${row.parallelServers}</td><td>${serviceTime.toFixed(2)}</td><td>${avgQueue.toFixed(2)}</td><td>${avgWait.toFixed(2)}</td><td>${(utilization * 100).toFixed(1)}</td><td>${idleTime.toFixed(2)}</td><td>${needDisplay}</td><td>${row.serviceCount}</td>`; // Hücreler
         stationPerformanceBody.appendChild(tr); // Tabloya ekle
       });
     }
@@ -4667,7 +5421,7 @@ function openReportModal() { // Rapor modalını aç
     } else {
       report.forkSummary.forEach(row => { // Her istasyon için
         const tr = document.createElement('tr'); // Satır oluştur
-        tr.innerHTML = `<td>${row.stationName}</td><td>${row.outDegree}</td><td>${row.producedChildren}</td><td>${row.forkEvents}</td>`; // Hücreler
+        tr.innerHTML = `<td>${row.stationName}</td><td>${row.outDegree}</td><td>${row.producedParts}</td><td>${row.forkEvents}</td>`; // Hücreler
         forkSummaryBody.appendChild(tr); // Tabloya ekle
       });
     }
@@ -4755,29 +5509,34 @@ function downloadCsv(report) { // CSV indirme fonksiyonu
   lines.push([ 'Throughput(dk)', report.throughputPerMin.toFixed(3) ].map(csvEscape).join(',')); // Ürün/dk
   lines.push([ 'Ortalama WIP', report.avgWip.toFixed(2) ].map(csvEscape).join(',')); // Ortalama WIP
   lines.push(''); // Boş satır
-  lines.push('İstasyon,Operatör,Paralel,Servis Süresi(sn),Tamamlanan İş,Teorik Kapasite(ürün/sn),Utilizasyon(%),Ortalama Kuyruk,Ortalama Bekleme(sn)'); // Tablo başlığı
+  lines.push('İstasyon,Operatör(Paralel),Servis Süresi(sn),Ortalama Kuyruk,Ortalama Bekleme(sn),Utilizasyon(%),Idle/Starved Süre(sn),İhtiyaç Karşılama (Alınan/İstenen),Tamamlanan İş,Teorik Kapasite(ürün/sn)'); // Tablo başlığı
   report.stationRows.forEach(row => { // Her istasyon için
+    const idleTime = Number.isFinite(row.idleTime) ? row.idleTime : 0; // Idle süresi değeri
+    const needInitial = Number.isFinite(row.needInitial) ? row.needInitial : 0; // İstenen adet
+    const needReceived = Number.isFinite(row.needReceived) ? row.needReceived : 0; // Alınan adet
+    const needField = needInitial > 0 ? `${needReceived}/${needInitial}` : `${needReceived}/-`; // CSV metni
     lines.push([
       row.stationName, // İstasyon adı
       row.parallelServers, // Operatör sayısı
-      row.parallelServers, // Paralel sunucu sayısı
       row.serviceTime.toFixed(2), // Servis süresi
-      row.serviceCount, // Tamamlanan iş
-      row.capacityPerSec.toFixed(3), // Teorik kapasite
-      (row.utilization * 100).toFixed(1), // Utilizasyon
       row.avgQueue.toFixed(2), // Ortalama kuyruk
-      row.avgWait.toFixed(2) // Ortalama bekleme
+      row.avgWait.toFixed(2), // Ortalama bekleme
+      (row.utilization * 100).toFixed(1), // Utilizasyon
+      idleTime.toFixed(2), // Idle süresi
+      needField, // İhtiyaç karşılama
+      row.serviceCount, // Tamamlanan iş
+      row.capacityPerSec.toFixed(3) // Teorik kapasite
     ].map(csvEscape).join(',')); // Satırı ekle
   });
   lines.push(''); // Boş satır
   lines.push('Fork Çıkışları'); // Başlık
-  lines.push('İstasyon,Çıkış Sayısı,Üretilen Çocuk,Fork Olayı'); // Fork başlığı
+  lines.push('İstasyon,Çıkış Sayısı,Üretilen Parça,Fork Olayı'); // Fork başlığı
   report.forkSummary.forEach(row => { // Her fork satırı için
     lines.push([
       row.stationName, // İstasyon adı
       row.outDegree, // Çıkış sayısı
-      row.producedChildren, // Üretilen çocuk adedi
-      row.forkEvents // Fork olay sayısı
+      row.producedParts, // Üretilen parça adedi
+      row.forkEvents // Yönlendirme olay sayısı
     ].map(csvEscape).join(',')); // Satırı ekle
   });
   lines.push(''); // Boş satır
@@ -4970,7 +5729,7 @@ function loadSample() { // Örnek kurulum yükle
   appState.entryPolicy = 'trigger'; // Tetikleme politikası
   appState.targetCount = 20; // Hedef 20
   syncControlsFromState(); // Kontrolleri hizala
-  renderStations(); // UI güncelle
+  setSelectedStation(s1.id, { skipSave: true }); // Panelde ilk istasyonu aç
   renderGraph(appState.stations); // Akışı güncelle
   saveState(appState); // Durumu kaydet
 }
@@ -4981,9 +5740,8 @@ function syncControlsFromState() { // Kontrolleri duruma göre hizala
   entryIntervalInput.value = appState.entryInterval; // Aralık alanı
   entryIntervalInput.style.display = appState.entryPolicy === 'interval' ? 'block' : 'none'; // Görünürlük
   entryIntervalInput.disabled = appState.entryPolicy !== 'interval'; // Kilit durumu
-  speedSlider.value = appState.speed; // Hız kaydırgacı
-  const display = Number.isInteger(appState.speed) ? appState.speed.toFixed(0) : appState.speed.toFixed(2); // Gösterim metni
-  speedValue.textContent = `${display}×`; // Hız etiketi
+  updateSpeedControls(appState.speed); // Hız kontrollerini hizala
+  viz.setSpeed(appState.speed); // Animasyon hızını güncelle
   if (taktInput) taktInput.value = appState.taktTime ?? ''; // Takt alanı
   updateZoomDisplay(); // Zoom göstergesini yenile
   document.body.dataset.editMode = appState.mode; // Mod niteliğini güncelle
@@ -5030,6 +5788,9 @@ function restoreFromSnapshot(snapshot, options = {}) { // Yerel depolamadan gele
     if (rawPos && Number.isFinite(rawPos.x) && Number.isFinite(rawPos.y)) { // Geçerliyse
       station.position = { x: Number(rawPos.x), y: Number(rawPos.y) }; // Konumu aktar
     }
+    station.need = Math.max(0, Number(raw.need) || 0); // İhtiyaç
+    station.queueLimit = raw.queueLimit === null || raw.queueLimit === undefined ? null : Math.max(0, Number(raw.queueLimit) || 0); // Kuyruk sınırı
+    station.note = raw.note ? String(raw.note) : ''; // Not
     return station; // Hazır istasyon
   });
   const snapshotNext = snapshot.nextStationId ? Number(snapshot.nextStationId) : appState.nextStationId; // Sonraki sayaç
@@ -5048,7 +5809,7 @@ function restoreFromSnapshot(snapshot, options = {}) { // Yerel depolamadan gele
     appState.entryPolicy = snapshot.entryPolicy; // Politikayı ata
   }
   if (typeof snapshot.speed === 'number' && snapshot.speed > 0) { // Hız geçerli mi
-    appState.speed = Math.max(0.25, Math.min(16, snapshot.speed)); // Hızı sınırla
+    appState.speed = SPEED_OPTIONS[getNearestSpeedIndex(snapshot.speed)]; // En yakın hızı seç
   }
   if (typeof snapshot.zoom === 'number' && snapshot.zoom > 0) { // Zoom geçerli mi
     appState.zoom = Math.max(0.25, Math.min(2, snapshot.zoom)); // Zoom aralığını sınırla
@@ -5059,10 +5820,16 @@ function restoreFromSnapshot(snapshot, options = {}) { // Yerel depolamadan gele
   if (snapshot.mode === 'edit' || snapshot.mode === 'view') { // Mod bilgisi geçerli mi
     appState.mode = snapshot.mode; // Modu ata
   }
+  const restoredSelection = snapshot.selectedStationId ? String(snapshot.selectedStationId) : null; // Kaydedilen seçim
+  if (restoredSelection && appState.stations.some(st => st.id === restoredSelection)) { // Geçerli mi
+    appState.selectedStationId = restoredSelection; // Seçimi uygula
+  } else {
+    appState.selectedStationId = appState.stations[0]?.id ?? null; // İlk istasyon varsayılan
+  }
   reorderStationsByTopology(); // Bağlantı sırasına göre diz
   document.body.dataset.editMode = appState.mode; // Body veri niteliğini güncelle
   syncControlsFromState(); // Kontrolleri güncelle
-  renderStations(); // Kartları çiz
+  setSelectedStation(appState.selectedStationId, { skipSave: true }); // Paneli güncelle
   renderGraph(appState.stations); // Akışı güncelle
   if (persist) { // Persist gerekiyorsa
     const payload = captureStatePayload(); // Snapshot üret
@@ -5074,6 +5841,7 @@ let eventsBound = false; // Olay bağlama bayrağı
 
 function bindKeyboardShortcuts(event) { // Klavye kısayol dinleyicisi
   if (!event || !event.key) return; // Geçersizse çık
+  if (drawerConfirmResolver) return; // Onay bekleniyorsa kısayol yok
   const tagName = event.target?.tagName; // Hedef etiketi
   if (tagName === 'INPUT' || tagName === 'TEXTAREA') return; // Form odakta ise çık
   const key = event.key.toLowerCase(); // Harfi küçült
@@ -5095,6 +5863,7 @@ function attachUiEvents() { // UI olaylarını bağla
   addBtn?.addEventListener('click', onAddStationClick, { once: false }); // Tıklama bağla
   sampleBtn?.addEventListener('click', () => { closeDropdownMenu(); loadSample(); }); // Örnek kurulum
   clearBtn?.addEventListener('click', () => clearActiveTab()); // Sekmeyi temizle
+  closeDrawerBtn?.addEventListener('click', () => closeStationDrawer()); // Paneli kapat
   startBtn?.addEventListener('click', () => startSimulation()); // Başlat
   stopBtn?.addEventListener('click', () => stopSimulation(true)); // Durdur
   resetBtn?.addEventListener('click', () => resetSimulation()); // Sıfırla
@@ -5129,12 +5898,12 @@ function attachUiEvents() { // UI olaylarını bağla
   normalizeLayoutBtn?.addEventListener('click', () => { viz.normalizeWorld(); showGraphToast('Yerleşim transformları onarıldı.', 'success'); }); // Normalize et
   refreshBubblesBtn?.addEventListener('click', () => { viz.refreshJobAnchors(true); showGraphToast('Baloncuk konumları yenilendi.', 'info'); }); // Baloncukları yenile
   speedSlider?.addEventListener('input', () => { // Hız değişimi
-    const value = Number(speedSlider.value); // Değer al
-    appState.speed = value; // Duruma ata
-    const display = Number.isInteger(value) ? value.toFixed(0) : value.toFixed(2); // Gösterim seçimi
-    speedValue.textContent = `${display}×`; // Etiketi güncelle
-    viz.setSpeed(appState.speed); // Animasyon hızını anında uygula
-    saveState(appState); // Durumu kaydet
+    setSpeedByIndex(Number(speedSlider.value)); // Dizine göre uygula
+  });
+  speedSelect?.addEventListener('change', () => { // Dropdown değişimi
+    const selected = Number(speedSelect.value); // Seçilen çarpan
+    const index = SPEED_OPTIONS.findIndex(option => option === selected); // Dizin bul
+    setSpeedByIndex(index >= 0 ? index : getNearestSpeedIndex(selected)); // Hızı ayarla
   });
   targetInput?.addEventListener('input', () => { // Hedef değişimi
     const value = Number(targetInput.value); // Değer al
@@ -5186,7 +5955,13 @@ function attachUiEvents() { // UI olaylarını bağla
   restoreYesBtn?.addEventListener('click', () => handleRestoreConfirm()); // Kurtarma onayı
   restoreNoBtn?.addEventListener('click', () => handleRestoreDecline()); // Kurtarma reddi
   restoreNeverBtn?.addEventListener('click', () => handleRestoreNever()); // Bir daha sorma
+  drawerConfirmSaveBtn?.addEventListener('click', () => resolveDrawerConfirm('save')); // Drawer kaydet
+  drawerConfirmDiscardBtn?.addEventListener('click', () => resolveDrawerConfirm('discard')); // Drawer kaydetmeden
+  drawerConfirmCancelBtn?.addEventListener('click', () => resolveDrawerConfirm('cancel')); // Drawer iptal
+  drawerConfirmModal?.addEventListener('click', event => { if (event.target === drawerConfirmModal) resolveDrawerConfirm('cancel'); }); // Dış tık iptal
   document.addEventListener('keydown', bindKeyboardShortcuts); // Klavye olayları
+  document.addEventListener('keydown', handleDrawerEscape, true); // Drawer ESC
+  document.addEventListener('mousedown', handleDrawerOutside); // Drawer dış tık
   document.addEventListener('fullscreenchange', () => { // Tam ekran değişince
     updateFullscreenLabel(); // Etiketi güncelle
     scheduleDashboardCharts(); // Grafik boyutlarını tazele
