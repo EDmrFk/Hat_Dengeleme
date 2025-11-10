@@ -344,6 +344,11 @@ button:disabled, input:disabled, select:disabled { /* Pasif durum */
   pointer-events: auto; /* Etkileşimi aç */
 }
 
+#stationDrawer:focus { /* Panel odak stili */
+  outline: 2px solid var(--accent); /* Vurgu çerçeve */
+  outline-offset: 4px; /* Dış boşluk */
+}
+
 .drawer-header { /* Drawer başlık alanı */
   display: flex; /* Yatay hizala */
   align-items: center; /* Dikey ortala */
@@ -1204,7 +1209,7 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
 </style> <!-- Stil bitişi -->
 </head>
 <body> <!-- Gövde başlangıcı -->
-<header> <!-- Üst çubuk -->
+<header data-drawer-inert> <!-- Üst çubuk -->
   <div class="tab-bar" id="tabBar" role="tablist" aria-label="Senaryo sekmeleri"> <!-- Sekme çubuğu -->
     <button id="newTabBtn" type="button" class="new-tab-btn" data-i18n="tabs.new" data-i18n-title="title.newTab" title="Yeni sekme aç">+ Yeni Sekme</button> <!-- Yeni sekme -->
   </div>
@@ -1325,7 +1330,7 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
         <svg id="lineSvg" role="img" aria-label="Hat akışı animasyonu"></svg> <!-- SVG alanı -->
       </div>
     </section>
-    <aside id="stationDrawer" aria-labelledby="drawerTitle" aria-hidden="true"> <!-- Sağ veri paneli -->
+    <aside id="stationDrawer" aria-labelledby="drawerTitle" aria-hidden="true" role="dialog" aria-modal="true" tabindex="-1"> <!-- Sağ veri paneli -->
       <header class="drawer-header"> <!-- Drawer başlığı -->
         <h2 id="drawerTitle">İstasyon Verisi</h2> <!-- Panel başlığı -->
         <button id="closeDrawerBtn" type="button" class="drawer-close" aria-label="Paneli kapat">×</button> <!-- Kapat butonu -->
@@ -1337,7 +1342,7 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
     </aside>
   </div>
 </main>
-<footer> <!-- Alt bilgi -->
+<footer data-drawer-inert> <!-- Alt bilgi -->
   <div class="footer-content"> <!-- Footer içeriği -->
     <div class="footer-brand">Franz Kiel Türkiye (FKT)</div> <!-- Kurumsal metin -->
     <div class="footer-hints"> <!-- Kısayol bilgisi -->
@@ -3898,6 +3903,8 @@ class Visualization { // Görsel katman
 const stationListEl = document.getElementById('stationList'); // İstasyon liste alanı
 const emptyStateEl = document.getElementById('emptyState'); // Boş durum mesajı
 const stationDrawer = document.getElementById('stationDrawer'); // Veri paneli
+const drawerFocusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'; // Odaklanabilir öğeler
+const drawerInertTargets = Array.from(document.querySelectorAll('[data-drawer-inert]')).filter(el => el && el !== stationDrawer); // İnert uygulanacak alanlar
 const closeDrawerBtn = document.getElementById('closeDrawerBtn'); // Panel kapatma butonu
 const addStationBtn = document.getElementById('addStationBtn'); // İstasyon ekleme butonu
 const startBtn = document.getElementById('startBtn'); // Başlat butonu
@@ -3995,6 +4002,9 @@ let edgeDraftKeyHandler = null; // Taslak klavye dinleyicisi
 let pendingRestoreSnapshot = null; // Kurtarma modalı için bekleyen veri
 let drawerConfirmResolver = null; // Drawer onay çözücü
 let drawerConfirmPromise = null; // Drawer onay sözü
+let drawerFocusTrapActive = false; // Drawer odak tuzağı açık mı
+let drawerFocusRestoreTarget = null; // Drawer kapatıldığında odağın döneceği öğe
+let drawerFocusInHandler = null; // Drawer odak takip dinleyicisi
 
 function showGraphToast(message, tone = 'info') { // Görsel panelde uyarı göster
   if (!visualPanel) return; // Panel yoksa çık
@@ -4036,6 +4046,120 @@ function requestConfirmation(messageKey, replacements = {}, options = {}) { // O
   }
   console.info('Onay iletişim kutusu kullanılamıyor, varsayılan değer döndürülüyor.'); // Bilgi
   return !!defaultValue; // Varsayılan
+}
+
+function setElementInert(element, active) { // İnert durumunu uygula
+  if (!element) return; // Eleman yoksa çık
+  if (active) { // İnert aç
+    element.setAttribute('inert', ''); // Özniteliği ekle
+    if ('inert' in element) { // Özellik destekleniyorsa
+      try { element.inert = true; } catch (error) { /* Yoksay */ }
+    }
+  } else { // İnert kapat
+    element.removeAttribute('inert'); // Özniteliği kaldır
+    if ('inert' in element) {
+      try { element.inert = false; } catch (error) { /* Yoksay */ }
+    }
+  }
+}
+
+function toggleDrawerInertState(active) { // Drawer açıkken inert durumu ayarla
+  drawerInertTargets.forEach(element => setElementInert(element, active));
+}
+
+function isElementVisibleForFocus(element) { // Odak için görünürlük kontrolü
+  if (!element || element.hasAttribute('hidden')) return false;
+  if (element.getAttribute('aria-hidden') === 'true') return false;
+  if (element.offsetParent) return true;
+  const rect = element.getBoundingClientRect();
+  return rect.width > 0 || rect.height > 0;
+}
+
+function getDrawerFocusableElements() { // Drawer içindeki odaklanabilirler
+  if (!stationDrawer) return [];
+  return Array.from(stationDrawer.querySelectorAll(drawerFocusableSelector))
+    .filter(element => !element.hasAttribute('disabled') && isElementVisibleForFocus(element));
+}
+
+function focusDrawerContents(options = {}) { // Drawer içi odağı yönet
+  const { force = false } = options;
+  if (!stationDrawer) return;
+  const active = document.activeElement;
+  if (!force && active && stationDrawer.contains(active)) return;
+  const focusables = getDrawerFocusableElements();
+  const target = focusables[0] || stationDrawer;
+  if (typeof target.focus === 'function') {
+    requestAnimationFrame(() => target.focus({ preventScroll: true }));
+  }
+}
+
+function handleDrawerKeydown(event) { // Tab dolaşımını yakala
+  if (!drawerFocusTrapActive || !stationDrawer) return;
+  if (event.key !== 'Tab' || event.defaultPrevented) return;
+  const focusables = getDrawerFocusableElements();
+  if (!focusables.length) {
+    event.preventDefault();
+    focusDrawerContents({ force: true });
+    return;
+  }
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement;
+  if (event.shiftKey) {
+    if (active === first || !stationDrawer.contains(active)) {
+      event.preventDefault();
+      if (typeof last.focus === 'function') last.focus({ preventScroll: true });
+    }
+  } else if (active === last) {
+    event.preventDefault();
+    if (typeof first.focus === 'function') first.focus({ preventScroll: true });
+  }
+}
+
+function activateDrawerFocusTrap(trigger) { // Drawer odak tuzağını başlat
+  if (!stationDrawer || drawerFocusTrapActive) return;
+  drawerFocusTrapActive = true;
+  drawerFocusRestoreTarget = null;
+  if (trigger && typeof trigger.focus === 'function') {
+    drawerFocusRestoreTarget = trigger;
+  } else {
+    const active = document.activeElement;
+    if (active && active !== document.body && typeof active.focus === 'function' && !stationDrawer.contains(active)) {
+      drawerFocusRestoreTarget = active;
+    }
+  }
+  if (!drawerFocusRestoreTarget && addStationBtn && typeof addStationBtn.focus === 'function') {
+    drawerFocusRestoreTarget = addStationBtn;
+  }
+  stationDrawer.addEventListener('keydown', handleDrawerKeydown, true);
+  drawerFocusInHandler = event => {
+    if (!stationDrawer.contains(event.target)) {
+      const modalHost = event.target && event.target.closest('.modal, .modal-backdrop');
+      if (modalHost) return; // Modal odaklarına izin ver
+      focusDrawerContents({ force: true });
+    }
+  };
+  document.addEventListener('focusin', drawerFocusInHandler, true);
+  focusDrawerContents({ force: true });
+}
+
+function deactivateDrawerFocusTrap() { // Drawer odak tuzağını kapat
+  if (!stationDrawer || !drawerFocusTrapActive) return;
+  drawerFocusTrapActive = false;
+  stationDrawer.removeEventListener('keydown', handleDrawerKeydown, true);
+  if (drawerFocusInHandler) {
+    document.removeEventListener('focusin', drawerFocusInHandler, true);
+    drawerFocusInHandler = null;
+  }
+  const target = drawerFocusRestoreTarget;
+  drawerFocusRestoreTarget = null;
+  const fallback = addStationBtn && typeof addStationBtn.focus === 'function' ? addStationBtn : null;
+  const focusTarget = target && typeof target.focus === 'function' && target instanceof Node && document.contains(target)
+    ? target
+    : fallback;
+  if (focusTarget) {
+    requestAnimationFrame(() => focusTarget.focus({ preventScroll: true }));
+  }
 }
 
 function resolveDrawerConfirm(choice = 'cancel') { // Drawer onay modülünü kapat
@@ -4598,11 +4722,13 @@ function hasDirtyStationDraft() { // Taslakta kaydedilmemiş değişiklik var m�
 }
 
 function applyStationSelection(stationId, options = {}) { // Sağ panel seçim uygulaması
-  const { skipSave = false, preserveDraft = false } = options;
+  const { skipSave = false, preserveDraft = false, trigger = null } = options;
   let normalized = stationId ? String(stationId) : null;
   if (normalized && !appState.stations.some(st => st.id === normalized)) normalized = null;
   const previous = appState.selectedStationId;
+  const wasOpen = !!previous;
   appState.selectedStationId = normalized;
+  const isOpen = !!normalized;
   if (normalized) {
     if (!preserveDraft || !appState.stationEditor || appState.stationEditor.stationId !== normalized) {
       ensureStationEditor(normalized);
@@ -4612,14 +4738,22 @@ function applyStationSelection(stationId, options = {}) { // Sağ panel seçim u
     if (stationDrawer) delete stationDrawer.dataset.dirty;
   }
   if (stationDrawer) stationDrawer.setAttribute('aria-hidden', normalized ? 'false' : 'true');
+  toggleDrawerInertState(isOpen);
   document.body.classList.toggle('drawer-open', !!normalized);
   renderStations();
   if (viz) viz.setSelectedStation(normalized);
+  if (!wasOpen && isOpen) {
+    activateDrawerFocusTrap(trigger);
+  } else if (wasOpen && !isOpen) {
+    deactivateDrawerFocusTrap();
+  } else if (isOpen && previous !== normalized) {
+    focusDrawerContents({ force: true });
+  }
   if (!skipSave && previous !== normalized) saveState(appState, 'station-select');
 }
 
 function setSelectedStation(stationId, options = {}) { // Sağ panel seçimini yönet
-  const { force = false, skipSave = false, preserveDraft = false } = options;
+  const { force = false, skipSave = false, preserveDraft = false, trigger = null } = options;
   const normalized = stationId ? String(stationId) : null;
   const editor = appState.stationEditor;
   const currentId = appState.selectedStationId;
@@ -4645,15 +4779,16 @@ function setSelectedStation(stationId, options = {}) { // Sağ panel seçimini y
   }
 
   if (sameTarget) {
-    applyStationSelection(normalized, { skipSave: true, preserveDraft: true });
+    applyStationSelection(normalized, { skipSave: true, preserveDraft: true, trigger });
     return;
   }
 
-  applyStationSelection(normalized, { skipSave, preserveDraft });
+  applyStationSelection(normalized, { skipSave, preserveDraft, trigger });
 }
 
-function handleStationSelect(stationId) { // Görsel seçim geri çağrısı
-  setSelectedStation(stationId); // Seçimi uygula
+function handleStationSelect(stationId, context = {}) { // Görsel seçim geri çağrısı
+  const trigger = context?.event?.currentTarget || context?.event?.target || null;
+  setSelectedStation(stationId, { trigger }); // Seçimi uygula
 }
 
 function closeStationDrawer(options = {}) { // Paneli kapat
