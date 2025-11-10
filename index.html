@@ -412,6 +412,26 @@ button:disabled, input:disabled, select:disabled { /* Pasif durum */
   min-height: 80px; /* Minimum yükseklik */
   resize: vertical; /* Dikey boyutlandırma */
 }
+.drawer-footer-actions { /* Drawer alt aksiyonları */
+  display: flex; /* Yatay hizala */
+  justify-content: flex-end; /* Sağa yasla */
+  gap: 10px; /* Boşluk */
+  flex-wrap: wrap; /* Satır kırılmasına izin ver */
+  margin-top: 18px; /* Üst boşluk */
+}
+.drawer-footer-actions button { /* Drawer butonları */
+  min-width: 120px; /* Minimum genişlik */
+}
+.drawer-dirty-indicator { /* Kaydetme durumu etiketi */
+  font-size: 0.8rem; /* Yazı boyutu */
+  color: var(--muted); /* Varsayılan renk */
+  text-align: right; /* Sağa hizala */
+  flex: 1 1 100%; /* Tam genişlikte satır */
+}
+.drawer-dirty-indicator[data-dirty="true"] { /* Kirli durumda vurgu */
+  color: var(--accent); /* Vurgu rengi */
+  font-weight: 600; /* Kalınlık */
+}
 
 main { /* Ana içerik */
   padding: 24px; /* İç boşluk */
@@ -1253,8 +1273,10 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
       </div>
       <div class="control-group" data-group="speed"> <!-- Hız kontrolü -->
         <label for="speedSlider" data-i18n="toolbar.speed" data-i18n-title="title.speed" title="Animasyon hızını ayarla">Hız</label> <!-- Hız etiketi -->
-        <input id="speedSlider" type="range" min="0" max="8" step="1" value="0" data-i18n-title="title.speed" title="Animasyon hızını ayarla"> <!-- Slider -->
+        <input id="speedSlider" type="range" min="0" max="10" step="1" value="2" data-i18n-title="title.speed" title="Animasyon hızını ayarla"> <!-- Slider -->
         <select id="speedSelect" title="Hız seçenekleri">
+          <option value="0.25">0.25×</option>
+          <option value="0.5">0.5×</option>
           <option value="1">1×</option>
           <option value="2">2×</option>
           <option value="4">4×</option>
@@ -1497,6 +1519,18 @@ input[type="range"]::-moz-range-thumb { /* Firefox tutamak */
   </div>
 </div>
 
+<div class="modal-backdrop" id="drawerConfirmModal"> <!-- Drawer kapatma uyarısı -->
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="drawerConfirmTitle"> <!-- Drawer modal kutusu -->
+    <h3 id="drawerConfirmTitle" data-i18n="confirm.drawerTitle">Değişiklikleri kaydetmek ister misiniz?</h3> <!-- Başlık -->
+    <p id="drawerConfirmMessage" data-i18n="confirm.drawerMessage">Paneli kapatmadan önce yaptığınız değişiklikleri kaydetmek ister misiniz?</p> <!-- Mesaj -->
+    <div class="modal-actions"> <!-- Buton grubu -->
+      <button id="drawerConfirmSave" type="button" class="primary" data-i18n="confirm.drawerSave">Kaydet</button> <!-- Kaydet -->
+      <button id="drawerConfirmDiscard" type="button" data-i18n="confirm.drawerDiscard">Kaydetmeden Kapat</button> <!-- Kaydetmeden -->
+      <button id="drawerConfirmCancel" type="button" class="danger" data-i18n="confirm.drawerCancel">İptal</button> <!-- İptal -->
+    </div>
+  </div>
+</div>
+
 <script> // Uygulama betiği başlangıcı
 
 window.addEventListener('error', event => console.error('Global error:', event.error || event.message)); // Global hata yakala
@@ -1591,9 +1625,17 @@ const translations = { // Çok dilli sözlük
     'toast.renameDone': 'Sekme adı güncellendi.',
     'toast.renameCancelled': 'Yeniden adlandırma iptal edildi.',
     'toast.renameRequired': 'Sekme adı boş olamaz.',
+    'toast.taskRequired': 'En az bir görev tanımlayın.',
     'confirm.clear': 'Aktif sekmedeki tüm veri silinsin mi?',
     'confirm.unsavedTabSwitch': 'Kaydedilmemiş değişiklikler var. Sekme değiştirilsin mi?',
     'confirm.overwrite': 'Bu adla bir kayıt var. Üzerine yazmak ister misiniz?',
+    'confirm.drawerTitle': 'Değişiklikleri kaydetmek ister misiniz?',
+    'confirm.drawerMessage': 'Paneli kapatmadan önce yaptığınız değişiklikleri nasıl yönetmek istersiniz?',
+    'confirm.drawerSave': 'Kaydet',
+    'confirm.drawerDiscard': 'Kaydetmeden Kapat',
+    'confirm.drawerCancel': 'İptal',
+    'confirm.edgeDuplicate': 'Bu bağlantı zaten mevcut. Mükerrer bağlantı oluşturmak ister misiniz?',
+    'confirm.edgeCycle': 'Bu bağlantı bir döngü oluşturacak. Yine de devam edilsin mi?',
     'prompt.saveName': 'Senaryo adını girin',
     'prompt.renameTab': 'Sekme adını girin',
     'prompt.loadName': 'Yüklenecek senaryo adını girin',
@@ -1683,9 +1725,17 @@ const translations = { // Çok dilli sözlük
     'toast.renameDone': 'Tab name updated.',
     'toast.renameCancelled': 'Rename cancelled.',
     'toast.renameRequired': 'Tab name cannot be empty.',
+    'toast.taskRequired': 'Please define at least one task.',
     'confirm.clear': 'Clear all data in the active tab?',
     'confirm.unsavedTabSwitch': 'You have unsaved changes. Switch tabs anyway?',
     'confirm.overwrite': 'A scenario with this name exists. Overwrite it?',
+    'confirm.drawerTitle': 'Save your changes?',
+    'confirm.drawerMessage': 'How would you like to handle the edits before closing the panel?',
+    'confirm.drawerSave': 'Save',
+    'confirm.drawerDiscard': 'Close without Saving',
+    'confirm.drawerCancel': 'Cancel',
+    'confirm.edgeDuplicate': 'This connection already exists. Do you want to create another one?',
+    'confirm.edgeCycle': 'This connection will create a cycle. Do you want to continue?',
     'prompt.saveName': 'Enter scenario name',
     'prompt.renameTab': 'Enter tab name',
     'prompt.loadName': 'Enter scenario name to load',
@@ -1775,9 +1825,17 @@ const translations = { // Çok dilli sözlük
     'toast.renameDone': 'Tab-Name aktualisiert.',
     'toast.renameCancelled': 'Umbenennen abgebrochen.',
     'toast.renameRequired': 'Tab-Name darf nicht leer sein.',
+    'toast.taskRequired': 'Definieren Sie mindestens eine Aufgabe.',
     'confirm.clear': 'Alle Daten im aktiven Tab löschen?',
     'confirm.unsavedTabSwitch': 'Es gibt ungespeicherte Änderungen. Trotzdem wechseln?',
     'confirm.overwrite': 'Ein Szenario mit diesem Namen existiert. Überschreiben?',
+    'confirm.drawerTitle': 'Änderungen speichern?',
+    'confirm.drawerMessage': 'Wie sollen die Änderungen vor dem Schließen des Panels behandelt werden?',
+    'confirm.drawerSave': 'Speichern',
+    'confirm.drawerDiscard': 'Ohne Speichern schließen',
+    'confirm.drawerCancel': 'Abbrechen',
+    'confirm.edgeDuplicate': 'Diese Verbindung existiert bereits. Möchten Sie dennoch eine weitere erstellen?',
+    'confirm.edgeCycle': 'Diese Verbindung erzeugt einen Zyklus. Trotzdem fortfahren?',
     'prompt.saveName': 'Szenarionamen eingeben',
     'prompt.renameTab': 'Tab-Namen eingeben',
     'prompt.loadName': 'Zu ladenden Szenarionamen eingeben',
@@ -2004,7 +2062,7 @@ function activateTab(tabId, options = {}) { // Sekme değiştir
   if (!target) return false; // Bulunamadı
   const current = getActiveTab(); // Mevcut aktif
   if (current && current.dirty && !options.force) { // Kaydedilmemiş değişiklik varsa
-    const proceed = window.confirm(t('confirm.unsavedTabSwitch')); // Onay iste
+    const proceed = requestConfirmation('confirm.unsavedTabSwitch'); // Onay iste
     if (!proceed) return false; // İptal edildi
   }
   if (current) storeActiveTabSnapshot('switch'); // Mevcut sekmeyi sakla
@@ -2113,7 +2171,7 @@ function handleSaveScenario() { // Senaryoyu kaydet
   const entry = { name, snapshot, language: appState.language, timestamp: Date.now(), appVersion: APP_VERSION }; // Kayıt nesnesi
   const existingIndex = savedScenarios.findIndex(item => item.name === name); // Var olan kayıt var mı
   if (existingIndex !== -1) { // Üzerine yazma durumu
-    const confirmOverwrite = window.confirm(t('confirm.overwrite')); // Onay al
+    const confirmOverwrite = requestConfirmation('confirm.overwrite'); // Onay al
     if (!confirmOverwrite) { // Reddedildiyse
       showGraphToast(t('toast.saveCancelled'), 'info'); // Bilgi ver
       return false; // Çık
@@ -2164,7 +2222,7 @@ function handleLoadScenario(name) { // Senaryoyu yükle
 }
 
 function clearActiveTab() { // Aktif sekmeyi temizle
-  const confirmClear = window.confirm(t('confirm.clear')); // Onay iste
+  const confirmClear = requestConfirmation('confirm.clear'); // Onay iste
   if (!confirmClear) return false; // İptal edildi
   cancelConnectionDraft('mode-change'); // Aktif taslağı kapat
   if (appState.simulation) stopSimulation(false); // Simülasyonu durdur
@@ -2287,7 +2345,8 @@ const appState = window.appState ?? { // Uygulama genel durumu
   tabCounter: 1, // Sekme kimliği üreteci
   edgeDraft: null, // Bağlantı oluşturma durumu
   completedDisplayCount: 0, // Görüntülenen tamamlanan sayısı
-  selectedStationId: null // Açık paneldeki istasyon
+  selectedStationId: null, // Açık paneldeki istasyon
+  stationEditor: null // Sağ panel taslak durumu
 };
 window.appState = appState; // Durumu küresele yaz
 document.body.dataset.editMode = appState.mode; // Başlangıç modunu body'ye işle
@@ -3894,6 +3953,11 @@ const restoreModal = document.getElementById('restoreModal'); // Kurtarma modal�
 const restoreYesBtn = document.getElementById('restoreYesBtn'); // Kurtarma evet butonu
 const restoreNoBtn = document.getElementById('restoreNoBtn'); // Kurtarma hayır butonu
 const restoreNeverBtn = document.getElementById('restoreNeverBtn'); // Kurtarma hiç sorma butonu
+const drawerConfirmModal = document.getElementById('drawerConfirmModal'); // Drawer uyarı modalı
+const drawerConfirmMessage = document.getElementById('drawerConfirmMessage'); // Drawer uyarı metni
+const drawerConfirmSaveBtn = document.getElementById('drawerConfirmSave'); // Drawer kaydet butonu
+const drawerConfirmDiscardBtn = document.getElementById('drawerConfirmDiscard'); // Drawer kaydetmeden butonu
+const drawerConfirmCancelBtn = document.getElementById('drawerConfirmCancel'); // Drawer iptal butonu
 const cardCycleEl = document.getElementById('cardCycle'); // Cycle kartı metni
 const cardCompletedEl = document.getElementById('cardCompleted'); // Tamamlanan kart metni
 const cardThroughputEl = document.getElementById('cardThroughput'); // Throughput kart metni
@@ -3929,6 +3993,8 @@ let openDropdownTrigger = null; // Açık menünün tetikleyicisi referansı
 let draggingTabId = null; // Sürüklenen sekme kimliği
 let edgeDraftKeyHandler = null; // Taslak klavye dinleyicisi
 let pendingRestoreSnapshot = null; // Kurtarma modalı için bekleyen veri
+let drawerConfirmResolver = null; // Drawer onay çözücü
+let drawerConfirmPromise = null; // Drawer onay sözü
 
 function showGraphToast(message, tone = 'info') { // Görsel panelde uyarı göster
   if (!visualPanel) return; // Panel yoksa çık
@@ -3944,6 +4010,79 @@ function showGraphToast(message, tone = 'info') { // Görsel panelde uyarı gös
   graphToastTimer = window.setTimeout(() => { // Yeni zamanlayıcı
     if (graphToastEl) graphToastEl.style.opacity = '0'; // Yumuşak kaybolma
   }, 3200); // Süre
+}
+
+function requestConfirmation(messageKey, replacements = {}, options = {}) { // Onay penceresi iste
+  const { defaultValue = true } = options; // Varsayılan dönüş
+  const message = t(messageKey, replacements); // Mesajı çevir
+  if (typeof appState.confirmHandler === 'function') { // Özel onay işleyici varsa
+    try {
+      const result = appState.confirmHandler({ key: messageKey, message, replacements }); // İşleyiciyi çağır
+      return !!result; // Boolean döndür
+    } catch (error) {
+      console.warn('Onay işleyicisi hata verdi:', error); // Hata kaydı
+    }
+  }
+  const confirmFn = typeof window !== 'undefined' && typeof window.confirm === 'function'
+    ? window.confirm
+    : (typeof globalThis !== 'undefined' && typeof globalThis.confirm === 'function' ? globalThis.confirm : null); // Küresel onay
+  if (confirmFn) {
+    try {
+      return !!confirmFn(message); // Kullanıcı yanıtını döndür
+    } catch (error) {
+      console.warn('Onay istemi başarısız oldu:', error); // Hata kaydı
+      return !!defaultValue; // Varsayılan
+    }
+  }
+  console.info('Onay iletişim kutusu kullanılamıyor, varsayılan değer döndürülüyor.'); // Bilgi
+  return !!defaultValue; // Varsayılan
+}
+
+function resolveDrawerConfirm(choice = 'cancel') { // Drawer onay modülünü kapat
+  if (!drawerConfirmResolver) return; // Aktif çözüm yok
+  if (drawerConfirmModal) drawerConfirmModal.classList.remove('active'); // Modalı gizle
+  const resolver = drawerConfirmResolver; // Çözücüyü sakla
+  drawerConfirmResolver = null; // Referansı temizle
+  drawerConfirmPromise = null; // Sözü temizle
+  resolver(choice); // Sonucu ilet
+}
+
+function openDrawerConfirm() { // Drawer kapanış onayı iste
+  if (!drawerConfirmModal) return Promise.resolve('cancel'); // Modal yoksa iptal
+  if (drawerConfirmResolver) return drawerConfirmPromise; // Zaten açık
+  applyTranslations(drawerConfirmModal); // Metinleri güncelle
+  drawerConfirmModal.classList.add('active'); // Modalı göster
+  drawerConfirmPromise = new Promise(resolve => {
+    drawerConfirmResolver = resolve; // Çözümleyiciyi sakla
+  });
+  return drawerConfirmPromise; // Sözü döndür
+}
+
+function handleDrawerOutside(event) { // Panel dışı tıklamayı işle
+  if (!appState.selectedStationId) return; // Seçili istasyon yoksa çık
+  if (!stationDrawer || stationDrawer.getAttribute('aria-hidden') === 'true') return; // Panel kapalıysa çık
+  if (drawerConfirmResolver) return; // Onay diyaloğu açıksa bekle
+  if (drawerConfirmModal && drawerConfirmModal.classList.contains('active')) return; // Modal açık
+  const target = event.target;
+  if (!target) return;
+  if (stationDrawer.contains(target)) return; // Panel içiyse çık
+  if (target.closest('.station-node') || target.closest('.node-data-chip')) return; // Grafik etkileşimi
+  if (target.closest('.modal')) return; // Başka modal varsa
+  setSelectedStation(null); // Paneli kapat
+}
+
+function handleDrawerEscape(event) { // Paneli ESC ile kapat
+  if (!event || event.key !== 'Escape') return; // ESC değilse çık
+  if (drawerConfirmResolver) { // Onay modalı açık
+    event.preventDefault();
+    resolveDrawerConfirm('cancel');
+    return;
+  }
+  if (!appState.selectedStationId) return; // Panel açık değil
+  if (drawerConfirmModal && drawerConfirmModal.classList.contains('active')) return; // Modal açık
+  if (analysisModal?.classList.contains('active') || reportModal?.classList.contains('active')) return; // Diğer modallar
+  event.preventDefault();
+  setSelectedStation(null); // Paneli kapat
 }
 
 function cancelConnectionDraft(reason = 'manual') { // Bağlantı taslağını iptal et
@@ -4010,7 +4149,7 @@ function completeConnectionDraft(sourceId, targetId) { // Taslak bağlantıyı t
 function normalizeStationTopology(stations) { // İstasyon topolojisini normalize et
   stations.forEach((station, index) => { // Her istasyonu dolaş
     if (!Array.isArray(station.outputs)) station.outputs = []; // Çıkış listesi oluştur
-    station.outputs = station.outputs.map(target => String(target)).filter((target, idx, arr) => arr.indexOf(target) === idx); // Benzersiz ve string hale getir
+    station.outputs = station.outputs.map(target => String(target)); // Çıkışları stringe dönüştür
     if (!station.position || !Number.isFinite(station.position.x) || !Number.isFinite(station.position.y)) { // Konum yoksa
       const fallback = suggestStationPosition(index); // Varsayılan konumu al
       station.position = { x: fallback.x, y: fallback.y }; // Konumu ata
@@ -4021,12 +4160,7 @@ function normalizeStationTopology(stations) { // İstasyon topolojisini normaliz
 function listPotentialTargets(sourceId) { // Uygun hedef istasyonları listele
   const source = appState.stations.find(station => station.id === sourceId); // Kaynak istasyonu bul
   if (!source) return []; // Yoksa boş
-  const existing = new Set(Array.isArray(source.outputs) ? source.outputs : []); // Mevcut bağlantılar
-  return appState.stations.filter(target => { // İstasyonları filtrele
-    if (target.id === sourceId) return false; // Kendine bağlantıyı engelle
-    if (existing.has(target.id)) return false; // Mükerrer bağlantıyı engelle
-    return !wouldCreateCycle(sourceId, target.id); // Döngüyü engelle
-  });
+  return appState.stations.filter(target => target.id !== sourceId); // Kaynak dışındaki tüm istasyonlar
 }
 
 function wouldCreateCycle(sourceId, targetId) { // Döngü kontrolü
@@ -4096,26 +4230,38 @@ function reorderStationsByTopology() { // Bağlantılara göre istasyonları sı
 function addConnection(sourceId, targetId, options = {}) { // Bağlantı ekle
   const { silent = false } = options; // Sessiz mod parametresi
   if (appState.running) { // Simülasyon çalışıyorsa
-    if (!silent) showGraphToast(t('toast.runningLock'), 'warning'); // Uyarı göster
+    showGraphToast(t('toast.runningLock'), 'warning'); // Uyarı göster
     return false; // Başarısız
   }
   const source = appState.stations.find(station => station.id === sourceId); // Kaynak bul
   const target = appState.stations.find(station => station.id === targetId); // Hedef bul
   if (!source || !target) return false; // Geçersizse çık
   if (!Array.isArray(source.outputs)) source.outputs = []; // Çıkış listesini hazırla
+
+  const sourceName = source.name || source.id; // Kaynak adı
+  const targetName = target.name || target.id; // Hedef adı
+
   if (source.outputs.includes(targetId)) { // Mükerrer bağlantı
-    if (!silent) showGraphToast(t('toast.edgeExists'), 'info'); // Bilgi ver
-    return false; // Başarısız
+    const proceedDuplicate = requestConfirmation('confirm.edgeDuplicate', { source: sourceName, target: targetName }); // Onay iste
+    if (!proceedDuplicate) { // Reddedildiyse
+      showGraphToast(t('toast.edgeExists'), 'info'); // Bilgi ver
+      return false; // Başarısız
+    }
   }
+
   if (wouldCreateCycle(sourceId, targetId)) { // Döngü kontrolü
-    if (!silent) showGraphToast(t('toast.edgeCycle'), 'error'); // Hata bildir
-    return false; // Başarısız
+    const proceedCycle = requestConfirmation('confirm.edgeCycle', { source: sourceName, target: targetName }); // Onay iste
+    if (!proceedCycle) { // Reddedildiyse
+      showGraphToast(t('toast.edgeCycle'), 'error'); // Hata bildir
+      return false; // Başarısız
+    }
   }
+
   source.outputs.push(targetId); // Bağlantıyı ekle
   reorderStationsByTopology(); // Diziyi yeniden sırala
   saveState(appState); // Durumu kaydet
   if (!silent) { // Sessiz değilse
-    showGraphToast(t('toast.edgeAdded', { source: source.name || source.id, target: target.name || target.id }), 'success'); // Başarı bildirimi
+    showGraphToast(t('toast.edgeAdded', { source: sourceName, target: targetName }), 'success'); // Başarı bildirimi
     renderGraph(appState.stations); // Grafiği yenile
   }
   return true; // Başarılı
@@ -4274,6 +4420,7 @@ function removeStation(id) { // İstasyon silme fonksiyonu
   appState.stations.forEach(station => { // Kalan istasyonları dolaş
     station.outputs = station.outputs.filter(targetId => targetId !== id); // Silinen istasyona giden bağlantıları temizle
   });
+  if (appState.stationEditor && appState.stationEditor.stationId === id) appState.stationEditor = null; // Taslağı temizle
   if (wasSelected) { // Seçili istasyon silindiyse
     const nextId = appState.stations.length ? appState.stations[0].id : null; // Yeni seçim
     setSelectedStation(nextId, { skipSave: true }); // Paneli güncelle
@@ -4297,22 +4444,21 @@ function moveStation(id, direction) { // İstasyon sıralama fonksiyonu
 }
 
 function addTask(stationId) { // Görev ekleme fonksiyonu
-  const station = appState.stations.find(st => st.id === stationId); // İstasyon bul
-  if (!station) return; // Yoksa çık
-  station.tasks.push(new Task('Görev', 1, 10)); // Varsayılan görev ekle
+  const editor = ensureStationEditor(stationId); // Taslak bul
+  if (!editor) return; // Yoksa çık
+  if (!Array.isArray(editor.draft.tasks)) editor.draft.tasks = []; // Güvenli liste
+  editor.draft.tasks.push({ name: 'Görev', operators: 1, durationSec: 10 }); // Taslağa ekle
+  markStationDraftDirty(editor); // Kirli işaretle
   renderStations(); // UI yenile
-  renderGraph(appState.stations); // Akışı güncelle
-  saveState(appState); // Durumu kaydet
 }
 
 function removeTask(stationId, taskIndex) { // Görev silme fonksiyonu
-  const station = appState.stations.find(st => st.id === stationId); // İstasyon bul
-  if (!station) return; // Yoksa çık
-  if (station.tasks.length <= 1) return; // En az bir görev bırak
-  station.tasks.splice(taskIndex, 1); // Görevi çıkar
+  const editor = ensureStationEditor(stationId); // Taslak bul
+  if (!editor || !Array.isArray(editor.draft.tasks)) return; // Geçerli değilse çık
+  if (editor.draft.tasks.length <= 1) return; // En az bir görev kalmalı
+  editor.draft.tasks.splice(taskIndex, 1); // Taslaktan çıkar
+  markStationDraftDirty(editor); // Kirli işaretle
   renderStations(); // UI yenile
-  renderGraph(appState.stations); // Akışı güncelle
-  saveState(appState); // Durumu kaydet
 }
 
 function getNearestSpeedIndex(value) { // Hız değerine en yakın dizin
@@ -4334,28 +4480,176 @@ function updateSpeedControls(speed) { // Hız kontrollerini güncelle
 function setSpeedByIndex(index, options = {}) { // Hızı dizine göre ayarla
   const { skipSave = false } = options; // Kaydetme bayrağı
   const clamped = Math.max(0, Math.min(SPEED_OPTIONS.length - 1, Number(index) || 0)); // Dizin sınırı
-  const speed = SPEED_OPTIONS[clamped]; // Çarpan
+  const speed = Math.max(0.01, SPEED_OPTIONS[clamped]); // Çarpan
   appState.speed = speed; // Duruma yaz
   updateSpeedControls(speed); // UI güncelle
   viz?.setSpeed(speed); // Görsel hızı uygula
   if (!skipSave) saveState(appState); // Kaydet
 }
 
-function setSelectedStation(stationId, options = {}) { // Sağ paneldeki seçimi güncelle
-  const { skipSave = false } = options; // Kaydetme kontrolü
-  let normalized = stationId ? String(stationId) : null; // Kimliği normalize et
-  if (normalized && !appState.stations.some(st => st.id === normalized)) { // Geçerli değilse
-    normalized = null; // Sıfırla
+function cloneStationToDraft(station) { // İstasyonu düzenleme taslağına kopyala
+  if (!station) return null; // Geçersizse çık
+  const tasks = Array.isArray(station.tasks) && station.tasks.length
+    ? station.tasks
+    : [new Task('Görev', 1, 10)]; // En az bir görev bırak
+  return {
+    id: station.id,
+    name: station.name || '',
+    parallelServers: Math.max(1, Math.min(MAX_SERVERS, Number(station.parallelServers) || 1)),
+    need: Math.max(0, Number(station.need) || 0),
+    queueLimit: station.queueLimit === null || station.queueLimit === undefined ? null : Math.max(0, Number(station.queueLimit) || 0),
+    note: station.note ? String(station.note) : '',
+    tasks: tasks.map(task => ({
+      name: task.name || 'Görev',
+      operators: Math.max(1, Math.min(MAX_SERVERS, Number(task.operators) || 1)),
+      durationSec: Math.max(1, Number(task.durationSec) || 1)
+    }))
+  };
+}
+
+function computeDraftTotalDuration(draft) { // Taslak toplam süresini hesapla
+  if (!draft || !Array.isArray(draft.tasks)) return 0;
+  return draft.tasks.reduce((sum, task) => sum + Math.max(0, Number(task.durationSec) || 0), 0);
+}
+
+function ensureStationEditor(stationId) { // Taslak düzenleyicisini hazırla
+  if (!stationId) return null;
+  if (appState.stationEditor && appState.stationEditor.stationId === stationId && appState.stationEditor.draft) {
+    return appState.stationEditor;
   }
-  const previous = appState.selectedStationId; // Önceki seçim
-  appState.selectedStationId = normalized; // Yeni değeri ata
-  if (stationDrawer) stationDrawer.setAttribute('aria-hidden', normalized ? 'false' : 'true'); // Panel görünürlüğü
-  document.body.classList.toggle('drawer-open', !!normalized); // Body sınıfını güncelle
-  renderStations(); // Panel içeriğini yeniden oluştur
-  if (viz) viz.setSelectedStation(normalized); // Görselleştirmeyi güncelle
-  if (!skipSave && previous !== normalized) { // Değiştiyse
-    saveState(appState, 'station-select'); // Durumu kaydet
+  const station = appState.stations.find(st => st.id === stationId);
+  if (!station) {
+    appState.stationEditor = null;
+    return null;
   }
+  appState.stationEditor = {
+    stationId,
+    draft: cloneStationToDraft(station),
+    dirty: false,
+    ui: {}
+  };
+  return appState.stationEditor;
+}
+
+function updateStationDraftUi(editor) { // Taslak UI durumunu güncelle
+  if (!editor) return;
+  if (editor.ui?.saveBtn) editor.ui.saveBtn.disabled = !editor.dirty;
+  if (editor.ui?.discardBtn) editor.ui.discardBtn.disabled = !editor.dirty;
+  if (editor.ui?.totalLabel) editor.ui.totalLabel.textContent = `Toplam: ${computeDraftTotalDuration(editor.draft)} sn`;
+  if (stationDrawer) {
+    if (editor.dirty) stationDrawer.dataset.dirty = 'true'; else delete stationDrawer.dataset.dirty;
+  }
+}
+
+function markStationDraftDirty(editor = appState.stationEditor) { // Taslağı kirli işaretle
+  if (!editor) return;
+  if (!editor.dirty) editor.dirty = true;
+  updateStationDraftUi(editor);
+}
+
+function applyStationDraft(options = {}) { // Taslağı kalıcılaştır
+  const { silent = false } = options;
+  const editor = appState.stationEditor;
+  if (!editor || !editor.draft) return true;
+  const station = appState.stations.find(st => st.id === editor.stationId);
+  if (!station) return false;
+  const draft = editor.draft;
+  const tasks = Array.isArray(draft.tasks) ? draft.tasks : [];
+  if (!tasks.length) {
+    showGraphToast(t('toast.taskRequired'), 'warning');
+    return false;
+  }
+  station.name = draft.name && draft.name.trim().length ? draft.name.trim() : station.id;
+  station.parallelServers = Math.max(1, Math.min(MAX_SERVERS, Number(draft.parallelServers) || 1));
+  station.need = Math.max(0, Number(draft.need) || 0);
+  if (draft.queueLimit === null || draft.queueLimit === '' || draft.queueLimit === undefined) {
+    station.queueLimit = null;
+  } else {
+    station.queueLimit = Math.max(0, Number(draft.queueLimit) || 0);
+  }
+  station.note = draft.note ? String(draft.note) : '';
+  station.tasks = tasks.map(task => new Task(
+    task.name && task.name.trim().length ? task.name.trim() : 'Görev',
+    Math.max(1, Math.min(MAX_SERVERS, Number(task.operators) || 1)),
+    Math.max(1, Number(task.durationSec) || 1)
+  ));
+  editor.draft = cloneStationToDraft(station);
+  editor.dirty = false;
+  updateStationDraftUi(editor);
+  saveState(appState);
+  renderGraph(appState.stations);
+  if (!silent) renderStations();
+  return true;
+}
+
+function resetStationDraft(editor = appState.stationEditor, options = {}) { // Taslağı sıfırla
+  const { silent = false } = options;
+  if (!editor) return;
+  const station = appState.stations.find(st => st.id === editor.stationId);
+  if (!station) { appState.stationEditor = null; return; }
+  editor.draft = cloneStationToDraft(station);
+  editor.dirty = false;
+  updateStationDraftUi(editor);
+  if (!silent) renderStations();
+}
+
+function hasDirtyStationDraft() { // Taslakta kaydedilmemiş değişiklik var mı
+  return !!(appState.stationEditor && appState.stationEditor.dirty);
+}
+
+function applyStationSelection(stationId, options = {}) { // Sağ panel seçim uygulaması
+  const { skipSave = false, preserveDraft = false } = options;
+  let normalized = stationId ? String(stationId) : null;
+  if (normalized && !appState.stations.some(st => st.id === normalized)) normalized = null;
+  const previous = appState.selectedStationId;
+  appState.selectedStationId = normalized;
+  if (normalized) {
+    if (!preserveDraft || !appState.stationEditor || appState.stationEditor.stationId !== normalized) {
+      ensureStationEditor(normalized);
+    }
+  } else {
+    appState.stationEditor = null;
+    if (stationDrawer) delete stationDrawer.dataset.dirty;
+  }
+  if (stationDrawer) stationDrawer.setAttribute('aria-hidden', normalized ? 'false' : 'true');
+  document.body.classList.toggle('drawer-open', !!normalized);
+  renderStations();
+  if (viz) viz.setSelectedStation(normalized);
+  if (!skipSave && previous !== normalized) saveState(appState, 'station-select');
+}
+
+function setSelectedStation(stationId, options = {}) { // Sağ panel seçimini yönet
+  const { force = false, skipSave = false, preserveDraft = false } = options;
+  const normalized = stationId ? String(stationId) : null;
+  const editor = appState.stationEditor;
+  const currentId = appState.selectedStationId;
+  const sameTarget = normalized === currentId;
+
+  if (!force && editor && editor.dirty) {
+    if (sameTarget && normalized !== null) return; // Aynı seçime tekrar
+    openDrawerConfirm().then(choice => {
+      if (choice === 'save') {
+        if (applyStationDraft({ silent: true })) {
+          setSelectedStation(stationId, { ...options, force: true });
+        } else {
+          markStationDraftDirty(editor);
+        }
+      } else if (choice === 'discard') {
+        resetStationDraft(editor, { silent: true });
+        setSelectedStation(stationId, { ...options, force: true });
+      } else {
+        updateStationDraftUi(editor);
+      }
+    });
+    return;
+  }
+
+  if (sameTarget) {
+    applyStationSelection(normalized, { skipSave: true, preserveDraft: true });
+    return;
+  }
+
+  applyStationSelection(normalized, { skipSave, preserveDraft });
 }
 
 function handleStationSelect(stationId) { // Görsel seçim geri çağrısı
@@ -4375,128 +4669,179 @@ function renderStations() { // Sağ panel içeriklerini çiz
   if (emptyStateEl) emptyStateEl.style.display = station ? 'none' : 'block'; // Boş durum kontrolü
   if (!station) return; // Seçim yoksa çık
 
-  const card = document.createElement('div'); // Kart
-  card.className = 'station-card'; // Stil
-  card.dataset.id = station.id; // Veri kimliği
+  const editor = ensureStationEditor(station.id); // Taslağı hazırla
+  if (!editor) return;
+  const draft = editor.draft || cloneStationToDraft(station);
+  editor.ui = {};
 
-  const header = document.createElement('div'); // Başlık satırı
-  header.className = 'station-header'; // Stil
-  const nameInput = document.createElement('input'); // Ad girişi
-  nameInput.value = station.name; // Değer
-  nameInput.placeholder = 'İstasyon adı'; // Yer tutucu
-  nameInput.disabled = appState.running; // Çalışırken kilitle
-  nameInput.addEventListener('input', () => { // Değişimde
-    station.name = nameInput.value; // İsmi ata
-    renderGraph(appState.stations); // Grafiği güncelle
-    saveState(appState); // Durumu kaydet
+  const card = document.createElement('div');
+  card.className = 'station-card';
+  card.dataset.id = station.id;
+
+  const header = document.createElement('div');
+  header.className = 'station-header';
+  const nameInput = document.createElement('input');
+  nameInput.placeholder = 'İstasyon adı';
+  nameInput.value = draft.name || station.name || '';
+  nameInput.disabled = appState.running;
+  nameInput.addEventListener('input', () => {
+    draft.name = nameInput.value;
+    markStationDraftDirty(editor);
   });
-  header.appendChild(nameInput); // Başlığa ekle
-  const totalLabel = document.createElement('span'); // Toplam süre etiketi
-  totalLabel.className = 'badge'; // Stil
-  const updateTotals = () => { totalLabel.textContent = `Toplam: ${station.totalDuration()} sn`; }; // Güncelleme fonksiyonu
-  updateTotals(); // İlk değer
-  header.appendChild(totalLabel); // Başlığa ekle
-  card.appendChild(header); // Kart içine ekle
+  header.appendChild(nameInput);
+  const totalLabel = document.createElement('span');
+  totalLabel.className = 'badge';
+  editor.ui.totalLabel = totalLabel;
+  header.appendChild(totalLabel);
+  card.appendChild(header);
 
-  const runtimeLine = document.createElement('div'); // Canlı metrik satırı
-  runtimeLine.className = 'runtime-line'; // Stil
-  const capacityPill = document.createElement('span'); capacityPill.className = 'runtime-pill'; capacityPill.textContent = `Operatör: ${station.parallelServers} (Paralel: ${station.parallelServers})`;
-  const queuePill = document.createElement('span'); queuePill.className = 'runtime-pill'; queuePill.textContent = 'Kuyruk: 0';
-  const servicePill = document.createElement('span'); servicePill.className = 'runtime-pill'; servicePill.textContent = `Servis: 0/${station.parallelServers}`;
-  const remainingPill = document.createElement('span'); remainingPill.className = 'runtime-pill'; remainingPill.textContent = 'Kalan: -';
-  runtimeLine.append(capacityPill, queuePill, servicePill, remainingPill); // Rozetleri ekle
-  card.appendChild(runtimeLine); // Kart içine ekle
-  stationRuntimeRefs.set(station.id, { card, capacity: capacityPill, queue: queuePill, service: servicePill, remaining: remainingPill }); // Referansları kaydet
+  const runtimeLine = document.createElement('div');
+  runtimeLine.className = 'runtime-line';
+  const capacityPill = document.createElement('span');
+  capacityPill.className = 'runtime-pill';
+  capacityPill.textContent = `Operatör: ${station.parallelServers} (Paralel: ${station.parallelServers})`;
+  const queuePill = document.createElement('span');
+  queuePill.className = 'runtime-pill';
+  queuePill.textContent = 'Kuyruk: 0';
+  const servicePill = document.createElement('span');
+  servicePill.className = 'runtime-pill';
+  servicePill.textContent = `Servis: 0/${station.parallelServers}`;
+  const remainingPill = document.createElement('span');
+  remainingPill.className = 'runtime-pill';
+  remainingPill.textContent = 'Kalan: -';
+  runtimeLine.append(capacityPill, queuePill, servicePill, remainingPill);
+  card.appendChild(runtimeLine);
+  stationRuntimeRefs.set(station.id, { card, capacity: capacityPill, queue: queuePill, service: servicePill, remaining: remainingPill });
 
-  const serverRow = document.createElement('div'); // Operatör satırı
-  serverRow.className = 'drawer-meta-row'; // Stil
-  const serverLabel = document.createElement('label'); // Etiket
-  serverLabel.innerHTML = '<span>Operatör (Paralel)</span>'; // Metin
-  const serverInput = document.createElement('input'); // Girdi
-  serverInput.type = 'number'; serverInput.min = 1; serverInput.max = MAX_SERVERS; serverInput.value = station.parallelServers; serverInput.disabled = appState.running; // Ayarlar
-  serverInput.addEventListener('change', () => { // Değişince
-    const value = Math.max(1, Math.min(MAX_SERVERS, Number(serverInput.value) || 1)); // Sınırla
-    station.parallelServers = value; // Ata
-    renderStations(); // Paneli yenile
-    renderGraph(appState.stations); // Grafiği güncelle
-    saveState(appState); // Durumu kaydet
+  const serverRow = document.createElement('div');
+  serverRow.className = 'drawer-meta-row';
+  const serverLabel = document.createElement('label');
+  serverLabel.innerHTML = '<span>Operatör (Paralel)</span>';
+  const serverInput = document.createElement('input');
+  serverInput.type = 'number';
+  serverInput.min = 1;
+  serverInput.max = MAX_SERVERS;
+  serverInput.value = draft.parallelServers;
+  serverInput.disabled = appState.running;
+  serverInput.addEventListener('change', () => {
+    const value = Math.max(1, Math.min(MAX_SERVERS, Number(serverInput.value) || 1));
+    draft.parallelServers = value;
+    serverInput.value = value;
+    capacityPill.textContent = `Operatör: ${value} (Paralel: ${station.parallelServers})`;
+    markStationDraftDirty(editor);
   });
-  serverLabel.appendChild(serverInput); // Etikete ekle
-  serverRow.appendChild(serverLabel); // Satıra ekle
-  card.appendChild(serverRow); // Kart içine ekle
+  serverLabel.appendChild(serverInput);
+  serverRow.appendChild(serverLabel);
+  card.appendChild(serverRow);
 
-  const demandRow = document.createElement('div'); // İhtiyaç/kuyruk satırı
-  demandRow.className = 'drawer-meta-row'; // Stil
-  const needLabel = document.createElement('label'); // İhtiyaç etiketi
-  needLabel.innerHTML = '<span>İhtiyaç (adet)</span>'; // Metin
-  const needInput = document.createElement('input'); // İhtiyaç girişi
-  needInput.type = 'number'; needInput.min = 0; needInput.step = 1; needInput.value = Number.isFinite(station.need) ? station.need : 0; needInput.disabled = appState.running; // Ayarlar
-  needInput.addEventListener('change', () => { // Değişim
-    const value = Math.max(0, Number(needInput.value) || 0); // Sınırla
-    station.need = value; // Ata
-    saveState(appState); // Kaydet
+  const demandRow = document.createElement('div');
+  demandRow.className = 'drawer-meta-row';
+  const needLabel = document.createElement('label');
+  needLabel.innerHTML = '<span>İhtiyaç (adet)</span>';
+  const needInput = document.createElement('input');
+  needInput.type = 'number';
+  needInput.min = 0;
+  needInput.step = 1;
+  needInput.value = Number.isFinite(draft.need) ? draft.need : 0;
+  needInput.disabled = appState.running;
+  needInput.addEventListener('change', () => {
+    draft.need = Math.max(0, Number(needInput.value) || 0);
+    needInput.value = draft.need;
+    markStationDraftDirty(editor);
   });
-  needLabel.appendChild(needInput); // Etikete ekle
-  demandRow.appendChild(needLabel); // Satıra ekle
-  const queueLabel = document.createElement('label'); // Kuyruk etiketi
-  queueLabel.innerHTML = '<span>Kuyruk sınırı</span>'; // Metin
-  const queueInput = document.createElement('input'); // Kuyruk girişi
-  queueInput.type = 'number'; queueInput.min = 0; queueInput.placeholder = 'sınırsız'; queueInput.value = Number.isFinite(station.queueLimit) ? station.queueLimit : ''; queueInput.disabled = appState.running; // Ayarlar
-  queueInput.addEventListener('change', () => { // Değişim
-    const text = queueInput.value.trim(); // Ham değer
-    if (!text) { // Boş ise
-      station.queueLimit = null; // Sınırsız
+  needLabel.appendChild(needInput);
+  demandRow.appendChild(needLabel);
+
+  const queueLabel = document.createElement('label');
+  queueLabel.innerHTML = '<span>Kuyruk sınırı</span>';
+  const queueInput = document.createElement('input');
+  queueInput.type = 'number';
+  queueInput.min = 0;
+  queueInput.placeholder = 'sınırsız';
+  queueInput.value = draft.queueLimit === null || draft.queueLimit === undefined ? '' : draft.queueLimit;
+  queueInput.disabled = appState.running;
+  queueInput.addEventListener('change', () => {
+    const text = queueInput.value.trim();
+    if (!text) {
+      draft.queueLimit = null;
+      queueInput.value = '';
     } else {
-      station.queueLimit = Math.max(0, Number(text) || 0); // Sayıya çevir
+      const parsed = Math.max(0, Number(text) || 0);
+      draft.queueLimit = parsed;
+      queueInput.value = parsed;
     }
-    saveState(appState); // Kaydet
+    markStationDraftDirty(editor);
   });
-  queueLabel.appendChild(queueInput); // Etikete ekle
-  demandRow.appendChild(queueLabel); // Satıra ekle
-  card.appendChild(demandRow); // Kart içine ekle
+  queueLabel.appendChild(queueInput);
+  demandRow.appendChild(queueLabel);
+  card.appendChild(demandRow);
 
-  const noteLabel = document.createElement('label'); // Not alanı
-  noteLabel.className = 'drawer-note-label'; // Stil
-  noteLabel.innerHTML = '<span>Not</span>'; // Metin
-  const noteField = document.createElement('textarea'); // Not metni
-  noteField.rows = 3; noteField.placeholder = 'İstasyonla ilgili notlar'; noteField.value = station.note || ''; noteField.disabled = appState.running; // Ayarlar
-  noteField.addEventListener('input', () => { station.note = noteField.value; saveState(appState); }); // Değişim
-  noteLabel.appendChild(noteField); // Etikete ekle
-  card.appendChild(noteLabel); // Kart içine ekle
+  const noteLabel = document.createElement('label');
+  noteLabel.className = 'drawer-note-label';
+  noteLabel.innerHTML = '<span>Not</span>';
+  const noteField = document.createElement('textarea');
+  noteField.rows = 3;
+  noteField.placeholder = 'İstasyonla ilgili notlar';
+  noteField.value = draft.note || '';
+  noteField.disabled = appState.running;
+  noteField.addEventListener('input', () => {
+    draft.note = noteField.value;
+    markStationDraftDirty(editor);
+  });
+  noteLabel.appendChild(noteField);
+  card.appendChild(noteLabel);
 
-  const table = document.createElement('table'); // Görev tablosu
-  table.className = 'task-table'; // Stil
+  const table = document.createElement('table');
+  table.className = 'task-table';
   const thead = document.createElement('thead');
   thead.innerHTML = '<tr><th>Görev Adı</th><th>Operatör</th><th>Süre (sn)</th><th></th></tr>';
   table.appendChild(thead);
   const tbody = document.createElement('tbody');
-  station.tasks.forEach((task, taskIndex) => { // Görev satırları
+  const draftTasks = Array.isArray(draft.tasks) ? draft.tasks : [];
+  draftTasks.forEach((task, taskIndex) => {
     const row = document.createElement('tr');
     const nameCell = document.createElement('td');
     const nameField = document.createElement('input');
-    nameField.value = task.name; nameField.disabled = appState.running;
-    nameField.addEventListener('input', () => { task.name = nameField.value; saveState(appState); });
-    nameCell.appendChild(nameField); row.appendChild(nameCell);
+    nameField.value = task.name || '';
+    nameField.disabled = appState.running;
+    nameField.addEventListener('input', () => {
+      task.name = nameField.value;
+      markStationDraftDirty(editor);
+    });
+    nameCell.appendChild(nameField);
+    row.appendChild(nameCell);
 
     const opCell = document.createElement('td');
     const opField = document.createElement('input');
-    opField.type = 'number'; opField.min = 1; opField.value = task.operators; opField.disabled = appState.running;
-    opField.addEventListener('change', () => { task.operators = Math.max(1, Number(opField.value) || 1); saveState(appState); });
-    opCell.appendChild(opField); row.appendChild(opCell);
+    opField.type = 'number';
+    opField.min = 1;
+    opField.value = task.operators;
+    opField.disabled = appState.running;
+    opField.addEventListener('change', () => {
+      task.operators = Math.max(1, Math.min(MAX_SERVERS, Number(opField.value) || 1));
+      opField.value = task.operators;
+      markStationDraftDirty(editor);
+    });
+    opCell.appendChild(opField);
+    row.appendChild(opCell);
 
     const durationCell = document.createElement('td');
     const durationField = document.createElement('input');
-    durationField.type = 'number'; durationField.min = 1; durationField.value = task.durationSec; durationField.disabled = appState.running;
+    durationField.type = 'number';
+    durationField.min = 1;
+    durationField.value = task.durationSec;
+    durationField.disabled = appState.running;
     durationField.addEventListener('change', () => {
       task.durationSec = Math.max(1, Number(durationField.value) || 1);
-      updateTotals();
-      renderGraph(appState.stations);
-      saveState(appState);
+      durationField.value = task.durationSec;
+      markStationDraftDirty(editor);
+      updateStationDraftUi(editor);
     });
-    durationCell.appendChild(durationField); row.appendChild(durationCell);
+    durationCell.appendChild(durationField);
+    row.appendChild(durationCell);
 
     const actionCell = document.createElement('td');
-    if (!appState.running && station.tasks.length > 1) {
+    if (!appState.running && draftTasks.length > 1) {
       const removeBtn = document.createElement('button');
       removeBtn.textContent = 'Sil';
       removeBtn.addEventListener('click', () => removeTask(station.id, taskIndex));
@@ -4508,7 +4853,7 @@ function renderStations() { // Sağ panel içeriklerini çiz
   table.appendChild(tbody);
   card.appendChild(table);
 
-  if (!appState.running) { // Aksiyonlar
+  if (!appState.running) {
     const actions = document.createElement('div');
     actions.className = 'task-actions';
     const addTaskBtn = document.createElement('button');
@@ -4523,7 +4868,26 @@ function renderStations() { // Sağ panel içeriklerini çiz
     card.appendChild(actions);
   }
 
-  stationListEl.appendChild(card); // Kartı yerleştir
+  const footer = document.createElement('div');
+  footer.className = 'drawer-footer-actions';
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'primary';
+  saveBtn.textContent = t('confirm.drawerSave');
+  saveBtn.addEventListener('click', () => {
+    if (applyStationDraft()) {
+      updateStationDraftUi(editor);
+    }
+  });
+  const discardBtn = document.createElement('button');
+  discardBtn.textContent = t('confirm.drawerDiscard');
+  discardBtn.addEventListener('click', () => resetStationDraft());
+  editor.ui.saveBtn = saveBtn;
+  editor.ui.discardBtn = discardBtn;
+  footer.append(saveBtn, discardBtn);
+  card.appendChild(footer);
+
+  stationListEl.appendChild(card);
+  updateStationDraftUi(editor);
 }
 
 function applyLiveStationSnapshot(snapshot) { // Canlı metrikleri karta yaz
@@ -4687,6 +5051,7 @@ function setMode(mode) { // Görünüm/düzenleme modunu değiştir
 }
 
 function toggleEditing(enabled) { // UI düzenleme durumunu ayarla
+  if (!stationListEl) return; // Panel yoksa çık
   const inputs = stationListEl.querySelectorAll('input, button'); // Tüm kontroller
   inputs.forEach(el => { // Her biri
     if (el.dataset.lock === 'runtime') return; // Kilitli olanlar
@@ -5341,6 +5706,7 @@ let eventsBound = false; // Olay bağlama bayrağı
 
 function bindKeyboardShortcuts(event) { // Klavye kısayol dinleyicisi
   if (!event || !event.key) return; // Geçersizse çık
+  if (drawerConfirmResolver) return; // Onay bekleniyorsa kısayol yok
   const tagName = event.target?.tagName; // Hedef etiketi
   if (tagName === 'INPUT' || tagName === 'TEXTAREA') return; // Form odakta ise çık
   const key = event.key.toLowerCase(); // Harfi küçült
@@ -5454,7 +5820,13 @@ function attachUiEvents() { // UI olaylarını bağla
   restoreYesBtn?.addEventListener('click', () => handleRestoreConfirm()); // Kurtarma onayı
   restoreNoBtn?.addEventListener('click', () => handleRestoreDecline()); // Kurtarma reddi
   restoreNeverBtn?.addEventListener('click', () => handleRestoreNever()); // Bir daha sorma
+  drawerConfirmSaveBtn?.addEventListener('click', () => resolveDrawerConfirm('save')); // Drawer kaydet
+  drawerConfirmDiscardBtn?.addEventListener('click', () => resolveDrawerConfirm('discard')); // Drawer kaydetmeden
+  drawerConfirmCancelBtn?.addEventListener('click', () => resolveDrawerConfirm('cancel')); // Drawer iptal
+  drawerConfirmModal?.addEventListener('click', event => { if (event.target === drawerConfirmModal) resolveDrawerConfirm('cancel'); }); // Dış tık iptal
   document.addEventListener('keydown', bindKeyboardShortcuts); // Klavye olayları
+  document.addEventListener('keydown', handleDrawerEscape, true); // Drawer ESC
+  document.addEventListener('mousedown', handleDrawerOutside); // Drawer dış tık
   document.addEventListener('fullscreenchange', () => { // Tam ekran değişince
     updateFullscreenLabel(); // Etiketi güncelle
     scheduleDashboardCharts(); // Grafik boyutlarını tazele
